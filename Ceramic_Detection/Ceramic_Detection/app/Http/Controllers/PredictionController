@@ -1,0 +1,36 @@
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+
+class PredictionController extends Controller
+{
+    public function predict(Request $request)
+    {
+        // Kiểm tra file được tải lên
+        if (!$request->hasFile('image')) {
+            return response()->json(['error' => 'No file uploaded'], 400);
+        }
+
+        // Lưu file vào storage tạm thời
+        $path = $request->file('image')->store('public/uploads');
+        $absolutePath = Storage::path($path); // Lấy đường dẫn tuyệt đối của file
+
+        // Gửi file tới API Python
+        try {
+            $response = Http::attach(
+                'file', file_get_contents($absolutePath), $request->file('image')->getClientOriginalName()
+            )->post('http://127.0.0.1:60074/predict');
+
+            // Xử lý phản hồi từ API Python
+            if ($response->successful()) {
+                return response()->json($response->json());
+            } else {
+                return response()->json(['error' => 'Failed to connect to Python API'], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+}

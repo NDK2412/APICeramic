@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ceramic Classification</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Thêm Font Awesome để sử dụng icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/public.css">
     <style>
         :root {
-            --primary-color: #6d4c41;
-            --secondary-color: #8d6e63;
-            --accent-color: #d7ccc8;
-            --light-color: #efebe9;
-            --dark-color: #3e2723;
-            --success-color: #4caf50;
-            --text-color: #333;
-            --text-light: #f5f5f5;
+            --primary-color: #b3cde0; /* Xanh lam nhạt */
+            --secondary-color: #6497b1; /* Xanh lam trung */
+            --accent-color: #e6f0fa; /* Xanh lam rất nhạt */
+            --light-color: #f5faff; /* Nền nhạt */
+            --dark-color: #03396c; /* Xanh lam đậm */
+            --text-light: #ffffff; /* Trắng cho chữ */
         }
 
         * {
@@ -26,19 +27,15 @@
 
         body {
             background-color: var(--light-color);
-            color: var(--text-color);
+            color: #333;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            animation: fadeIn 1s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            overflow-x: hidden;
         }
 
         .container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
@@ -46,50 +43,81 @@
         }
 
         header {
+            background-color: var(--primary-color);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 3rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--accent-color);
-            animation: slideDown 0.8s ease-out;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        h1 {
-            font-size: 2.5rem;
+        .logo {
+            display: flex;
+            align-items: center;
             color: var(--dark-color);
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
             font-weight: 600;
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: inline-block;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo img {
+            height: clamp(30px, 5vw, 40px);
+            margin-right: 10px;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            gap: clamp(1rem, 2vw, 1.5rem);
+        }
+
+        .nav-menu li a {
+            color: var(--dark-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu li a:hover {
+            color: var(--secondary-color);
         }
 
         .login-section {
             display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
             align-items: center;
-            margin-top: 2rem;
+            gap: 1rem;
         }
 
         .login-section button {
-            padding: 0.8rem 1.5rem;
+            padding: clamp(0.5rem, 1vw, 0.6rem) clamp(1rem, 2vw, 1.2rem);
             border: none;
-            border-radius: 30px;
+            border-radius: 20px;
             font-weight: 500;
+            font-size: clamp(0.8rem, 1.2vw, 1rem);
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         #loginButton {
-            background-color: var(--primary-color);
+            background-color: var(--secondary-color);
             color: var(--text-light);
         }
 
@@ -99,185 +127,378 @@
         }
 
         .login-section button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
         }
 
-        #mainContent {
+        /* Hamburger Menu */
+        .hamburger {
             display: none;
-            animation: fadeInUp 1s ease-out;
+            font-size: 2rem;
+            background: none;
+            border: none;
+            color: var(--dark-color);
+            cursor: pointer;
+            padding: 0.5rem;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Banner Styles */
+        .banner {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .feature-section {
+        .banner-slides {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .banner-slide {
+            min-width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* News Section */
+        .news-section {
+            padding: 2rem 0;
+        }
+
+        .news-section h1 {
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .news-list {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            margin-bottom: 3rem;
         }
 
-        .upload-section, .folder-section {
+        .news-item {
             background-color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
             transition: transform 0.3s ease;
         }
 
-        .upload-section:hover, .folder-section:hover {
+        .news-item:hover {
             transform: translateY(-5px);
         }
 
-        .upload-section {
-            animation-delay: 0.2s;
-        }
-
-        .folder-section {
-            animation-delay: 0.4s;
-        }
-
-        h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
-            position: relative;
-            display: inline-block;
-        }
-
-        h3::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background-color: var(--secondary-color);
-        }
-
-        input[type="file"], select {
+        .news-item img {
             width: 100%;
-            padding: 0.8rem;
-            margin-bottom: 1.5rem;
-            border: 2px solid var(--accent-color);
-            border-radius: 8px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-content h2 {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .news-content p {
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
         }
 
-        input[type="file"]:focus, select:focus {
-            border-color: var(--primary-color);
-            outline: none;
+        .news-content a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
         }
 
-        .preview-section {
+        .news-content a:hover {
+            color: var(--dark-color);
+        }
+
+        /* About Section */
+        .about-section {
             background-color: white;
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
             text-align: center;
-            transition: all 0.3s ease;
+            animation: fadeIn 1s ease-out;
         }
 
-        #previewImage {
-            max-width: 100%;
-            max-height: 400px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+        .about-section h2 {
+            font-size: 2rem;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
         }
 
-        #previewImage:hover {
-            transform: scale(1.02);
-        }
-
-        .result-section, .chatbot-section {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            transition: all 0.3s ease;
-        }
-
-        .result-section:hover, .chatbot-section:hover {
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-        }
-
-        #result, #chatbotResponse {
-            padding: 1rem;
-            background-color: var(--light-color);
-            border-radius: 8px;
-            min-height: 100px;
+        .about-section p {
+            font-size: 1.1rem;
+            color: #666;
             line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.8rem;
-            border-radius: 30px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        button:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         footer {
             text-align: center;
             padding: 1.5rem;
-            background-color: 
-            color: var(--text-light);
-            margin-top: 3rem;
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            margin-top: auto;
+            width: 100%;
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--dark-color);
+        }
+
+        .modal-content button {
+            padding: 0.6rem 1.5rem;
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+        }
+
+        /* Contact Sidebar Styles */
+        .contact-sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            padding: 2rem;
+            z-index: 1500;
+            transition: right 0.3s ease-in-out;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .contact-sidebar.active {
+            right: 0;
+        }
+
+        .contact-sidebar h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .contact-sidebar ul {
+            list-style: none;
+        }
+
+        .contact-sidebar li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .contact-sidebar i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .contact-sidebar a {
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-sidebar a:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .feature-section {
-                grid-template-columns: 1fr;
+            .hamburger {
+                display: block;
             }
-            
-            h1 {
-                font-size: 2rem;
+
+            .nav-container {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background-color: var(--primary-color);
+                padding: 1rem;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             }
-            
-            .container {
+
+            .nav-container.active {
+                display: flex;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+                width: 100%;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-menu li {
+                width: 100%;
+            }
+
+            .login-section {
+                width: 100%;
+                justify-content: center;
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .login-section button {
+                width: 100%;
+            }
+
+            .header-content {
+                justify-content: space-between;
+            }
+
+            .contact-sidebar {
+                width: 250px;
+            }
+
+            .about-section, .news-section {
                 padding: 1.5rem;
             }
-            .login-section {
-                display: flex;
-                justify-content: center; /* Căn giữa theo chiều ngang */
-                align-items: center;    /* Căn giữa theo chiều dọc */
-                height: 100vh;          /* Chiều cao của khung chứa */
+
+            .about-section h2, .news-section h1 {
+                font-size: 1.5rem;
+            }
+
+            .about-section p, .news-content p {
+                font-size: 1rem;
+            }
+
+            .banner {
+                height: 250px;
+            }
+
+            .news-item img {
+                height: 150px;
+            }
+
+            .news-content h2 {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .logo img {
+                height: 25px;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .modal-content p {
+                font-size: 1rem;
+            }
+
+            .contact-sidebar {
+                width: 200px;
+                padding: 1.5rem;
+            }
+
+            .contact-sidebar h3 {
+                font-size: 1.2rem;
+            }
+
+            .contact-sidebar li {
+                font-size: 0.9rem;
+            }
+
+            .banner {
+                height: 200px;
+            }
+
+            .news-item img {
+                height: 120px;
+            }
+
+            .news-content h2 {
+                font-size: 1.2rem;
+            }
+
+            .news-content p {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -285,53 +506,98 @@
 <body>
     <div class="container">
         <header>
-            <h1>Ceramic Classification</h1>
-            <div class="login-section">
-                <button id="logoutButton" onclick="logout()" style="display:none;">Đăng xuất</button>
-        
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <img src="logo.png" alt="Logo" style="display: none;"> <!-- Thay bằng đường dẫn logo thực tế -->
+                    Ceramic Classification
+                </a>
+                <button class="hamburger" aria-label="Toggle menu">☰</button>
+                <div class="nav-container">
+                    <ul class="nav-menu">
+                        <li><a href="#home">Trang chủ</a></li>
+                        <li><a href="gallery">Thư viện đồ gốm</a></li>
+                        <li><a href="#" id="classificationLink">Nhận diện</a></li>
+                        <li><a href="#market">Mua bán</a></li>
+                        <li><a href="#" id="contactLink">Liên hệ</a></li>
+                    </ul>
+                </div>
+            </div>
         </header>
+        <div class="login-section">
+            <button id="loginButton" onclick="redirectToLogin()">Try It Out <i class="fa-solid fa-arrow-up-from-bracket"></i></button>
+            <button id="logoutButton" onclick="logout()" style="display:none;">Đăng xuất</button>
         </div>
-            <div class="login-section">
-            <button id="loginButton" onclick="redirectToLogin()">Đăng nhập</button>
-            </div>
-        <div id="mainContent">
-            <div class="feature-section">
-                <div class="upload-section">
-                    <h3>Upload Image</h3>
-                    <input type="file" id="imageInput" accept="image/*">
-                    <button onclick="predictImage()">
-                        <span id="predictSpinner" class="loading" style="display: none;"></span>
-                        Predict
-                    </button>
-                </div>
 
-                <div class="folder-section">
-                    <h3>Select from Folder</h3>
-                    <select id="imageSelect" onchange="loadSelectedImage()">
-                        <option value="">Select an image</option>
-                        <option value="ceramic1.jpg">Ceramic Sample 1</option>
-                        <option value="ceramic2.jpg">Ceramic Sample 2</option>
-                        <option value="ceramic3.jpg">Ceramic Sample 3</option>
-                    </select>
-                    <button onclick="loadSelectedImage()">Load Image</button>
-                </div>
-            </div>
-
-            <div class="preview-section">
-                <h3>Image Preview</h3>
-                <img id="previewImage" src="" alt="Image preview" style="display: none;">
-            </div>
-
-            <div class="result-section">
-                <h3>Classification Result</h3>
-                <p id="result">Please upload or select an image to see the prediction</p>
-            </div>
-
-            <div class="chatbot-section">
-                <h3>Ceramic Information</h3>
-                <p id="chatbotResponse">Detailed information about the ceramic will appear here after prediction.</p>
+        <!-- Banner Section -->
+        <div class="banner">
+            <div class="banner-slides" id="bannerSlides">
+                <img src="https://midata.io/wp-content/uploads/2024/04/fb88-khuyen-mai-banner.jpg" alt="Banner 1" class="banner-slide">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJiERP9QRxZJ8t-wMZe8BqwxYfQOE6W__pwVKuS63JEnG2yFi041dSHZt-0r8erqiMPw&usqp=CAU" alt="Banner 2" class="banner-slide">
+                <img src="https://treobangron.com.vn/wp-content/uploads/2022/09/banner-khuyen-mai-42.jpg" alt="Banner 3" class="banner-slide">
             </div>
         </div>
+
+        <!-- News Section -->
+        <section class="news-section">
+            <h1>Tin tức về gốm sứ</h1>
+            <div class="news-list">
+                <article class="news-item">
+                    <img src="https://file3.qdnd.vn/data/images/0/2024/10/08/upload_2049/gom1.jpg" alt="News 1">
+                    <div class="news-content">
+                        <h2>Triển lãm gốm sứ 2023</h2>
+                        <p>Triển lãm gốm sứ quốc tế diễn ra tại Hà Nội, thu hút hàng trăm nghệ nhân và nhà sưu tập...</p>
+                        <a href="#news1">Đọc thêm</a>
+                    </div>
+                </article>
+                <article class="news-item">
+                    <img src="https://www.gomnghethuat.com/wp-content/uploads/5-Buoc-Lam-Do-Gom-Quy-Trinh-Chi-Tiet-Lam-Do-Gom-Ban-Can-Biet.jpg" alt="News 2">
+                    <div class="news-content">
+                        <h2>Kỹ thuật làm gốm cổ truyền</h2>
+                        <p>Tìm hiểu về các phương pháp làm gốm truyền thống đang được bảo tồn tại Việt Nam...</p>
+                        <a href="#news2">Đọc thêm</a>
+                    </div>
+                </article>
+                <article class="news-item">
+                    <img src="https://chus.vn/images/Blog/G%E1%BB%91m%20trong%20%C4%91%E1%BB%9Di%20s%E1%BB%91ng/go%CC%82%CC%81m%20xu%CC%9Ba%207.jpg?1713503045290" alt="News 3">
+                    <div class="news-content">
+                        <h2>Xu hướng gốm sứ hiện đại</h2>
+                        <p>Gốm sứ không chỉ là nghệ thuật mà còn là xu hướng trang trí nội thất mới...</p>
+                        <a href="#news3">Đọc thêm</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about-section">
+            <h2>Giới thiệu về Ceramic Classification</h2>
+            <p>
+                Ceramic Classification là nền tảng trực tuyến hàng đầu giúp bạn khám phá và nhận diện các loại gốm sứ độc đáo. 
+                Chúng tôi cung cấp công cụ phân loại thông minh, thư viện gốm phong phú, cùng không gian mua bán và chia sẻ tin tức về nghệ thuật gốm sứ. 
+                Hãy cùng chúng tôi trải nghiệm hành trình tôn vinh giá trị văn hóa và lịch sử qua từng sản phẩm gốm!
+            </p>
+        </section>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="loginPrompt">
+        <div class="modal-content">
+            <p>Vui lòng đăng nhập để sử dụng tính năng này</p>
+            <button onclick="redirectToLogin()">Đăng Nhập</button>
+        </div>
+    </div>
+
+    <!-- Contact Sidebar -->
+    <div class="contact-sidebar" id="contactSidebar">
+        <h3>Liên hệ với chúng tôi</h3>
+        <ul>
+            <li><i class="fas fa-phone"></i> <span>SĐT: 0982638519</span></li>
+            <li><i class="fas fa-envelope"></i> <a href="mailto:khangkhang1111777@gmail.com">Email: khangkhang1111777@gmail.com</a></li>
+            <li><i class="fab fa-facebook-f"></i> <a href="https://facebook.com/ceramic" target="_blank">Facebook</a></li>
+            <li><i class="fab fa-instagram"></i> <a href="https://instagram.com/ceramic" target="_blank">Instagram</a></li>
+            <li><i class="fa-brands fa-x-twitter"></i> <a href="https://twitter.com/ceramic" target="_blank">Twitter</a></li>
+            <li><i class="fas fa-map-marker-alt"></i> <span>Địa chỉ: 123 Đường Gốm, TP. Hà Nội</span></li>
+        </ul>
     </div>
 
     <footer>
@@ -339,29 +605,52 @@
     </footer>
 
     <script>
+        // Toggle menu hamburger
+        const hamburger = document.querySelector('.hamburger');
+        const navContainer = document.querySelector('.nav-container');
+        const classificationLink = document.querySelector('#classificationLink');
+        const contactLink = document.querySelector('#contactLink');
+        const loginPrompt = document.querySelector('#loginPrompt');
+        const contactSidebar = document.querySelector('#contactSidebar');
+        const bannerSlides = document.querySelector('#bannerSlides');
+        const slides = document.querySelectorAll('.banner-slide');
+        let currentSlide = 0;
+
+        hamburger.addEventListener('click', () => {
+            navContainer.classList.toggle('active');
+        });
+
+        // Banner slideshow
+        function showNextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            bannerSlides.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        // Tự động chạy banner mỗi 3 giây
+        setInterval(showNextSlide, 3000);
+
+        // Biến kiểm tra trạng thái đăng nhập
+        let isAuthenticated = false;
+
         // Hàm kiểm tra trạng thái đăng nhập
         async function checkLoginStatus() {
             try {
-                document.getElementById('predictSpinner').style.display = 'inline-block';
                 let response = await fetch("http://localhost:8000/api/check-auth", {
                     credentials: "include"
                 });
                 let data = await response.json();
 
                 if (data.authenticated) {
-                    document.getElementById("mainContent").style.display = "block";
+                    isAuthenticated = true;
                     document.getElementById("loginButton").style.display = "none";
                     document.getElementById("logoutButton").style.display = "block";
-                    
-                    // Animation khi hiển thị nội dung chính
-                    document.getElementById("mainContent").style.animation = "fadeInUp 1s ease-out";
                 } else {
-                    document.getElementById("mainContent").style.display = "none";
+                    isAuthenticated = false;
+                    document.getElementById("loginButton").style.display = "block";
+                    document.getElementById("logoutButton").style.display = "none";
                 }
             } catch (error) {
                 console.error("Lỗi kiểm tra đăng nhập:", error);
-            } finally {
-                document.getElementById('predictSpinner').style.display = 'none';
             }
         }
 
@@ -385,63 +674,36 @@
             }
         }
 
-        // Hiển thị ảnh đã chọn
-        function loadSelectedImage() {
-            const select = document.getElementById('imageSelect');
-            const preview = document.getElementById('previewImage');
-            
-            if (select.value) {
-                // Trong thực tế, bạn sẽ load ảnh từ server
-                preview.src = `images/${select.value}`;
-                preview.style.display = 'block';
-                
-                // Animation khi hiển thị ảnh
-                preview.style.animation = 'fadeIn 0.5s ease-out';
-                
-                // Giả lập kết quả phân loại
-                setTimeout(() => {
-                    document.getElementById('result').textContent = `Classification: ${select.value.split('.')[0].replace('ceramic', 'Ceramic Type ')}`;
-                    document.getElementById('chatbotResponse').textContent = 
-                        `This is a beautiful example of ${select.value.split('.')[0].replace('ceramic', 'Ceramic Type ')}, originating from the Ming Dynasty. 
-                        It features traditional blue-and-white patterns and is approximately 300 years old.`;
-                }, 1000);
-            } else {
-                preview.style.display = 'none';
-                document.getElementById('result').textContent = 'Please upload or select an image to see the prediction';
-                document.getElementById('chatbotResponse').textContent = 'Detailed information about the ceramic will appear here after prediction.';
+        // Hiển thị modal khi nhấp "Nhận diện" nếu chưa đăng nhập
+        classificationLink.addEventListener('click', (e) => {
+            if (!isAuthenticated) {
+                e.preventDefault();
+                loginPrompt.style.display = 'flex';
             }
-        }
+        });
 
-        // Xử lý ảnh upload
-        function predictImage() {
-            const input = document.getElementById('imageInput');
-            const preview = document.getElementById('previewImage');
-            const predictBtn = document.getElementById('predictSpinner');
-            
-            if (input.files && input.files[0]) {
-                predictBtn.style.display = 'inline-block';
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    preview.style.animation = 'fadeIn 0.5s ease-out';
-                    
-                    // Giả lập quá trình xử lý
-                    setTimeout(() => {
-                        predictBtn.style.display = 'none';
-                        document.getElementById('result').textContent = 'Classification: Ceramic Type 4 (Uploaded Sample)';
-                        document.getElementById('chatbotResponse').textContent = 
-                            'This uploaded ceramic piece appears to be a hand-painted vase from the Qing Dynasty. ' +
-                            'It shows characteristics of famille rose porcelain with vibrant enamel colors. ' +
-                            'The craftsmanship suggests it was made in the late 18th century.';
-                    }, 2000);
-                };
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                alert('Please select an image first');
+        // Đóng modal khi nhấp ra ngoài
+        loginPrompt.addEventListener('click', (e) => {
+            if (e.target === loginPrompt) {
+                loginPrompt.style.display = 'none';
             }
-        }
+        });
+
+        // Hiển thị sidebar khi nhấp "Liên hệ"
+        contactLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            contactSidebar.classList.add('active');
+        });
+
+        // Đóng sidebar khi nhấp ra ngoài
+        document.addEventListener('click', (e) => {
+            if (contactSidebar.classList.contains('active') && 
+                !contactSidebar.contains(e.target) && 
+                e.target !== contactLink && 
+                !navContainer.contains(e.target)) {
+                contactSidebar.classList.remove('active');
+            }
+        });
 
         // Kiểm tra trạng thái đăng nhập khi trang tải
         window.onload = checkLoginStatus;

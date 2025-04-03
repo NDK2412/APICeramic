@@ -1,16 +1,43 @@
+<?php
+
 namespace App\Http\Controllers;
 
+use App\Models\Ceramic;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class CeramicController extends Controller
 {
-    public function index()
+    public function gallery(Request $request)
     {
-        // Gọi API từ FastAPI để lấy danh sách ảnh
-        $response = Http::get('http://localhost:60074/images');
-        $images = $response->successful() ? $response->json()['images'] : [];
+        // Lấy tham số lọc từ request
+        $category = $request->query('category');
+        $origin = $request->query('origin');
 
-        return view('ceramic.index', compact('images'));
+        // Xây dựng truy vấn
+        $query = Ceramic::query();
+
+        // Áp dụng bộ lọc
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        if ($origin) {
+            $query->where('origin', $origin);
+        }
+
+        // Phân trang (10 món đồ gốm mỗi trang)
+        $ceramics = $query->paginate(10);
+
+        // Lấy danh sách danh mục và nguồn gốc duy nhất cho bộ lọc
+        $categories = Ceramic::select('category')->distinct()->pluck('category');
+        $origins = Ceramic::select('origin')->distinct()->pluck('origin');
+
+        return view('gallery', compact('ceramics', 'categories', 'origins'));
+    }
+
+    public function show($id)
+    {
+        $ceramic = Ceramic::findOrFail($id);
+        return view('ceramic_detail', compact('ceramic'));
     }
 }

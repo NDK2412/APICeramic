@@ -17,18 +17,27 @@ class AuthController extends Controller
 
     // Xử lý đăng nhập
     public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->intended('/dashboard'); // Đổi sang trang chính sau khi đăng nhập
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+
+        // Chuyển hướng dựa trên role
+        if (Auth::user()->role === 'admin') {
+            return redirect()->intended('/admin');
+        } else {
+            return redirect()->intended('/dashboard');
         }
-
-        return back()->withErrors(['email' => 'Invalid credentials.']);
     }
+
+    return back()->withErrors([
+        'email' => 'Thông tin đăng nhập không chính xác.',
+    ])->onlyInput('email');
+}
 
     // Hiển thị form đăng ký
     public function showRegisterForm()
@@ -42,15 +51,35 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed'
+            'password' => 'required|min:6|confirmed',
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'tokens' => 3, // Gán 10 tokens cho tài khoản mới
         ]);
 
-        return redirect()->route('login')->with('success', 'Account created! Please log in.');
+        return redirect()->route('login')->with('success', 'Tài khoản đã được tạo! Vui lòng đăng nhập.');
+    }
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/'); // Chuyển hướng về http://localhost:8000/
+    }
+
+
+    public function useToken(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->tokens > 0) {
+            $user->tokens -= 1;
+            $user->save();
+            return response()->json(['success' => true, 'tokens' => $user->tokens]);
+        }
+        return response()->json(['success' => false, 'message' => 'Hết lượt dự đoán']);
     }
 }

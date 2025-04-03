@@ -115,7 +115,7 @@
 </head>
 <body>
     <div class="register-container">
-        <h2>Register</h2>
+        <h2>Đăng ký</h2>
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -144,10 +144,10 @@
                 <label for="password_confirmation">Confirm Password:</label>
                 <input type="password" id="password_confirmation" name="password_confirmation" required>
             </div>
-            <button type="submit">Register</button>
+            <button type="submit">Đăng ký</button>
         </form>
 
-        <p class="links">Already have an account? <a href="{{ route('login') }}">Login here</a></p>
+        <p class="links">Bạn đã có tài khoản? <a href="{{ route('login') }}">Đăng nhập</a></p>
     </div>
 </body>
 </html>

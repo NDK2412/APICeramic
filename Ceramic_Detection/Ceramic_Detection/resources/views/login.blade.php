@@ -3,27 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In</title>
+    <title>Đăng Nhập</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <style>
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 0 0 rgba(24, 119, 242, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 15px rgba(24, 119, 242, 0.5);
-            }
+            0%, 100% { box-shadow: 0 0 0 rgba(24, 119, 242, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(24, 119, 242, 0.5); }
         }
 
         body {
@@ -32,7 +22,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(to bottom right, #4facfe,rgb(255, 255, 255));
+            background: linear-gradient(to bottom right, #4facfe, rgb(255, 255, 255));
             margin: 0;
         }
 
@@ -141,10 +131,10 @@
 </head>
 <body>
     <div class="login-container">
-        <h2>SIGN IN</h2>
+        <h2>ĐĂNG NHẬP</h2>
         <div class="welcome-text">
-            <h3>Hello, Friend!</h3>
-            <p>Register with your personal details to use all of site features</p>
+            <h3>Xin chào!</h3>
+            <p>Đăng nhập để sử dụng tất cả các tính năng của trang web</p>
         </div>
 
         <div class="divider"></div>
@@ -167,18 +157,18 @@
             </div>
             
             <div>
-                <label for="password">Password</label>
+                <label for="password">Mật khẩu</label>
                 <input type="password" id="password" name="password" required>
             </div>
 
             <div class="links">
-                <a href="#forgot-password">Forget Your Password?</a>
+                <a href="{{ route('password.request') }}">Đổi mật khẩu? </a>
             </div>
 
-            <button type="submit">SIGN IN</button>
+            <button type="submit">ĐĂNG NHẬP</button>
         </form>
 
-        <p style="margin-top: 20px; color: #606770;">Don't have an account? <a href="{{ route('register') }}">Register here</a></p>
+        <p style="margin-top: 20px; color: #606770;">Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký tại đây</a></p>
     </div>
 </body>
 </html>

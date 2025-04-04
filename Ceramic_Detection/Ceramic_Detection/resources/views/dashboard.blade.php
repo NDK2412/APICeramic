@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <style>
         :root {
-            --primary-color:rgb(38, 70, 82); /* Màu cam đậm */
-            --secondary-color:rgb(118, 218, 236); /* Màu vàng nhạt */
+            --primary-color: rgb(38, 70, 82); /* Màu cam đậm */
+            --secondary-color: rgb(118, 218, 236); /* Màu vàng nhạt */
             --light-blue: #e3f2fd;
             --white: #ffffff;
             --dark-gray: #263238;
@@ -103,6 +103,78 @@
 
         .sidebar:hover a span {
             opacity: 1;
+        }
+
+        /* User name in sidebar */
+        .sidebar .user-name {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: padding-left 0.3s;
+        }
+
+        .sidebar .user-name i {
+            font-size: 1.2rem;
+            min-width: 30px;
+        }
+
+        .sidebar .user-name span {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .user-name span {
+            opacity: 1;
+        }
+
+        .sidebar .user-name:hover {
+            background: var(--secondary-color);
+            padding-left: 30px;
+        }
+
+        /* Logout button in sidebar */
+        .sidebar .logout-form {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--white);
+            font-size: 1rem;
+            transition: background 0.3s, padding-left 0.3s;
+        }
+
+        .sidebar .logout-form button {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0;
+            width: 100%;
+            text-align: left;
+        }
+
+        .sidebar .logout-form i {
+            font-size: 1.2rem;
+            min-width: 30px;
+        }
+
+        .sidebar .logout-form span {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .logout-form span {
+            opacity: 1;
+        }
+
+        .sidebar .logout-form:hover {
+            background: var(--secondary-color);
+            padding-left: 30px;
         }
 
         /* Main content */
@@ -357,26 +429,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .logout-section {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .logout-section button {
-            padding: 10px 25px;
-            background: var(--gradient);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .logout-section button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -432,10 +484,25 @@
         <div class="logo">
             <i class="fas fa-cogs"></i>
         </div>
+        <!-- Tên người dùng -->
+        <div class="user-name">
+            <i class="fas fa-user"></i>
+            <span>{{ Auth::user()->name }}</span>
+        </div>
         <ul>
             <li><a href="#" class="active" data-section="ceramic-ai"><i class="fas fa-brain"></i><span>CeramicAI</span></a></li>
             <li><a href="#" data-section="rating"><i class="fas fa-star"></i><span>Rating</span></a></li>
             <li><a href="/recharge"><i class="fas fa-wallet"></i><span>Recharge</span></a></li>
+            <!-- Thêm nút Đăng xuất vào sidebar -->
+            <li>
+                <form method="POST" action="{{ route('logout') }}" class="logout-form">
+                    @csrf
+                    <button type="submit">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </button>
+                </form>
+            </li>
         </ul>
     </div>
 
@@ -467,7 +534,7 @@
                 </div>
                 <div class="result-area">
                     <h4>Result</h4>
-                    <p id="result">Vui lòng upload ảnh để xem kết quả.</p>
+                    <p id="result"><i class="fa-solid fa-brain">  </i> Vui lòng upload ảnh để xem kết quả.</p>
                 </div>
                 <div class="chatbot-area">
                     <h4>Information</h4>
@@ -502,13 +569,7 @@
                 </div>
             </div>
         </div>
-
-        <div class="logout-section">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit">Đăng xuất</button>
-            </form>
-        </div>
+        <!-- Xóa logout-section vì đã chuyển vào sidebar -->
     </div>
 
     <script>
@@ -551,6 +612,7 @@
             chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
 
             try {
+                // Gọi API bên ngoài để nhận diện
                 const predictResponse = await fetch('http://localhost:60074/predict', {
                     method: 'POST',
                     body: formData
@@ -561,6 +623,7 @@
                     resultElement.textContent = `Lỗi: ${predictData.error}`;
                     chatbotElement.innerHTML = '<p>Đã xảy ra lỗi trong quá trình dự đoán.</p>';
                 } else {
+                    // Gọi route /use-token để cập nhật số lượt dự đoán
                     const tokenResponse = await fetch('/use-token', {
                         method: 'POST',
                         headers: {
@@ -581,11 +644,29 @@
                         const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
                         let formattedResponse = '';
                         paragraphs.forEach(paragraph => {
-                            // Tô đậm các từ khóa quan trọng (ví dụ: các từ trước dấu hai chấm)
                             const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
                             formattedResponse += `<p>${formattedParagraph}</p>`;
                         });
                         chatbotElement.innerHTML = formattedResponse;
+
+                        // Gọi route /classify để lưu dữ liệu vào bảng classifications
+                        const classifyFormData = new FormData();
+                        classifyFormData.append('image', fileInput.files[0]);
+                        classifyFormData.append('result', predictData.predicted_class);
+                        classifyFormData.append('_token', '{{ csrf_token() }}');
+
+                        const classifyResponse = await fetch('{{ route('classify') }}', {
+                            method: 'POST',
+                            body: classifyFormData
+                        });
+                        const classifyData = await classifyResponse.json();
+
+                        if (classifyData.error) {
+                            console.error('Lỗi khi lưu vào lịch sử:', classifyData.error);
+                        } else {
+                            console.log('Đã lưu vào lịch sử:', classifyData);
+                            // Xóa thông báo "Đã lưu kết quả nhận diện vào lịch sử!"
+                        }
                     } else {
                         resultElement.textContent = 'Hết lượt dự đoán!';
                         chatbotElement.innerHTML = '<p>Hết lượt dự đoán! Vui lòng nạp thêm.</p>';

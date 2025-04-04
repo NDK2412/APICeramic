@@ -461,7 +461,8 @@
             }
 
             .logo img {
-                height: 25px;
+                width: 100%;
+                height: auto;
             }
 
             .modal-content {
@@ -506,22 +507,22 @@
 <body>
     <div class="container">
         <header>
-            <div class="header-content">
-                <a href="#" class="logo">
-                    <img src="logo.png" alt="Logo" style="display: none;"> <!-- Thay bằng đường dẫn logo thực tế -->
-                    Ceramic Classification
-                </a>
-                <button class="hamburger" aria-label="Toggle menu">☰</button>
-                <div class="nav-container">
-                    <ul class="nav-menu">
-                        <li><a href="#home">Trang chủ</a></li>
-                        <li><a href="gallery">Thư viện đồ gốm</a></li>
-                        <li><a href="#" id="classificationLink">Nhận diện</a></li>
-                        <li><a href="#market">Mua bán</a></li>
-                        <li><a href="#" id="contactLink">Liên hệ</a></li>
-                    </ul>
-                </div>
+        <div class="header-content">
+            <a href="#" class="logo">
+                <img src="{{ asset('storage/ceramics/ndfrdddk.png') }}" alt="Logo">
+                Ceramic Classification
+            </a>
+            <button class="hamburger" aria-label="Toggle menu">☰</button>
+            <div class="nav-container">
+                <ul class="nav-menu">
+                    <li><a href="#home">Trang chủ</a></li>
+                    <li><a href="gallery">Thư viện đồ gốm</a></li>
+                    <li><a href="#" id="classificationLink">Nhận diện</a></li>
+                    <li><a href="#market">Mua bán</a></li>
+                    <li><a href="#" id="contactLink">Liên hệ</a></li>
+                </ul>
             </div>
+        </div>
         </header>
         <div class="login-section">
             <button id="loginButton" onclick="redirectToLogin()">Try It Out <i class="fa-solid fa-arrow-up-from-bracket"></i></button>

@@ -10,6 +10,8 @@ use App\Models\Recharge;
 use App\Models\RechargeRequest;
 use App\Models\RechargeHistory;
 use App\Models\Ceramic;
+use App\Models\Setting;
+use App\Models\Classification;
 class AdminController extends Controller
 {
     public function __construct()
@@ -61,7 +63,8 @@ class AdminController extends Controller
         ->orderBy('month')
         ->get();
 
-
+        // Lấy múi giờ hiện tại từ bảng settings
+        $currentTimezone = \App\Models\Setting::where('key', 'timezone')->first()->value ?? config('app.timezone');
 
         // Lấy lịch sử giao dịch (tất cả các yêu cầu nạp tiền)
         $transactionHistory = RechargeRequest::with('user')
@@ -83,10 +86,12 @@ class AdminController extends Controller
         $chatUsers = User::whereHas('messages', function ($query) {
             $query->whereNotNull('message');
         })->get();
-
+        //Lịch sử giao dịch trang admin
+        $classifications = \App\Models\Classification::with('user')->get();
+        //dd($classifications);
         //dữ liệu từ bảng ceramics
         $ceramics = Ceramic::all();
-        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers','transactionHistory','ceramics'));
+        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers','transactionHistory','ceramics','currentTimezone','classifications'));
     }
     public function sendChatMessage(Request $request)
     {
@@ -124,7 +129,7 @@ class AdminController extends Controller
             'role' => 'required|in:user,admin',
             'tokens' => 'required|integer|min:0',
         ]);
-
+    
         // Cập nhật dữ liệu
         $user->update([
             'name' => $request->input('name'),
@@ -132,7 +137,8 @@ class AdminController extends Controller
             'role' => $request->input('role'),
             'tokens' => $request->input('tokens'),
         ]);
-
+    
+        // Xóa dòng $user->save() vì update() đã tự động lưu
         return redirect()->route('admin.index')->with('success', 'Cập nhật người dùng thành công!');
     }
     
@@ -212,5 +218,58 @@ public function deleteCeramic($id)
     $ceramic->delete();
 
     return redirect()->route('admin.index')->with('success', 'Xóa món đồ gốm thành công!');
+
 }
+
+
+//Settings thay đổi múi giờ
+public function updateTimezone(Request $request)
+    {
+        // Xác thực dữ liệu đầu vào
+        $request->validate([
+            'timezone' => 'required|string|timezone',
+        ]);
+
+        // Lưu múi giờ vào bảng settings
+        Setting::updateOrCreate(
+            ['key' => 'timezone'],
+            ['value' => $request->timezone]
+        );
+
+        // Cập nhật múi giờ cho ứng dụng
+        config(['app.timezone' => $request->timezone]);
+        date_default_timezone_set($request->timezone);
+
+        // Chuyển hướng về trang trước đó với thông báo thành công
+        return redirect()->back()->with('timezone_success', 'Múi giờ đã được cập nhật thành công!');
+    }
+
+//Lịch sử giao dịch
+
+public function getRecognitionHistory(Request $request)
+{
+    $query = RecognitionHistory::with('user')
+        ->orderBy('created_at', 'desc');
+
+    if ($request->has('user_id') && $request->user_id) {
+        $query->where('user_id', $request->user_id);
+    }
+
+    if ($request->has('method') && $request->method) {
+        $query->where('method', $request->method);
+    }
+
+    if ($request->has('date') && $request->date) {
+        $query->whereDate('created_at', $request->date);
+    }
+
+    $history = $query->paginate(15);
+
+    return view('admin.dashboard', [
+        'recognitionHistory' => $history,
+        // Các biến khác...
+    ]);
+}
+
+
 }

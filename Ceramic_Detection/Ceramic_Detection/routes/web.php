@@ -101,6 +101,7 @@ Route::get('/admin', function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::put('/admin/users/{id}', [AdminController::class, 'update'])->name('admin.update');
+    
     Route::delete('/admin/users/{id}', [AdminController::class, 'destroy'])->name('admin.delete');
     Route::post('/admin/recharge/approve/{id}', [AdminController::class, 'approveRecharge'])->name('admin.recharge.approve');
     Route::post('/admin/recharge/reject', [AdminController::class, 'rejectRecharge'])->name('admin.recharge.reject');
@@ -128,13 +129,18 @@ Route::get('/recharge/export/{id}', [RechargeController::class, 'exportReceipt']
 Route::post('/recharge/message', [RechargeController::class, 'sendMessage'])->name('recharge.message');
 Route::post('/admin/recharge/reject', [AdminController::class, 'rejectRecharge'])->name('admin.recharge.reject');
 
-
+//Route setting
+Route::post('/admin/settings/timezone', [App\Http\Controllers\AdminController::class, 'updateTimezone'])->name('admin.settings.timezone');
 
 
 // Routes cho quản lý thư viện đồ gốm
 Route::post('/admin/ceramics', [AdminController::class, 'storeCeramic'])->name('admin.ceramics.store');
 Route::put('/admin/ceramics/{id}', [AdminController::class, 'updateCeramic'])->name('admin.ceramics.update');
 Route::delete('/admin/ceramics/{id}', [AdminController::class, 'deleteCeramic'])->name('admin.ceramics.delete');
+
+
+
+Route::post('/classify', [App\Http\Controllers\CeramicController::class, 'classify'])->name('classify');
 /*use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -155,3 +161,10 @@ Route::post('/upload', function (Request $request) {
     return back()->with('success', 'Ảnh đã được tải lên thành công!')->with('image', $imageName);
 });
 */
+
+
+
+
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::put('/admin/users/{id}', [AdminController::class, 'update'])->name('admin.update');
+Route::delete('/admin/users/{id}', [AdminController::class, 'delete'])->name('admin.delete');

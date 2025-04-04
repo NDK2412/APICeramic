@@ -271,6 +271,12 @@
             width: 100%;
             font-size: clamp(0.8rem, 1.5vw, 1rem);
         }
+        
+        .gallery-item img {
+            width: auto;
+            height: 200px;
+            object-fit: cover;
+        }
 
         @media (max-width: 768px) {
             .hamburger {
@@ -327,9 +333,8 @@
                 font-size: 1.5rem;
             }
 
-            .gallery-item img {
-                height: 150px;
-            }
+            
+            
 
             .gallery-content h2 {
                 font-size: 1.3rem;
@@ -364,6 +369,7 @@
             .gallery-content p {
                 font-size: 0.85rem;
             }
+            
         }
     </style>
 </head>

@@ -7,7 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/HistoryDetection.css') }}">
     <style>
         :root {
             --primary-color: rgb(0, 0, 0);
@@ -334,6 +335,8 @@
             <li><a href="#" data-tab="recharge"><i class="fas fa-money-bill"></i> Yêu cầu nạp tiền</a></li>
             <li><a href="#" data-tab="revenue"><i class="fas fa-chart-line"></i> Doanh thu</a></li>
             <li><a href="#" data-tab="ceramics"><i class="fa-solid fa-layer-group"></i> Quản lý thư viện đồ gốm</a></li>
+            <li><a href="#" data-tab="classifications"><i class="fas fa-history"></i> Lịch Sử Nhận Diện</a></li>
+            <li><a href="#" data-tab="settings"><i class="fas fa-cog"></i> Cài Đặt</a></li>
             <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
         </ul>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -401,61 +404,78 @@
         </div>
 
         <!-- Tab Quản lý người dùng -->
-        <div class="container tab-content" id="users" style="display: none;">
-            <h1>Quản Lý Người Dùng</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên</th>
-                        <th>Email</th>
-                        <th>Vai trò</th>
-                        <th>Tokens</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $user)
-                        <tr id="row-{{ $user->id }}">
-                            <td>{{ $user->id }}</td>
-                            <td class="editable" data-field="name">
-                                <span class="display user-name" onclick="showPopup('{{ $user->id }}', '{{ $user->name }}', '{{ $user->rating ?? 0 }}', '{{ $user->feedback ?? 'Chưa có phản hồi' }}')">{{ $user->name }}</span>
-                                <input type="text" name="name" value="{{ $user->name }}" style="display:none;">
-                            </td>
-                            <td class="editable" data-field="email">
-                                <span class="display">{{ $user->email }}</span>
-                                <input type="email" name="email" value="{{ $user->email }}" style="display:none;">
-                            </td>
-                            <td class="editable" data-field="role">
-                                <span class="display">{{ $user->role }}</span>
-                                <select name="role" style="display:none;">
-                                    <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Người dùng</option>
-                                    <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
-                                </select>
-                            </td>
-                            <td class="editable" data-field="tokens">
-                                <span class="display">{{ $user->tokens }}</span>
-                                <input type="number" name="tokens" value="{{ $user->tokens }}" style="display:none;" min="0">
-                            </td>
-                            <td class="actions">
-                                <button type="button" class="action-btn edit-btn" onclick="editRow({{ $user->id }})"><i class="fas fa-edit"></i> Sửa</button>
-                                <form action="{{ route('admin.update', $user->id) }}" method="POST" class="edit-form" id="form-{{ $user->id }}">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="action-btn save-btn" style="display:none;"><i class="fas fa-save"></i> Lưu</button>
-                                </form>
-                                <button type="button" class="action-btn cancel-btn" style="display:none;" onclick="cancelEdit({{ $user->id }})"><i class="fas fa-times"></i> Hủy</button>
-                                <form action="{{ route('admin.delete', $user->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="action-btn delete-btn"><i class="fas fa-trash"></i> Xóa</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+<!-- Tab Quản lý người dùng -->
+<div class="container tab-content" id="users" style="display: none;">
+    <h1>Quản Lý Người Dùng</h1>
+    @if (session('success'))
+        <div class="success-message">
+            {{ session('success') }}
         </div>
+    @endif
+    @if ($errors->any())
+        <div style="color: var(--error-color); background: #f8d7da; padding: 8px; border-radius: 4px; margin-bottom: 15px; text-align: center;">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>Vai trò</th>
+                <th>Tokens</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($users as $user)
+                <tr id="row-{{ $user->id }}">
+                    <td>{{ $user->id }}</td>
+                    <td class="editable" data-field="name">
+                        <span class="display user-name" onclick="showPopup('{{ $user->id }}', '{{ $user->name }}', '{{ $user->rating ?? 0 }}', '{{ $user->feedback ?? 'Chưa có phản hồi' }}')">{{ $user->name }}</span>
+                        <input type="text" name="name" value="{{ $user->name }}" style="display:none;">
+                    </td>
+                    <td class="editable" data-field="email">
+                        <span class="display">{{ $user->email }}</span>
+                        <input type="email" name="email" value="{{ $user->email }}" style="display:none;">
+                    </td>
+                    <td class="editable" data-field="role">
+                        <span class="display">{{ $user->role }}</span>
+                        <select name="role" style="display:none;">
+                            <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Người dùng</option>
+                            <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                        </select>
+                    </td>
+                    <td class="editable" data-field="tokens">
+                        <span class="display">{{ $user->tokens }}</span>
+                        <input type="number" name="tokens" value="{{ $user->tokens }}" style="display:none;" min="0">
+                    </td>
+                    <td class="actions">
+                        <!-- Form "Lưu" -->
+                        <form action="{{ route('admin.update', $user->id) }}" method="POST" class="edit-form" id="form-{{ $user->id }}" style="display:inline;">
+                            @csrf
+                            @method('PUT')
+                            <button type="button" class="action-btn edit-btn" onclick="editRow({{ $user->id }})"><i class="fas fa-edit"></i> Sửa</button>
+                            <button type="submit" class="action-btn save-btn" style="display:none;"><i class="fas fa-save"></i> Lưu</button>
+                            <button type="button" class="action-btn cancel-btn" style="display:none;" onclick="cancelEdit({{ $user->id }})"><i class="fas fa-times"></i> Hủy</button>
+                        </form>
+                        <!-- Form "Xóa" -->
+                        <form action="{{ route('admin.delete', $user->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="action-btn delete-btn"><i class="fas fa-trash"></i> Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 
         <!-- Tab Yêu cầu nạp tiền -->
         <div class="container tab-content" id="recharge" style="display: none;">
@@ -597,8 +617,86 @@
                 </table>
             @endif
         </div>
-    </div>
+        <!-- Tab Yêu Cầu Settings -->
+        <div class="container tab-content" id="settings" style="display: none;">
+            <h1>Cài Đặt</h1>
+            <h3>Thay Đổi Múi Giờ</h3>
+            @if (session('timezone_success'))
+                <div class="success-message">
+                    {{ session('timezone_success') }}
+                </div>
+            @endif
+            <form method="POST" action="{{ route('admin.settings.timezone') }}">
+                @csrf
+                <div>
+                    <label for="timezone">Chọn múi giờ:</label>
+                    <select name="timezone" id="timezone" required>
+                        <option value="" disabled {{ !isset($currentTimezone) ? 'selected' : '' }}>Chọn múi giờ</option>
+                        <option value="UTC" {{ isset($currentTimezone) && $currentTimezone === 'UTC' ? 'selected' : '' }}>UTC</option>
+                        <option value="Asia/Ho_Chi_Minh" {{ isset($currentTimezone) && $currentTimezone === 'Asia/Ho_Chi_Minh' ? 'selected' : '' }}>Asia/Ho_Chi_Minh (Việt Nam, GMT+7)</option>
+                        <option value="Asia/Bangkok" {{ isset($currentTimezone) && $currentTimezone === 'Asia/Bangkok' ? 'selected' : '' }}>Asia/Bangkok (Thái Lan, GMT+7)</option>
+                        <option value="Asia/Tokyo" {{ isset($currentTimezone) && $currentTimezone === 'Asia/Tokyo' ? 'selected' : '' }}>Asia/Tokyo (Nhật Bản, GMT+9)</option>
+                        <option value="America/New_York" {{ isset($currentTimezone) && $currentTimezone === 'America/New_York' ? 'selected' : '' }}>America/New_York (Mỹ, GMT-5)</option>
+                        <option value="Europe/London" {{ isset($currentTimezone) && $currentTimezone === 'Europe/London' ? 'selected' : '' }}>Europe/London (Anh, GMT+0)</option>
+                    </select>
+                </div>
+                <button type="submit" class="action-btn save-btn"><i class="fas fa-save"></i> Lưu Múi Giờ</button>
+            </form>
+        </div>
 
+        <!-- Tab lịch sử nhận diện -->
+         <!-- Tab Lịch Sử Nhận Diện -->
+<div class="container tab-content" id="classifications" style="display: none;">
+    <h1>Lịch Sử Nhận Diện</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên Người Dùng</th>
+                <th>Email</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($users as $user)
+                <tr>
+                    <td>{{ $user->id }}</td>
+                    <td class="user-name" onclick="showClassificationHistory('{{ $user->id }}', '{{ $user->name }}')">{{ $user->name }}</td>
+                    <td>{{ $user->email }}</td>
+                    <td>
+                        <button class="action-btn save-btn" onclick="showClassificationHistory('{{ $user->id }}', '{{ $user->name }}')">
+                            <i class="fas fa-eye"></i> Xem Lịch Sử
+                        </button>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+
+    </div>
+<!-- Popup Lịch Sử Nhận Diện -->
+<div class="popup-overlay" id="classificationOverlay" onclick="hideClassificationHistory()"></div>
+<div class="popup" id="classificationPopup">
+    <h3>Lịch Sử Nhận Diện của <span id="classificationUserName"></span></h3>
+    <div id="classificationHistoryContent">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ảnh</th>
+                    <th>Kết Quả</th>
+                    <th>Thời Gian</th>
+                </tr>
+            </thead>
+            <tbody id="classificationHistoryTable">
+                <!-- Nội dung sẽ được thêm bằng JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    <button onclick="hideClassificationHistory()">Đóng</button>
+</div>
     <!-- Popup thông tin đánh giá -->
     <div class="popup-overlay" onclick="hidePopup()"></div>
     <div class="popup" id="userPopup">
@@ -662,82 +760,221 @@
         });
 
         // Edit user row
-        function editRow(userId) {
-            const row = document.getElementById(`row-${userId}`);
-            const editables = row.querySelectorAll('.editable');
-            const editBtn = row.querySelector('.edit-btn');
-            const saveBtn = row.querySelector('.save-btn');
-            const cancelBtn = row.querySelector('.cancel-btn');
+// Biến để lưu giá trị ban đầu của các trường
+let initialValues = {};
 
-            editables.forEach(cell => {
-                const display = cell.querySelector('.display');
-                const input = cell.querySelector('input, select');
-                display.style.display = 'none';
-                input.style.display = 'block';
-            });
+// Edit user row
+function editRow(userId) {
+    const row = document.getElementById(`row-${userId}`);
+    const editables = row.querySelectorAll('.editable');
+    const editBtn = row.querySelector('.edit-btn');
+    const saveBtn = row.querySelector('.save-btn');
+    const cancelBtn = row.querySelector('.cancel-btn');
 
-            editBtn.style.display = 'none';
-            saveBtn.style.display = 'inline-flex';
-            cancelBtn.style.display = 'inline-flex';
+    // Lưu giá trị ban đầu của các trường
+    initialValues[userId] = {};
+    editables.forEach(cell => {
+        const field = cell.dataset.field;
+        const input = cell.querySelector('input, select');
+        initialValues[userId][field] = input.value;
+    });
+
+    editables.forEach(cell => {
+        const display = cell.querySelector('.display');
+        const input = cell.querySelector('input, select');
+        display.style.display = 'none';
+        input.style.display = 'block';
+    });
+
+    editBtn.style.display = 'none';
+    saveBtn.style.display = 'inline-flex';
+    cancelBtn.style.display = 'inline-flex';
+}
+
+function cancelEdit(userId) {
+    const row = document.getElementById(`row-${userId}`);
+    const editables = row.querySelectorAll('.editable');
+    const editBtn = row.querySelector('.edit-btn');
+    const saveBtn = row.querySelector('.save-btn');
+    const cancelBtn = row.querySelector('.cancel-btn');
+
+    editables.forEach(cell => {
+        const display = cell.querySelector('.display');
+        const input = cell.querySelector('input, select');
+        input.style.display = 'none';
+        display.style.display = 'block';
+        // Khôi phục giá trị ban đầu
+        input.value = initialValues[userId][cell.dataset.field];
+    });
+
+    editBtn.style.display = 'inline-flex';
+    saveBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
+
+    // Xóa giá trị ban đầu khi hủy
+    delete initialValues[userId];
+}
+
+// Kiểm tra thay đổi trước khi gửi form
+document.querySelectorAll('.edit-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Ngăn gửi form mặc định để kiểm tra
+
+        const userId = this.id.replace('form-', '');
+        const editables = document.getElementById(`row-${userId}`).querySelectorAll('.editable');
+        let hasChanges = false;
+
+        // Xóa các hidden input cũ (nếu có) để tránh trùng lặp
+        const existingHiddenInputs = form.querySelectorAll('input[type="hidden"]:not([name="_token"]):not([name="_method"])');
+        existingHiddenInputs.forEach(input => input.remove());
+
+        // Thêm các trường ẩn vào form để gửi dữ liệu
+        editables.forEach(cell => {
+            const field = cell.dataset.field;
+            const input = cell.querySelector('input, select');
+            const currentValue = input.value;
+            const initialValue = initialValues[userId][field];
+
+            // Tạo input ẩn để gửi dữ liệu
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = field;
+            hiddenInput.value = currentValue;
+            form.appendChild(hiddenInput);
+
+            // So sánh giá trị hiện tại với giá trị ban đầu
+            if (currentValue !== initialValue) {
+                hasChanges = true;
+            }
+        });
+
+        // Nếu không có thay đổi, hiển thị thông báo và dừng
+        if (!hasChanges) {
+            alert('Không có thay đổi để lưu!');
+            return;
         }
 
-        function cancelEdit(userId) {
-            const row = document.getElementById(`row-${userId}`);
-            const editables = row.querySelectorAll('.editable');
-            const editBtn = row.querySelector('.edit-btn');
-            const saveBtn = row.querySelector('.save-btn');
-            const cancelBtn = row.querySelector('.cancel-btn');
+        // Kiểm tra dữ liệu gửi đi
+        const formData = new FormData(this);
+        console.log('Dữ liệu gửi đi:', Object.fromEntries(formData));
 
-            editables.forEach(cell => {
-                const display = cell.querySelector('.display');
-                const input = cell.querySelector('input, select');
-                input.style.display = 'none';
-                display.style.display = 'block';
-            });
+        // Gửi form
+        form.submit();
+    });
+});
 
-            editBtn.style.display = 'inline-flex';
-            saveBtn.style.display = 'none';
-            cancelBtn.style.display = 'none';
+
+
+
+// Biến để lưu giá trị ban đầu của các trường trong tab Quản lý thư viện đồ gốm
+let initialCeramicValues = {};
+
+// Edit ceramic row
+function editCeramicRow(ceramicId) {
+    const row = document.getElementById(`ceramic-row-${ceramicId}`);
+    const editables = row.querySelectorAll('.editable');
+    const editBtn = row.querySelector('.edit-btn');
+    const saveBtn = row.querySelector('.save-btn');
+    const cancelBtn = row.querySelector('.cancel-btn');
+
+    // Lưu giá trị ban đầu của các trường
+    initialCeramicValues[ceramicId] = {};
+    editables.forEach(cell => {
+        const field = cell.dataset.field;
+        const input = cell.querySelector('input, textarea');
+        initialCeramicValues[ceramicId][field] = input.value;
+    });
+
+    editables.forEach(cell => {
+        const display = cell.querySelector('.display');
+        const input = cell.querySelector('input, textarea');
+        display.style.display = 'none';
+        input.style.display = 'block';
+    });
+
+    editBtn.style.display = 'none';
+    saveBtn.style.display = 'inline-flex';
+    cancelBtn.style.display = 'inline-flex';
+}
+
+function cancelCeramicEdit(ceramicId) {
+    const row = document.getElementById(`ceramic-row-${ceramicId}`);
+    const editables = row.querySelectorAll('.editable');
+    const editBtn = row.querySelector('.edit-btn');
+    const saveBtn = row.querySelector('.save-btn');
+    const cancelBtn = row.querySelector('.cancel-btn');
+
+    editables.forEach(cell => {
+        const display = cell.querySelector('.display');
+        const input = cell.querySelector('input, textarea');
+        input.style.display = 'none';
+        display.style.display = 'block';
+        // Khôi phục giá trị ban đầu
+        input.value = initialCeramicValues[ceramicId][cell.dataset.field];
+    });
+
+    editBtn.style.display = 'inline-flex';
+    saveBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
+
+    // Xóa giá trị ban đầu khi hủy
+    delete initialCeramicValues[ceramicId];
+}
+
+// Xử lý gửi form trong tab Quản lý thư viện đồ gốm
+document.querySelectorAll('#ceramics .edit-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Ngăn gửi form mặc định để kiểm tra
+
+        const ceramicId = this.id.replace('ceramic-form-', '');
+        const editables = document.getElementById(`ceramic-row-${ceramicId}`).querySelectorAll('.editable');
+        let hasChanges = false;
+
+        // Xóa các hidden input cũ (nếu có) để tránh trùng lặp
+        const existingHiddenInputs = form.querySelectorAll('input[type="hidden"]:not([name="_token"]):not([name="_method"])');
+        existingHiddenInputs.forEach(input => input.remove());
+
+        // Thêm các trường ẩn vào form để gửi dữ liệu
+        editables.forEach(cell => {
+            const field = cell.dataset.field;
+            const input = cell.querySelector('input, textarea');
+            const currentValue = input.value;
+            const initialValue = initialCeramicValues[ceramicId][field];
+
+            // Tạo input ẩn để gửi dữ liệu
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = field;
+            hiddenInput.value = currentValue;
+            form.appendChild(hiddenInput);
+
+            // So sánh giá trị hiện tại với giá trị ban đầu
+            if (currentValue !== initialValue) {
+                hasChanges = true;
+            }
+        });
+
+        // Nếu không có thay đổi, hiển thị thông báo và dừng
+        if (!hasChanges) {
+            alert('Không có thay đổi để lưu!');
+            return;
         }
 
-        // Edit ceramic row
-        function editCeramicRow(ceramicId) {
-            const row = document.getElementById(`ceramic-row-${ceramicId}`);
-            const editables = row.querySelectorAll('.editable');
-            const editBtn = row.querySelector('.edit-btn');
-            const saveBtn = row.querySelector('.save-btn');
-            const cancelBtn = row.querySelector('.cancel-btn');
+        // Kiểm tra dữ liệu gửi đi
+        const formData = new FormData(this);
+        console.log('Dữ liệu gửi đi:', Object.fromEntries(formData));
 
-            editables.forEach(cell => {
-                const display = cell.querySelector('.display');
-                const input = cell.querySelector('input, textarea');
-                display.style.display = 'none';
-                input.style.display = 'block';
-            });
+        // Gửi form
+        form.submit();
+    });
 
-            editBtn.style.display = 'none';
-            saveBtn.style.display = 'inline-flex';
-            cancelBtn.style.display = 'inline-flex';
+    // Ngăn chặn gửi form khi nhấn Enter trong khi chỉnh sửa
+    form.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Ngăn chặn hành vi mặc định của Enter
         }
-
-        function cancelCeramicEdit(ceramicId) {
-            const row = document.getElementById(`ceramic-row-${ceramicId}`);
-            const editables = row.querySelectorAll('.editable');
-            const editBtn = row.querySelector('.edit-btn');
-            const saveBtn = row.querySelector('.save-btn');
-            const cancelBtn = row.querySelector('.cancel-btn');
-
-            editables.forEach(cell => {
-                const display = cell.querySelector('.display');
-                const input = cell.querySelector('input, textarea');
-                input.style.display = 'none';
-                display.style.display = 'block';
-            });
-
-            editBtn.style.display = 'inline-flex';
-            saveBtn.style.display = 'none';
-            cancelBtn.style.display = 'none';
-        }
+    });
+});
 
         // Show/Hide Add Ceramic Popup
         function showAddCeramicPopup() {
@@ -867,6 +1104,62 @@
                 document.getElementById('overview').style.display = 'block';
             }
         });
+
+
+
+
+    //Lịch sử nhận diện
+    
+    
+
+    // Dữ liệu lịch sử nhận diện (giả lập từ PHP)
+const classifications = @json($classifications);
+
+// Hiển thị lịch sử nhận diện của người dùng
+function showClassificationHistory(userId, userName) {
+    const popup = document.getElementById('classificationPopup');
+    const overlay = document.getElementById('classificationOverlay');
+    const userNameElement = document.getElementById('classificationUserName');
+    const historyTable = document.getElementById('classificationHistoryTable');
+
+    // Hiển thị tên người dùng
+    userNameElement.textContent = userName;
+
+    // Lọc lịch sử nhận diện của người dùng
+    const userClassifications = classifications.filter(item => item.user_id == userId);
+
+    // Xóa nội dung cũ
+    historyTable.innerHTML = '';
+
+    // Nếu không có lịch sử
+    if (userClassifications.length === 0) {
+        historyTable.innerHTML = '<tr><td colspan="4">Không có lịch sử nhận diện.</td></tr>';
+    } else {
+        // Thêm các dòng lịch sử
+        userClassifications.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.id}</td>
+                <td><img src="${item.image_path}" alt="Image"></td>
+                <td>${item.result}</td>
+                <td>${new Date(item.created_at).toLocaleString('vi-VN')}</td>
+            `;
+            historyTable.appendChild(row);
+        });
+    }
+
+    // Hiển thị popup
+    popup.style.display = 'block';
+    overlay.style.display = 'block';
+}
+
+// Ẩn popup lịch sử nhận diện
+function hideClassificationHistory() {
+    const popup = document.getElementById('classificationPopup');
+    const overlay = document.getElementById('classificationOverlay');
+    popup.style.display = 'none';
+    overlay.style.display = 'none';
+}
     </script>
 </body>
 </html>

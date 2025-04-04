@@ -1,0 +1,126 @@
+/* CSS cho tab Cài Đặt */
+#settings {
+    padding: 30px; /* Tăng padding để tạo không gian thoáng hơn */
+    background: white; /* Đảm bảo nền trắng */
+    border-radius: 12px; /* Bo góc giống các container khác */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
+    animation: fadeIn 0.5s ease-in; /* Hiệu ứng fadeIn */
+}
+
+#settings h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    background: var(--gradient); /* Gradient giống các tiêu đề khác */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#settings h3 {
+    font-size: 1.4rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-align: left; /* Căn trái để đồng bộ với form */
+}
+
+#settings form {
+    max-width: 500px; /* Giới hạn chiều rộng form để trông gọn gàng */
+    margin: 0 auto; /* Căn giữa form */
+}
+
+#settings form div {
+    margin-bottom: 20px; /* Khoảng cách giữa các phần tử trong form */
+}
+
+#settings label {
+    display: block; /* Đảm bảo label chiếm toàn bộ chiều rộng */
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--dark-color);
+    margin-bottom: 8px; /* Khoảng cách giữa label và select */
+}
+
+#settings select {
+    width: 100%; /* Chiều rộng 100% */
+    padding: 10px 15px; /* Padding bên trong */
+    border: 1px solid var(--accent-color); /* Viền nhẹ */
+    border-radius: 6px; /* Bo góc */
+    font-size: 1rem;
+    color: var(--dark-color);
+    background: #fff; /* Nền trắng */
+    transition: all 0.3s ease; /* Hiệu ứng chuyển đổi mượt mà */
+    cursor: pointer; /* Con trỏ chuột dạng pointer */
+}
+
+#settings select:focus {
+    border-color: var(--secondary-color); /* Viền đổi màu khi focus */
+    box-shadow: 0 0 5px rgba(66, 165, 245, 0.3); /* Hiệu ứng bóng khi focus */
+    outline: none; /* Bỏ viền mặc định của trình duyệt */
+}
+
+#settings select:hover {
+    border-color: var(--secondary-color); /* Viền đổi màu khi hover */
+}
+
+#settings .success-message {
+    color: var(--success-color);
+    background: #d4edda;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#settings .save-btn {
+    background: var(--success-color); /* Màu nền nút */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Khoảng cách giữa icon và chữ */
+    width: 100%; /* Chiều rộng 100% */
+    max-width: 200px; /* Giới hạn chiều rộng tối đa */
+    margin: 0 auto; /* Căn giữa nút */
+}
+
+#settings .save-btn:hover {
+    background: #00a843; /* Màu nền khi hover */
+    transform: translateY(-2px); /* Hiệu ứng nâng lên */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng khi hover */
+}
+
+#settings .save-btn i {
+    font-size: 1.1rem; /* Kích thước icon */
+}
+
+/* Responsive cho thiết bị nhỏ */
+@media (max-width: 768px) {
+    #settings {
+        padding: 20px; /* Giảm padding trên thiết bị nhỏ */
+    }
+
+    #settings h1 {
+        font-size: 1.5rem; /* Giảm kích thước tiêu đề */
+    }
+
+    #settings h3 {
+        font-size: 1.2rem; /* Giảm kích thước tiêu đề phụ */
+    }
+
+    #settings form {
+        max-width: 100%; /* Form chiếm toàn bộ chiều rộng */
+    }
+
+    #settings .save-btn {
+        max-width: 100%; /* Nút chiếm toàn bộ chiều rộng trên thiết bị nhỏ */
+    }
+}

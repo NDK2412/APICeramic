@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <!-- Font Awesome để sử dụng icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -61,9 +63,14 @@
             font-weight: 500;
         }
 
+        /* Style cho input với icon */
+        .input-group {
+            position: relative;
+        }
+
         input {
             width: 100%;
-            padding: 12px;
+            padding: 12px 12px 12px 40px; /* Padding bên trái để chừa chỗ cho icon */
             border: 1px solid #dddfe2;
             border-radius: 6px;
             font-size: 16px;
@@ -77,6 +84,16 @@
             outline: none;
         }
 
+        .input-group i {
+            position: absolute;
+            left: 12px;
+            top: 65%; /* Điều chỉnh vị trí icon để căn giữa theo chiều dọc so với input */
+            transform: translateY(-50%);
+            color: #606770;
+            font-size: 16px;
+        }
+
+        /* Style cho nút đăng nhập với icon */
         button {
             width: 100%;
             padding: 12px;
@@ -89,11 +106,19 @@
             cursor: pointer;
             margin-top: 15px;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Tăng khoảng cách giữa icon và chữ để trông cân đối hơn */
         }
 
         button:hover {
             background: #166fe5;
             animation: pulse 1s infinite;
+        }
+
+        button i {
+            font-size: 18px; /* Tăng kích thước icon trong nút để trông cân đối */
         }
 
         .links {
@@ -151,21 +176,25 @@
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
-            <div>
+            <div class="input-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" value="{{ old('email') }}" required>
+                <i class="fas fa-envelope"></i>
             </div>
             
-            <div>
+            <div class="input-group">
                 <label for="password">Mật khẩu</label>
                 <input type="password" id="password" name="password" required>
+                <i class="fas fa-lock"></i>
             </div>
 
             <div class="links">
                 <a href="{{ route('password.request') }}">Đổi mật khẩu? </a>
             </div>
 
-            <button type="submit">ĐĂNG NHẬP</button>
+            <button type="submit">
+                <i class="fas fa-sign-in-alt"></i> ĐĂNG NHẬP
+            </button>
         </form>
 
         <p style="margin-top: 20px; color: #606770;">Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký tại đây</a></p>

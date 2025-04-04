@@ -311,10 +311,10 @@
                 </div>
             </div>
         </header>
-        <div class="login-section">
+        <!-- <div class="login-section">
             <button id="loginButton" onclick="redirectToLogin()">Try It Out <i class="fa-solid fa-arrow-up-from-bracket"></i></button>
             <button id="logoutButton" onclick="logout()" style="display:none;">Đăng xuất</button>
-        </div>
+        </div> -->
 
         <!-- Detail Section -->
         <section class="detail-section">

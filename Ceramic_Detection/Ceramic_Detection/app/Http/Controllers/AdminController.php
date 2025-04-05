@@ -9,7 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Recharge;
 use App\Models\RechargeRequest;
 use App\Models\RechargeHistory;
+use App\Models\TermsAndConditions;
+use PhpOffice\PhpSpreadsheet\Spreadsheet; 
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\Ceramic;
+use App\Models\TokenUsage;
 use App\Models\Setting;
 use App\Models\Classification;
 class AdminController extends Controller
@@ -50,6 +54,7 @@ class AdminController extends Controller
     public function index()
     {
         $users = User::all();
+        $users = User::with('loginHistories')->get();//lưu lịch sử đăng nhập
         $rechargeRequests = RechargeRequest::where('status', 'pending')->get();
         $totalRevenue = RechargeHistory::sum('amount');
         $averageRating = User::avg('rating') ?? 0;
@@ -73,7 +78,20 @@ class AdminController extends Controller
             ->get();
         // Tính tổng doanh thu
         $totalRevenue = RechargeRequest::where('status', 'approved')->sum('amount');
-     
+        //Tính doanh thu theo từng user
+
+        $revenueByUser = RechargeRequest::select('user_id')
+            ->selectRaw('SUM(amount) as total_revenue')
+            ->where('status', 'approved')
+            ->groupBy('user_id')
+            ->with('user') // Lấy thông tin user liên quan
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->user_id => [
+                    'name' => $item->user ? $item->user->name : 'Người dùng không tồn tại',
+                    'total_revenue' => $item->total_revenue,
+                ]];
+            });
         $revenueLabels = $revenueData->pluck('month')->toArray();
         $revenueData = $revenueData->pluck('total')->toArray();
 
@@ -91,7 +109,14 @@ class AdminController extends Controller
         //dd($classifications);
         //dữ liệu từ bảng ceramics
         $ceramics = Ceramic::all();
-        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers','transactionHistory','ceramics','currentTimezone','classifications'));
+        //Chính sáchd  và điều khoản
+        $terms = \App\Models\TermsAndConditions::first();
+        // Lấy trạng thái CAPTCHA từ cột mới
+        
+        $recaptchaEnabled = Setting::where('key', 'recaptcha_enabled')->first();
+        $recaptchaEnabled = $recaptchaEnabled ? ($recaptchaEnabled->recaptcha_enabled == 1) : false;
+
+        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers','transactionHistory','ceramics','currentTimezone','classifications','terms','recaptchaEnabled','revenueByUser'));
     }
     public function sendChatMessage(Request $request)
     {
@@ -270,6 +295,98 @@ public function getRecognitionHistory(Request $request)
         // Các biến khác...
     ]);
 }
+//Chính sách và điều khoản
+public function terms()
+    {
+        $terms = TermsAndConditions::first();
+        return view('admin.terms', compact('terms'));
+    }
+
+    public function updateTerms(Request $request)
+    {
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $terms = TermsAndConditions::first();
+        if ($terms) {
+            $terms->update(['content' => $request->content]);
+        } else {
+            TermsAndConditions::create(['content' => $request->content]);
+        }
+
+        return redirect()->route('admin.index')->with('success', 'Chính sách và điều khoản đã được cập nhật.');
+    }
+//Xuât file excel
+public function exportTransactionHistory(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $query = RechargeRequest::with('user');
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+        $transactions = $query->orderBy('created_at', 'desc')->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Thiết lập tiêu đề
+        $sheet->setCellValue('A1', 'ID');
+        $sheet->setCellValue('B1', 'Tên Người Dùng');
+        $sheet->setCellValue('C1', 'Số Tiền (VNĐ)');
+        $sheet->setCellValue('D1', 'Tokens Yêu Cầu');
+        $sheet->setCellValue('E1', 'Trạng Thái');
+        $sheet->setCellValue('F1', 'Thời Gian');
+
+        // Thêm dữ liệu
+        $row = 2;
+        foreach ($transactions as $transaction) {
+            $sheet->setCellValue('A' . $row, $transaction->id);
+            $sheet->setCellValue('B' . $row, $transaction->user->name ?? 'Người dùng không tồn tại');
+            $sheet->setCellValue('C' . $row, number_format($transaction->amount));
+            $sheet->setCellValue('D' . $row, $transaction->requested_tokens);
+            $sheet->setCellValue('E' . $row, ucfirst($transaction->status));
+            $sheet->setCellValue('F' . $row, $transaction->created_at->format('d/m/Y H:i'));
+            $row++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'transaction_history_' . now()->format('Ymd_His') . '.xlsx';
+
+        // Lưu vào file tạm
+        $tempFile = tempnam(sys_get_temp_dir(), 'transaction_history');
+        $writer->save($tempFile);
+
+        // Trả về file dưới dạng tải xuống
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    }
 
 
+    //bật tắt capcha
+    public function updateCaptchaSetting(Request $request)
+    {
+        // Kiểm tra giá trị của checkbox (1 nếu bật, 0 nếu tắt)
+        $recaptchaEnabled = $request->has('recaptcha_enabled') ? '1' : '0';
+
+        // Cập nhật hoặc tạo bản ghi trong bảng settings
+        Setting::updateOrCreate(
+            ['key' => 'recaptcha_enabled'],
+            ['recaptcha_enabled' => $recaptchaEnabled]
+        );
+
+        // Debug: Kiểm tra giá trị sau khi lưu
+        $newValue = Setting::where('key', 'recaptcha_enabled')->first()->value;
+        \Log::info("CAPTCHA state updated to: " . $newValue);
+
+        return redirect()->back()->with('captcha_success', 'Cài đặt CAPTCHA đã được cập nhật thành công!');
+    }
+
+    //Thống kê số lượt sử dụng
+    public function showTokenUsage(User $user)
+    {
+        $tokenUsages = $user->tokenUsages()->latest()->paginate(10);
+        return view('admin.token-usage', compact('user', 'tokenUsages'));
+    }
 }

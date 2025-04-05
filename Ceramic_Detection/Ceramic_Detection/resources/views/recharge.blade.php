@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <style>
         :root {
-            --primary-color: #1e88e5;
-            --secondary-color: #42a5f5;
+          --primary-color: rgb(38, 70, 82); /* Màu cam đậm */
+            --secondary-color: rgb(118, 218, 236); /* Màu vàng nhạt */
             --accent-color: #eceff1;
             --light-color: #f5f7fa;
             --dark-color: #263238;
@@ -420,7 +420,7 @@
         </div>
         <ul>
             <li><a href="#" class="active" data-section="recharge-section"><i class="fas fa-money-bill-wave"></i><span>Nạp Tiền</span></a></li>
-            <li><a href="#" data-section="recharge-history"><i class="fas fa-history"></i><span>Lịch Sử Nạp Tiền</span></a></li>
+            <li><a href="#" data-section="recharge-history"><i class="fas fa-history"></i><span>Lịch Sử </span></a></li>
             <li><a href="#" data-section="notifications"><i class="fas fa-bell"></i><span>Thông Báo</span></a></li>
             <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Quay Lại Dashboard</span></a></li>
         </ul>
@@ -488,7 +488,7 @@
                         <img id="proofPreview" src="" alt="Proof preview">
                     </div>
 
-                    <button type="submit">Gửi Yêu Cầu Thêm Tokens</button>
+                    <button type="submit">Xác Nhân Mua Thêm Lượt</button>
                 </form>
             </div>
 

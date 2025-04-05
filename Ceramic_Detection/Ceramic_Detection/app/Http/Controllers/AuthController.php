@@ -6,13 +6,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-
+use App\Models\Setting;
 class AuthController extends Controller
 {
     // Hiển thị form đăng nhập
     public function showLoginForm()
     {
-        return view('login');
+        // Lấy trạng thái CAPTCHA từ bảng settings
+        $recaptchaEnabled = Setting::where('key', 'recaptcha_enabled')->first();
+        $recaptchaEnabled = $recaptchaEnabled ? ($recaptchaEnabled->recaptcha_enabled == '1') : false;
+        \Log::info("recaptchaEnabled in showLoginForm: " . ($recaptchaEnabled ? 'true' : 'false'));
+
+        return view('login', compact('recaptchaEnabled'));
     }
 
     // Xử lý đăng nhập
@@ -58,7 +63,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'tokens' => 3, // Gán 10 tokens cho tài khoản mới
+            'tokens' => 3, 
         ]);
 
         return redirect()->route('login')->with('success', 'Tài khoản đã được tạo! Vui lòng đăng nhập.');
@@ -77,6 +82,7 @@ class AuthController extends Controller
         $user = Auth::user();
         if ($user->tokens > 0) {
             $user->tokens -= 1;
+            $user->tokens_used += 1;
             $user->save();
             return response()->json(['success' => true, 'tokens' => $user->tokens]);
         }

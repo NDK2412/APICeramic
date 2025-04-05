@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Authenticatable
 {
     protected $fillable = [
-        'name', 'email', 'password', 'tokens', 'role', 'rating', 'tokens','feedback'
+        'name', 'email', 'password', 'tokens', 'role', 'rating', 'tokens','tokens_used','feedback'
     ];
 
     protected $hidden = [
@@ -22,5 +22,9 @@ class User extends Authenticatable
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class, 'user_id');
+    }
+    public function loginHistories()
+    {
+        return $this->hasMany(LoginHistory::class);
     }
 }

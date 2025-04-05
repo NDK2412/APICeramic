@@ -72,7 +72,7 @@
         }
 
         .logo img {
-            height: clamp(30px, 5vw, 40px);
+            height: clamp(50px, 5vw, 50px);
             margin-right: 10px;
         }
 
@@ -241,18 +241,76 @@
             animation: fadeIn 1s ease-out;
         }
 
-        .about-section h2 {
-            font-size: 2rem;
+        .feature-point {
+            margin: 2rem 0;
+            text-align: left;
+            padding: 1rem;
+            background-color: var(--accent-color);
+            border-radius: 8px;
+        }
+
+        .feature-point h3 {
             color: var(--dark-color);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-point h3 i {
+            color: var(--secondary-color);
+        }
+
+        .feature-point p {
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .benefit-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .benefit-card i {
+            font-size: 2rem;
+            color: var(--secondary-color);
             margin-bottom: 1rem;
         }
 
-        .about-section p {
-            font-size: 1.1rem;
-            color: #666;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
+        .benefit-card h4 {
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .applications-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .application-tag {
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         @keyframes fadeIn {
@@ -509,7 +567,7 @@
         <header>
         <div class="header-content">
             <a href="#" class="logo">
-                <img src="{{ asset('storage/ceramics/ndfrdddk.png') }}" alt="Logo">
+                <img src="{{ asset('storage/ceramics/logo2.webp') }}" alt="Logo">
                 Ceramic Classification
             </a>
             <button class="hamburger" aria-label="Toggle menu">☰</button>
@@ -532,9 +590,9 @@
         <!-- Banner Section -->
         <div class="banner">
             <div class="banner-slides" id="bannerSlides">
-                <img src="https://midata.io/wp-content/uploads/2024/04/fb88-khuyen-mai-banner.jpg" alt="Banner 1" class="banner-slide">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJiERP9QRxZJ8t-wMZe8BqwxYfQOE6W__pwVKuS63JEnG2yFi041dSHZt-0r8erqiMPw&usqp=CAU" alt="Banner 2" class="banner-slide">
-                <img src="https://treobangron.com.vn/wp-content/uploads/2022/09/banner-khuyen-mai-42.jpg" alt="Banner 3" class="banner-slide">
+                <img src="https://www.metizsoft.com/wp-content/uploads/2025/02/Laravel-12-Latest-Features-and-Updates.webp" alt="Banner 1" class="banner-slide">
+                <img src="https://s3-ap-southeast-1.amazonaws.com/vmixvn/wp-media-folder-vmix-viet-nam/wp-content/uploads/2024/08/ai_trong_thi_t_k_logo.jpg" alt="Banner 2" class="banner-slide">
+                <img src="https://thietkelogo.edu.vn/uploads/.thumbs/images/tuyen-dung/1-php-developer-1417084819.jpg" alt="Banner 3" class="banner-slide">
             </div>
         </div>
 
@@ -569,14 +627,59 @@
             </div>
         </section>
 
-        <!-- About Section -->
+        <!-- About Section - Updated Version -->
         <section class="about-section">
-            <h2>Giới thiệu về Ceramic Classification</h2>
-            <p>
-                Ceramic Classification là nền tảng trực tuyến hàng đầu giúp bạn khám phá và nhận diện các loại gốm sứ độc đáo. 
-                Chúng tôi cung cấp công cụ phân loại thông minh, thư viện gốm phong phú, cùng không gian mua bán và chia sẻ tin tức về nghệ thuật gốm sứ. 
-                Hãy cùng chúng tôi trải nghiệm hành trình tôn vinh giá trị văn hóa và lịch sử qua từng sản phẩm gốm!
-            </p>
+            <h2>Giới thiệu tổng quan về Ceramic AI</h2>
+            
+            <div class="feature-point">
+                <h3><i class="fas fa-question-circle"></i> Ceramic AI là gì?</h3>
+                <p>Ceramic AI là hệ thống trí tuệ nhân tạo tiên tiến chuyên về nhận dạng và phân loại đồ gốm sứ. 
+                Công nghệ của chúng tôi kết hợp học máy và cơ sở dữ liệu phong phú để xác định chính xác niên đại, 
+                xuất xứ và loại hình gốm sứ chỉ từ hình ảnh đầu vào.</p>
+            </div>
+            
+            <div class="feature-point">
+                <h3><i class="fas fa-star"></i> Lợi ích nổi bật</h3>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <i class="fas fa-bolt"></i>
+                        <h4>Nhanh chóng</h4>
+                        <p>Kết quả phân tích chỉ trong vài giây, tiết kiệm thời gian nghiên cứu</p>
+                    </div>
+                    <div class="benefit-card">
+                        <i class="fas fa-bullseye"></i>
+                        <h4>Chính xác</h4>
+                        <p>Độ chính xác lên đến 75% nhờ thuật toán AI được đào tạo chuyên sâu</p>
+                    </div>
+                    <div class="benefit-card">
+                        <i class="fas fa-gem"></i>
+                        <h4>Miễn phí/Có gói</h4>
+                        <p>Sử dụng cơ bản miễn phí hoặc nâng cấp gói cao cấp với nhiều tính năng</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="feature-point">
+                <h3><i class="fas fa-cubes"></i> Ứng dụng đa dạng</h3>
+                <p>Ceramic AI phục vụ nhiều đối tượng và mục đích khác nhau:</p>
+                <div class="applications-list">
+                    <span class="application-tag">Bảo tàng</span>
+                    <span class="application-tag">Nhà nghiên cứu</span>
+                    <span class="application-tag">Nhà sưu tầm</span>
+                    <span class="application-tag">Thương mại</span>
+                    <span class="application-tag">Giáo dục</span>
+                    <span class="application-tag">Bảo tồn</span>
+                </div>
+            </div>
+            
+            <div class="feature-point">
+                <h3><i class="fas fa-book-open"></i> Hướng dẫn sử dụng</h3>
+                <p>1. Tải lên hình ảnh đồ gốm cần phân tích<br>
+                2. Hệ thống AI sẽ tự động nhận diện và phân loại<br>
+                3. Nhận kết quả chi tiết về niên đại, xuất xứ và đặc điểm<br>
+                4. Lưu trữ hoặc chia sẻ kết quả phân tích</p>
+                <h4 id="guideButton" href="#" onclick="redirectToGuide()">Xem hướng dẫn chi tiết</h4>
+            </div>
         </section>
     </div>
 
@@ -658,6 +761,11 @@
         // Chuyển hướng đến trang đăng nhập
         function redirectToLogin() {
             window.location.href = "http://localhost:8000/login";
+        }
+
+        // Chuyển hướng đến trang hướng dẫn
+        function redirectToGuide() {
+            window.location.href = "http://localhost:8000/guide";
         }
 
         // Đăng xuất người dùng

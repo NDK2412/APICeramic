@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @if (isset($recaptchaEnabled) && $recaptchaEnabled)
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    @endif
     <!-- Font Awesome để sử dụng icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
@@ -187,6 +190,13 @@
                 <input type="password" id="password" name="password" required>
                 <i class="fas fa-lock"></i>
             </div>
+            <!-- Thêm reCAPTCHA -->
+            @if ($recaptchaEnabled)
+                <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+                @error('g-recaptcha-response')
+                    <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
+            @endif
 
             <div class="links">
                 <a href="{{ route('password.request') }}">Đổi mật khẩu? </a>

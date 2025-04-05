@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
     <link rel="stylesheet" href="{{ asset('css/HistoryDetection.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Terms.css') }}">
     <style>
         :root {
             --primary-color: rgb(0, 0, 0);
@@ -324,6 +325,10 @@
             .stats { flex-direction: column; }
             table { font-size: 0.75rem; }
         }
+        /* Thêm vào phần style */
+        .action-btn.save-btn i {
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -336,6 +341,7 @@
             <li><a href="#" data-tab="revenue"><i class="fas fa-chart-line"></i> Doanh thu</a></li>
             <li><a href="#" data-tab="ceramics"><i class="fa-solid fa-layer-group"></i> Quản lý thư viện đồ gốm</a></li>
             <li><a href="#" data-tab="classifications"><i class="fas fa-history"></i> Lịch Sử Nhận Diện</a></li>
+            <li><a href="#" data-tab="terms"><i class="fas fa-file-alt"></i> Chính sách và điều khoản</a></li>
             <li><a href="#" data-tab="settings"><i class="fas fa-cog"></i> Cài Đặt</a></li>
             <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
         </ul>
@@ -370,6 +376,21 @@
             <!-- Bảng lịch sử giao dịch -->
             <div class="transaction-history">
                 <h3>Lịch Sử Giao Dịch</h3>
+                <form action="{{ route('admin.export.transaction.history') }}" method="GET" style="margin-bottom: 20px;">
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <div>
+                            <label for="start_date">Từ ngày:</label>
+                            <input type="date" id="start_date" name="start_date" required>
+                        </div>
+                        <div>
+                            <label for="end_date">Đến ngày:</label>
+                            <input type="date" id="end_date" name="end_date" required>
+                        </div>
+                        <button type="submit" class="action-btn save-btn">
+                            <i class="fas fa-file-excel"></i> Xuất Excel
+                        </button>
+                    </div>
+                </form>
                 @if ($transactionHistory->isEmpty())
                     <p>Không có giao dịch nào.</p>
                 @else
@@ -401,9 +422,33 @@
                     </table>
                 @endif
             </div>
-        </div>
+             <!-- Bảng Doanh Thu Theo Người Dùng -->
+ <div class="revenue-by-user">
+        <h3>Doanh Thu Theo Người Dùng</h3>
+        @if ($revenueByUser->isEmpty())
+            <p>Không có dữ liệu doanh thu.</p>
+        @else
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên người dùng</th>
+                        <th>Doanh thu (VNĐ)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($revenueByUser as $userId => $data)
+                        <tr>
+                            <td>{{ $data['name'] }}</td>
+                            <td>{{ number_format($data['total_revenue']) }} VNĐ</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
+</div>
+        
 
-        <!-- Tab Quản lý người dùng -->
 <!-- Tab Quản lý người dùng -->
 <div class="container tab-content" id="users" style="display: none;">
     <h1>Quản Lý Người Dùng</h1>
@@ -428,8 +473,10 @@
                 <th>Tên</th>
                 <th>Email</th>
                 <th>Vai trò</th>
-                <th>Tokens</th>
+                <th>Tokens </th>
+                <th>Tokens đã dùng</th>
                 <th>Hành động</th>
+                <th>Lịch Sử Đăng Nhập</th>
             </tr>
         </thead>
         <tbody>
@@ -455,6 +502,12 @@
                         <span class="display">{{ $user->tokens }}</span>
                         <input type="number" name="tokens" value="{{ $user->tokens }}" style="display:none;" min="0">
                     </td>
+                    <td>
+                        {{ $user->tokens_used }}
+                        <a href="{{ route('admin.users.token-usage', $user) }}" 
+                           style="margin-left: 5px; padding: 3px 6px;">
+                        </a>
+                    </td>
                     <td class="actions">
                         <!-- Form "Lưu" -->
                         <form action="{{ route('admin.update', $user->id) }}" method="POST" class="edit-form" id="form-{{ $user->id }}" style="display:inline;">
@@ -471,12 +524,36 @@
                             <button type="submit" class="action-btn delete-btn"><i class="fas fa-trash"></i> Xóa</button>
                         </form>
                     </td>
+                    <td>
+                        <button class="action-btn save-btn" onclick="showLoginHistory('{{ $user->id }}', '{{ $user->name }}')">
+                            <i class="fas fa-eye"></i> Xem
+                        </button>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 </div>
-
+<!-- Popup Lịch Sử Đăng Nhập -->
+<div class="popup-overlay" id="loginHistoryOverlay" onclick="hideLoginHistory()"></div>
+<div class="popup" id="loginHistoryPopup">
+    <h3>Lịch Sử Đăng Nhập của <span id="loginHistoryUserName"></span></h3>
+    <div id="loginHistoryContent">
+        <table>
+            <thead>
+                <tr>
+                    <th>Thời Gian</th>
+                    <th>Địa Chỉ IP</th>
+                    <th>Thiết Bị</th>
+                </tr>
+            </thead>
+            <tbody id="loginHistoryTable">
+                <!-- Nội dung sẽ được thêm bằng JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    <button onclick="hideLoginHistory()">Đóng</button>
+</div>
         <!-- Tab Yêu cầu nạp tiền -->
         <div class="container tab-content" id="recharge" style="display: none;">
             <h1>Yêu Cầu Nạp Tiền</h1>
@@ -642,6 +719,23 @@
                 </div>
                 <button type="submit" class="action-btn save-btn"><i class="fas fa-save"></i> Lưu Múi Giờ</button>
             </form>
+            <!-- Bật/Tắt CAPTCHA -->
+    <h3>Bật/Tắt CAPTCHA cho Trang Đăng Nhập</h3>
+    @if (session('captcha_success'))
+        <div class="success-message">
+            {{ session('captcha_success') }}
+        </div>
+    @endif
+    <form method="POST" action="{{ route('admin.settings.captcha') }}">
+        @csrf
+        <div>
+            <label for="recaptcha_enabled">
+                <input type="checkbox" id="recaptcha_enabled" name="recaptcha_enabled" value="1" {{ $recaptchaEnabled ? 'checked' : '' }}>
+                Bật CAPTCHA (reCAPTCHA) cho trang đăng nhập
+            </label>
+        </div>
+        <button type="submit" class="action-btn save-btn"><i class="fas fa-save"></i> Lưu Cài Đặt</button>
+    </form>
         </div>
 
         <!-- Tab lịch sử nhận diện -->
@@ -672,9 +766,28 @@
             @endforeach
         </tbody>
     </table>
+
+    <!-- Tab chỉnh sủa lịch sử nhận diện -->
+     
+
 </div>
-
-
+<!-- Tab Chính sách và điều khoản -->
+<div class="container tab-content" id="terms" style="display: none;">
+    <h1>Chính sách và điều khoản</h1>
+    @if (session('success'))
+        <div class="success-message">
+            {{ session('success') }}
+        </div>
+    @endif
+    <form method="POST" action="{{ route('admin.terms.update') }}">
+        @csrf
+        <div>
+            <label for="terms_content">Nội dung chính sách và điều khoản:</label>
+            <textarea name="content" id="terms_content" rows="10" required>{{ $terms ? $terms->content : '' }}</textarea>
+        </div>
+        <button type="submit" class="action-btn save-btn"><i class="fas fa-save"></i> Lưu</button>
+    </form>
+</div>
     </div>
 <!-- Popup Lịch Sử Nhận Diện -->
 <div class="popup-overlay" id="classificationOverlay" onclick="hideClassificationHistory()"></div>
@@ -1160,6 +1273,97 @@ function hideClassificationHistory() {
     popup.style.display = 'none';
     overlay.style.display = 'none';
 }
+
+
+
+//lịch sử đăng nhập
+
+
+// Dữ liệu lịch sử đăng nhập (giả lập từ PHP)
+const loginHistories = @json($users->mapWithKeys(function ($user) {
+    return [$user->id => $user->loginHistories];
+})->toArray());
+
+// Hiển thị lịch sử đăng nhập của người dùng
+function showLoginHistory(userId, userName) {
+    const popup = document.getElementById('loginHistoryPopup');
+    const overlay = document.getElementById('loginHistoryOverlay');
+    const userNameElement = document.getElementById('loginHistoryUserName');
+    const historyTable = document.getElementById('loginHistoryTable');
+
+    // Hiển thị tên người dùng
+    userNameElement.textContent = userName;
+
+    // Lấy lịch sử đăng nhập của người dùng
+    const userLoginHistories = loginHistories[userId] || [];
+
+    // Xóa nội dung cũ
+    historyTable.innerHTML = '';
+
+    // Nếu không có lịch sử
+    if (userLoginHistories.length === 0) {
+        historyTable.innerHTML = '<tr><td colspan="3">Không có lịch sử đăng nhập.</td></tr>';
+    } else {
+        // Thêm các dòng lịch sử
+        userLoginHistories.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${new Date(item.login_time).toLocaleString('vi-VN')}</td>
+                <td>${item.ip_address || 'Không có'}</td>
+                <td>${item.device_info || 'Không có'}</td>
+            `;
+            historyTable.appendChild(row);
+        });
+    }
+
+    // Hiển thị popup
+    popup.style.display = 'block';
+    overlay.style.display = 'block';
+}
+
+// Ẩn popup lịch sử đăng nhập
+function hideLoginHistory() {
+    const popup = document.getElementById('loginHistoryPopup');
+    const overlay = document.getElementById('loginHistoryOverlay');
+    popup.style.display = 'none';
+    overlay.style.display = 'none';
+}
+
+
+
+//Bật tắt capcha
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('captchaForm');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Hiển thị loading
+        const btn = this.querySelector('button[type="submit"]');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+        btn.disabled = true;
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert('Cập nhật thành công!');
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            btn.innerHTML = '<i class="fas fa-save"></i> Lưu thay đổi';
+            btn.disabled = false;
+        });
+    });
+});
     </script>
 </body>
 </html>

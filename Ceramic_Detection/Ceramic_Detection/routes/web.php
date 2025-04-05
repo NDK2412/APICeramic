@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RechargeController;
-
+use App\Models\TermsAndConditions;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\TokenUsage;
 // use App\Http\Controllers\ImageController;
 // use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\CustomForgotPasswordController;
@@ -141,6 +141,52 @@ Route::delete('/admin/ceramics/{id}', [AdminController::class, 'deleteCeramic'])
 
 
 Route::post('/classify', [App\Http\Controllers\CeramicController::class, 'classify'])->name('classify');
+
+//Quản lý điều khoản
+Route::get('/admin/terms', function () {
+    $terms = TermsAndConditions::first();
+    return view('admin.terms', compact('terms'));
+})->name('admin.terms');
+
+Route::post('/admin/terms/update', function (Request $request) {
+  
+    $request->validate([
+        'content' => 'required|string',
+    ]);
+
+    $terms = TermsAndConditions::first();
+    if ($terms) {
+        $terms->update(['content' => $request->content]);
+    } else {
+        TermsAndConditions::create(['content' => $request->content]);
+    }
+
+    return redirect()->route('admin.terms')->with('success', 'Chính sách và điều khoản đã được cập nhật.');
+})->name('admin.terms.update');
+Route::get('/terms-and-conditions', function () {
+    $terms = TermsAndConditions::first();
+    return response()->json(['content' => $terms ? $terms->content : 'Chưa có chính sách và điều khoản.']);
+})->name('terms.show');
+
+Route::get('/admin/terms', [AdminController::class, 'terms'])->name('admin.terms');
+Route::post('/admin/terms/update', [AdminController::class, 'updateTerms'])->name('admin.terms.update');
+
+Route::get('/guide', function () {
+    return view('guide');
+});
+
+//Lưu file excel
+
+Route::get('/admin/export-transaction-history', [AdminController::class, 'exportTransactionHistory'])->name('admin.export.transaction.history');
+//Bật tắt capcha
+
+Route::post('/admin/settings/captcha', [AdminController::class, 'updateCaptchaSetting'])->name('admin.settings.captcha');
+// Thống kê số lượt sử dụng
+Route::get('/admin/users/{user}/token-usage', [AdminController::class, 'showTokenUsage'])
+    ->name('admin.users.token-usage');
+// Route::post('/admin/settings/captcha', [AdminController::class, 'updateCaptchaSetting'])
+//      ->name('admin.settings.captcha')
+//      ->middleware('auth'); // Đảm bảo phải đăng nhập
 /*use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 

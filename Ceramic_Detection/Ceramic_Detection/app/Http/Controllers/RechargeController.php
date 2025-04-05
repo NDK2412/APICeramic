@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\RechargeRequest;
 use App\Models\RechargeHistory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Message;         // Thêm import cho Message
+use App\Models\Message;    
+ 
+    // Thêm import cho Message
 
 
 class RechargeController extends Controller
@@ -101,4 +105,43 @@ class RechargeController extends Controller
 
         return $pdf->download('HoaDon_NapTien_' . $id . '.pdf');
     }
+    public function verify(Request $request)
+{
+    // Kiểm tra mật khẩu
+    $password = $request->input('password');
+    $user = Auth::user();
+
+    if (!Hash::check($password, $user->password)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Mật khẩu không chính xác!'
+        ], 401);
+    }
+
+    // Kiểm tra CAPTCHA
+    $recaptchaResponse = $request->input('g-recaptcha-response');
+    $client = new Client();
+    $response = $client->post('https://www.google.com/recaptcha/api/siteverify', [
+        'form_params' => [
+            'secret' => env('RECAPTCHA_SECRET_KEY'), // Thêm Secret Key vào file .env
+            'response' => $recaptchaResponse,
+            'remoteip' => $request->ip()
+        ]
+    ]);
+
+    $recaptchaData = json_decode($response->getBody(), true);
+
+    if (!$recaptchaData['success']) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Xác nhận CAPTCHA không thành công!'
+        ], 401);
+    }
+
+    // Nếu cả mật khẩu và CAPTCHA hợp lệ
+    return response()->json([
+        'success' => true,
+        'message' => 'Xác nhận thành công!'
+    ]);
+}
 }

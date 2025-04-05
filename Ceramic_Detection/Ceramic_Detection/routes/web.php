@@ -184,6 +184,11 @@ Route::post('/admin/settings/captcha', [AdminController::class, 'updateCaptchaSe
 // Thống kê số lượt sử dụng
 Route::get('/admin/users/{user}/token-usage', [AdminController::class, 'showTokenUsage'])
     ->name('admin.users.token-usage');
+
+Route::get('/classification/{id}/info', [CeramicController::class, 'getClassificationInfo'])->middleware('auth')->name('classification.info');
+Route::get('/dashboard', [CeramicController::class, 'dashboard'])->middleware('auth')->name('dashboard');
+//Kiểm tra mật khẩu capcha khi nạp tiền
+Route::post('/recharge/verify', [App\Http\Controllers\RechargeController::class, 'verify'])->middleware('auth')->name('recharge.verify');
 // Route::post('/admin/settings/captcha', [AdminController::class, 'updateCaptchaSetting'])
 //      ->name('admin.settings.captcha')
 //      ->middleware('auth'); // Đảm bảo phải đăng nhập

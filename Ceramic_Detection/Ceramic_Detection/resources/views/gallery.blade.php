@@ -48,6 +48,7 @@
             top: 0;
             z-index: 1000;
             width: 100%;
+            animation: slideDown 0.5s ease-out;
         }
 
         .header-content {
@@ -67,6 +68,7 @@
             font-weight: 600;
             text-decoration: none;
             flex-shrink: 0;
+            animation: fadeInUp 0.6s ease-out;
         }
 
         .logo img {
@@ -83,6 +85,11 @@
             list-style: none;
             display: flex;
             gap: clamp(1rem, 2vw, 1.5rem);
+        }
+
+        .nav-menu li {
+            animation: fadeInUp 0.6s ease-out;
+            animation-delay: calc(0.1s * var(--index));
         }
 
         .nav-menu li a {
@@ -125,8 +132,9 @@
         }
 
         .login-section button:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.05);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            animation: pulse 1s infinite;
         }
 
         .hamburger {
@@ -137,6 +145,11 @@
             color: var(--dark-color);
             cursor: pointer;
             padding: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .hamburger.active {
+            transform: rotate(90deg);
         }
 
         /* Gallery Section */
@@ -149,6 +162,7 @@
             color: var(--dark-color);
             text-align: center;
             margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
         }
 
         .filter-section {
@@ -159,13 +173,16 @@
             justify-content: center;
         }
 
-        .filter-section select {
+        .filter-section select,
+        .filter-section button {
             padding: 0.5rem;
             border: 1px solid var(--secondary-color);
             border-radius: 5px;
             font-size: 1rem;
             color: var(--dark-color);
             background-color: var(--accent-color);
+            animation: zoomIn 0.5s ease-out;
+            animation-delay: calc(0.1s * var(--index));
         }
 
         .filter-section button {
@@ -175,11 +192,13 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         .filter-section button:hover {
             background-color: var(--dark-color);
+            transform: translateY(-2px) scale(1.05);
+            animation: pulse 1s infinite;
         }
 
         .gallery-list {
@@ -193,17 +212,25 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+            animation-delay: calc(0.1s * var(--index));
         }
 
         .gallery-item:hover {
             transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         .gallery-item img {
-            width: 100%;
+            width: auto;
             height: 200px;
             object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
         }
 
         .gallery-content {
@@ -248,18 +275,20 @@
             border-radius: 5px;
             text-decoration: none;
             color: var(--dark-color);
-            transition: background-color 0.3s ease;
+            transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
         }
 
         .pagination a:hover {
             background-color: var(--secondary-color);
             color: var(--text-light);
+            transform: scale(1.1);
         }
 
         .pagination .current {
             background-color: var(--dark-color);
             color: var(--text-light);
             border-color: var(--dark-color);
+            animation: pulse 1.5s infinite;
         }
 
         footer {
@@ -270,12 +299,65 @@
             margin-top: auto;
             width: 100%;
             font-size: clamp(0.8rem, 1.5vw, 1rem);
+            animation: fadeInUp 0.6s ease-out;
         }
-        
-        .gallery-item img {
-            width: auto;
-            height: 200px;
-            object-fit: cover;
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(90deg);
+            }
         }
 
         @media (max-width: 768px) {
@@ -293,6 +375,7 @@
                 background-color: var(--primary-color);
                 padding: 1rem;
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                animation: slideDown 0.5s ease-out;
             }
 
             .nav-container.active {
@@ -333,9 +416,6 @@
                 font-size: 1.5rem;
             }
 
-            
-            
-
             .gallery-content h2 {
                 font-size: 1.3rem;
             }
@@ -369,7 +449,6 @@
             .gallery-content p {
                 font-size: 0.85rem;
             }
-            
         }
     </style>
 </head>
@@ -377,18 +456,17 @@
     <div class="container">
         <header>
             <div class="header-content">
-                <a href="/" class="logo">
-                    <img src="logo.png" alt="Logo" style="display: none;">
+                <a href="#" class="logo"><img src="http://localhost:8000/storage/ceramics/logo2.webp" alt="Logo">
                     Ceramic Classification
                 </a>
                 <button class="hamburger" aria-label="Toggle menu">☰</button>
                 <div class="nav-container">
                     <ul class="nav-menu">
-                        <li><a href="/">Trang chủ</a></li>
-                        <li><a href="/gallery">Thư viện đồ gốm</a></li>
-                        <li><a href="/dashboard" id="classificationLink">Nhận diện</a></li>
-                        <li><a href="#market">Mua bán</a></li>
-                        <li><a href="#" id="contactLink">Liên hệ</a></li>
+                        <li style="--index: 1;"><a href="/">Trang chủ</a></li>
+                        <li style="--index: 2;"><a href="/gallery">Thư viện đồ gốm</a></li>
+                        <li style="--index: 3;"><a href="/dashboard" id="classificationLink">Nhận diện</a></li>
+                        <li style="--index: 4;"><a href="#market">Mua bán</a></li>
+                        <!-- <li style="--index: 5;"><a href="#" id="contactLink">Liên hệ</a></li> -->
                     </ul>
                 </div>
             </div>
@@ -400,25 +478,25 @@
 
             <!-- Filter Section -->
             <form class="filter-section" method="GET" action="{{ route('gallery') }}">
-                <select name="category">
+                <select name="category" style="--index: 1;">
                     <option value="">Tất cả danh mục</option>
                     @foreach ($categories as $cat)
                         <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
                     @endforeach
                 </select>
-                <select name="origin">
+                <select name="origin" style="--index: 2;">
                     <option value="">Tất cả nguồn gốc</option>
                     @foreach ($origins as $org)
                         <option value="{{ $org }}" {{ request('origin') == $org ? 'selected' : '' }}>{{ $org }}</option>
                     @endforeach
                 </select>
-                <button type="submit">Lọc</button>
+                <button type="submit" style="--index: 3;">Lọc</button>
             </form>
 
             <!-- Gallery List -->
             <div class="gallery-list">
-                @forelse ($ceramics as $ceramic)
-                    <article class="gallery-item">
+                @forelse ($ceramics as $key => $ceramic)
+                    <article class="gallery-item" style="--index: {{ $key + 1 }};">
                         <img src="{{ $ceramic->image ? asset('storage/' . $ceramic->image) : 'https://via.placeholder.com/300x200' }}" alt="{{ $ceramic->name }}">
                         <div class="gallery-content">
                             <h2>{{ $ceramic->name }}</h2>
@@ -454,6 +532,7 @@
 
         hamburger.addEventListener('click', () => {
             navContainer.classList.toggle('active');
+            hamburger.classList.toggle('active');
         });
 
         // Biến kiểm tra trạng thái đăng nhập

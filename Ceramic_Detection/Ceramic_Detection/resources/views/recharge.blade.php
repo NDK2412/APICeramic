@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Nạp Tiền - Ceramic Recognition</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <!-- Thêm script Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         :root {
-          --primary-color: rgb(38, 70, 82); /* Màu cam đậm */
-            --secondary-color: rgb(118, 218, 236); /* Màu vàng nhạt */
+            --primary-color: rgb(38, 70, 82);
+            --secondary-color: rgb(118, 218, 236);
             --accent-color: #eceff1;
             --light-color: #f5f7fa;
             --dark-color: #263238;
@@ -26,7 +29,7 @@
         }
 
         body {
-            background: linear-gradient(to bottom right, #4facfe, #ffffff);
+            background: linear-gradient(to bottom right,rgb(12, 40, 64),rgb(182, 192, 218));
             color: var(--dark-color);
             min-height: 100vh;
             display: flex;
@@ -179,7 +182,7 @@
         /* Recharge Section - Card Selection Style */
         .recharge-options {
             display: flex;
-            flex-wrap: nowrap; /* Đảm bảo các thẻ nằm trên một hàng ngang */
+            flex-wrap: nowrap;
             justify-content: space-between;
             gap: 15px;
             margin-bottom: 30px;
@@ -192,7 +195,7 @@
         }
 
         .recharge-options input[type="radio"] {
-            display: none; /* Ẩn input radio */
+            display: none;
         }
 
         .recharge-options .card {
@@ -384,6 +387,67 @@
             color: #777;
         }
 
+        /* Popup Styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .popup h3 {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .popup input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--accent-color);
+            border-radius: 4px;
+        }
+
+        .popup .g-recaptcha {
+            margin-bottom: 10px;
+        }
+
+        .popup button {
+            background: var(--gradient);
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .popup button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -420,7 +484,7 @@
         </div>
         <ul>
             <li><a href="#" class="active" data-section="recharge-section"><i class="fas fa-money-bill-wave"></i><span>Nạp Tiền</span></a></li>
-            <li><a href="#" data-section="recharge-history"><i class="fas fa-history"></i><span>Lịch Sử </span></a></li>
+            <li><a href="#" data-section="recharge-history"><i class="fas fa-history"></i><span>Lịch Sử</span></a></li>
             <li><a href="#" data-section="notifications"><i class="fas fa-bell"></i><span>Thông Báo</span></a></li>
             <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Quay Lại Dashboard</span></a></li>
         </ul>
@@ -479,7 +543,7 @@
                     <div class="qr-code">
                         <h4>Quét Mã QR Để Chuyển Khoản</h4>
                         <img src="\images\1743491347043.png" alt="QR Code Agribank">
-                        <p>Ngân hàng: Agribank<br>STK: 7206205146190<br>Vui lòng ghi rõ số tiền khi chuyển khoản!</p>
+                        <p>Ngân hàng: Agribank<br>STK: 7206205146190<br>Vui lòng chụp rõ số tiền khi chuyển khoản!</p>
                     </div>
 
                     <div class="proof-upload">
@@ -488,7 +552,7 @@
                         <img id="proofPreview" src="" alt="Proof preview">
                     </div>
 
-                    <button type="submit">Xác Nhân Mua Thêm Lượt</button>
+                    <button type="submit">Xác Nhận Mua Thêm Lượt</button>
                 </form>
             </div>
 
@@ -530,6 +594,19 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Popup Xác Nhận Mật Khẩu và CAPTCHA -->
+            <div class="popup-overlay" id="confirmPopupOverlay" onclick="hideConfirmPopup()"></div>
+            <div class="popup" id="confirmPopup">
+                <h3>Xác Nhận Giao Dịch</h3>
+                <form id="confirmForm">
+                    <p><strong>Nhập lại mật khẩu:</strong></p>
+                    <input type="password" id="confirmPassword" name="password" required placeholder="Nhập mật khẩu của bạn">
+                    <p><strong>Xác nhận CAPTCHA:</strong></p>
+                    <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+                    <button type="button" onclick="submitRechargeForm()">Xác Nhận</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -554,12 +631,72 @@
             document.getElementById('recharge-section').style.display = 'block';
         });
 
-        // Form submission confirmation
+        // Hiển thị popup xác nhận khi nhấn nút "Xác Nhận Mua Thêm Lượt"
         document.getElementById('rechargeForm').addEventListener('submit', function(e) {
-            if (!confirm('Bạn có chắc chắn muốn gửi yêu cầu nạp tiền này?')) {
-                e.preventDefault();
-            }
+            e.preventDefault();
+            showConfirmPopup();
         });
+
+        // Hiển thị popup
+        function showConfirmPopup() {
+            const popup = document.getElementById('confirmPopup');
+            const overlay = document.getElementById('confirmPopupOverlay');
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+            grecaptcha.reset();
+        }
+
+        // Ẩn popup
+        function hideConfirmPopup() {
+            const popup = document.getElementById('confirmPopup');
+            const overlay = document.getElementById('confirmPopupOverlay');
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        // Xử lý gửi form sau khi xác nhận mật khẩu và CAPTCHA
+        function submitRechargeForm() {
+            const password = document.getElementById('confirmPassword').value;
+            const recaptchaResponse = grecaptcha.getResponse();
+
+            if (!password) {
+                alert('Vui lòng nhập mật khẩu!');
+                return;
+            }
+
+            if (!recaptchaResponse) {
+                alert('Vui lòng xác nhận CAPTCHA!');
+                return;
+            }
+
+            fetch('/recharge/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    password: password,
+                    'g-recaptcha-response': recaptchaResponse
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('rechargeForm').submit();
+                } else {
+                    alert(data.message || 'Mật khẩu hoặc CAPTCHA không hợp lệ!');
+                    grecaptcha.reset();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại!');
+                grecaptcha.reset();
+            });
+        }
 
         // Preview proof image
         document.getElementById('proofImage').addEventListener('change', function(e) {

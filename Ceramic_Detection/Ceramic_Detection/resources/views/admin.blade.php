@@ -316,6 +316,81 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+                /* Định dạng bảng trong tab Quản lý thư viện đồ gốm */
+        #ceramics table {
+            table-layout: fixed; /* Đảm bảo các cột có độ rộng cố định */
+            width: 100%;
+        }
+
+        /* Đặt độ rộng cố định cho các cột */
+        #ceramics th,
+        #ceramics td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--accent-color);
+            word-wrap: break-word; /* Đảm bảo nội dung dài không tràn */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Thêm dấu ... khi nội dung bị cắt */
+        }
+
+        /* Đặt độ rộng cụ thể cho từng cột */
+        #ceramics th:nth-child(1),
+        #ceramics td:nth-child(1) { width: 5%; } /* ID */
+        #ceramics th:nth-child(2),
+        #ceramics td:nth-child(2) { width: 15%; } /* Tên */
+        #ceramics th:nth-child(3),
+        #ceramics td:nth-child(3) { width: 25%; } /* Mô tả */
+        #ceramics th:nth-child(4),
+        #ceramics td:nth-child(4) { width: 15%; } /* Hình ảnh */
+        #ceramics th:nth-child(5),
+        #ceramics td:nth-child(5) { width: 15%; } /* Danh mục */
+        #ceramics th:nth-child(6),
+        #ceramics td:nth-child(6) { width: 15%; } /* Nguồn gốc */
+        #ceramics th:nth-child(7),
+        #ceramics td:nth-child(7) { width: 10%; } /* Hành động */
+
+        /* Giới hạn chiều cao và ẩn nội dung dài trong cột Mô tả */
+        #ceramics .description-cell {
+            max-height: 3em; /* Giới hạn chiều cao (khoảng 3 dòng) */
+            overflow: hidden;
+            position: relative;
+            line-height: 1.5em; /* Đảm bảo chiều cao dòng phù hợp */
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* Giới hạn số dòng hiển thị */
+            -webkit-box-orient: vertical;
+        }
+
+        /* Hiển thị toàn bộ nội dung khi có class expanded */
+        #ceramics .description-cell.expanded {
+            max-height: none;
+            -webkit-line-clamp: unset;
+        }
+
+        /* Định dạng nút Xem thêm */
+        #ceramics .toggle-description {
+            color: var(--secondary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: inline-block;
+            text-decoration: underline;
+        }
+
+        #ceramics .toggle-description:hover {
+            color: var(--dark-color);
+        }
+
+        /* Đảm bảo hình ảnh không vượt quá kích thước cột */
+        #ceramics .image-cell img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Ẩn nút Xem thêm khi đang chỉnh sửa */
+        #ceramics .editable.editing .toggle-description {
+            display: none;
+        }
 
         @media (max-width: 768px) {
             .sidebar { width: 80px; }
@@ -651,10 +726,11 @@
                                     <input type="text" name="name" value="{{ $ceramic->name }}" style="display:none;">
                                 </td>
                                 <td class="editable" data-field="description">
-                                    <span class="display">{{ $ceramic->description ?? 'Không có' }}</span>
+                                <span class="display description-cell" id="description-{{ $ceramic->id }}">{{ $ceramic->description ?? 'Không có' }}</span>
+                                    <span class="toggle-description" onclick="toggleDescription('{{ $ceramic->id }}')" id="toggle-{{ $ceramic->id }}">Xem thêm</span>
                                     <textarea name="description" style="display:none;">{{ $ceramic->description }}</textarea>
                                 </td>
-                                <td class="editable" data-field="image">
+                                <td class="editable image-cell" data-field="image">
                                     <span class="display">
                                         @if ($ceramic->image)
                                             <img src="{{ url('/storage/' . $ceramic->image) }}" alt="{{ $ceramic->name }}" style="max-width: 100px; border-radius: 5px;">
@@ -996,6 +1072,7 @@ function editCeramicRow(ceramicId) {
         const field = cell.dataset.field;
         const input = cell.querySelector('input, textarea');
         initialCeramicValues[ceramicId][field] = input.value;
+        cell.classList.add('editing');
     });
 
     editables.forEach(cell => {
@@ -1024,6 +1101,13 @@ function cancelCeramicEdit(ceramicId) {
         display.style.display = 'block';
         // Khôi phục giá trị ban đầu
         input.value = initialCeramicValues[ceramicId][cell.dataset.field];
+        cell.classList.remove('editing');
+        const descriptionCell = cell.querySelector('.description-cell');
+        if (descriptionCell) {
+            descriptionCell.classList.remove('expanded');
+            const toggleLink = cell.querySelector('.toggle-description');
+            toggleLink.textContent = 'Xem thêm';
+        }
     });
 
     editBtn.style.display = 'inline-flex';
@@ -1105,6 +1189,18 @@ document.querySelectorAll('#ceramics .edit-form').forEach(form => {
         }
 
         // Popup thông tin đánh giá
+        function toggleDescription(ceramicId) {
+    const descriptionCell = document.getElementById(`description-${ceramicId}`);
+    const toggleLink = document.getElementById(`toggle-${ceramicId}`);
+
+    if (descriptionCell.classList.contains('expanded')) {
+        descriptionCell.classList.remove('expanded');
+        toggleLink.textContent = 'Xem thêm';
+    } else {
+        descriptionCell.classList.add('expanded');
+        toggleLink.textContent = 'Ẩn bớt';
+    }
+}
         function showPopup(userId, name, rating, feedback) {
             const popup = document.getElementById('userPopup');
             const overlay = document.querySelector('.popup-overlay');

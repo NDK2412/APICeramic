@@ -196,7 +196,9 @@
 
         .detail-info a:hover {
             background-color: var(--dark-color);
+            
         }
+        
 
         footer {
             text-align: center;
@@ -289,14 +291,15 @@
                 font-size: 1rem;
             }
         }
+       
+        
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <div class="header-content">
-                <a href="/" class="logo">
-                    <img src="logo.png" alt="Logo" style="display: none;">
+                <a href="#" class="logo"><img src="http://localhost:8000/storage/ceramics/logo2.webp" alt="Logo">
                     Ceramic Classification
                 </a>
                 <button class="hamburger" aria-label="Toggle menu">☰</button>
@@ -326,7 +329,7 @@
                 <div class="detail-info">
                     <p><strong>Danh mục:</strong> {{ $ceramic->category ?? 'Không có' }}</p>
                     <p><strong>Nguồn gốc:</strong> {{ $ceramic->origin ?? 'Không có' }}</p>
-                    <p><strong>Mô tả:</strong> {{ $ceramic->description ?? 'Không có mô tả.' }}</p>
+                    <p><strong>Mô tả:</strong> {!! $ceramic->description ?? 'Không có mô tả.' !!}</p>
                     <a href="{{ route('gallery') }}">Quay lại thư viện</a>
                 </div>
             </div>

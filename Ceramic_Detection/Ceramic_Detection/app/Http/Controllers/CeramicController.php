@@ -41,13 +41,15 @@ class CeramicController extends Controller
         return view('ceramic_detail', compact('ceramic'));
     }
 
-    public function classify(Request $request)
+//     
+public function classify(Request $request)
 {
     try {
         // Xác thực dữ liệu đầu vào
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'result' => 'required|string', // Thêm xác thực cho kết quả nhận diện
+            'result' => 'required|string',
+            'llm_response' => 'required|string', // Thêm xác thực cho llm_response
         ]);
 
         // Kiểm tra người dùng đã đăng nhập chưa
@@ -62,14 +64,16 @@ class CeramicController extends Controller
             return response()->json(['error' => 'Không thể lưu ảnh'], 500);
         }
 
-        // Lấy kết quả nhận diện từ request
+        // Lấy kết quả nhận diện và llm_response từ request
         $result = $request->input('result');
+        $llmResponse = $request->input('llm_response');
 
         // Lưu vào bảng classifications
         $classification = \App\Models\Classification::create([
             'user_id' => $userId,
             'image_path' => '/storage/' . $imagePath,
             'result' => $result,
+            'llm_response' => $llmResponse, // Lưu llm_response
             'created_at' => now(),
         ]);
 
@@ -83,6 +87,27 @@ class CeramicController extends Controller
         \Log::error('Lỗi khi lưu nhận diện: ' . $e->getMessage());
         return response()->json(['error' => 'Có lỗi xảy ra khi lưu nhận diện: ' . $e->getMessage()], 500);
     }
+}
+public function dashboard()
+{
+    // Lấy người dùng đã đăng nhập
+    $user = auth()->user();
+
+    // Truy xuất lịch sử nhận diện với phân trang
+    $classifications = \App\Models\Classification::where('user_id', $user->id)
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+    // Truyền dữ liệu vào view
+    return view('dashboard', compact('classifications'));
+}
+public function getClassificationInfo($id)
+{
+    $classification = \App\Models\Classification::findOrFail($id);
+    if ($classification->user_id !== auth()->id()) {
+        return response()->json(['error' => 'Không có quyền truy cập'], 403);
+    }
+    return response()->json(['llm_response' => $classification->llm_response]);
 }
 }
 

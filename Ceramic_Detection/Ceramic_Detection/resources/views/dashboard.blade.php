@@ -9,14 +9,14 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <style>
         :root {
-            --primary-color: rgb(38, 70, 82); /* Màu cam đậm */
-            --secondary-color: rgb(118, 218, 236); /* Màu vàng nhạt */
+            --primary-color: rgb(38, 70, 82);
+            --secondary-color: rgb(118, 218, 236);
             --light-blue: #e3f2fd;
             --white: #ffffff;
             --dark-gray: #263238;
             --light-gray: #eceff1;
             --success-color: #00c853;
-            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); /* Gradient mới */
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         }
 
         * {
@@ -105,7 +105,6 @@
             opacity: 1;
         }
 
-        /* User name in sidebar */
         .sidebar .user-name {
             display: flex;
             align-items: center;
@@ -135,7 +134,6 @@
             padding-left: 30px;
         }
 
-        /* Logout button in sidebar */
         .sidebar .logout-form {
             display: flex;
             align-items: center;
@@ -275,6 +273,11 @@
             padding: 15px;
             background: var(--light-gray);
             border-radius: 10px;
+            display: flex; /* Thêm display: flex */
+            flex-direction: column; /* Sắp xếp theo cột */
+            justify-content: center; /* Căn giữa theo chiều dọc */
+            align-items: center; /* Căn giữa theo chiều ngang */
+            min-height: 200px; /* Đảm bảo khu vực preview có chiều cao tối thiểu để căn giữa hiệu quả */
         }
 
         .ceramic-ai .result-area {
@@ -289,13 +292,13 @@
             padding: 15px;
             background: var(--light-gray);
             border-radius: 10px;
-            max-height: 200px;
+            max-height: 400px;
             overflow-y: auto;
             transition: background 0.3s ease;
         }
 
         .ceramic-ai .chatbot-area:hover {
-            background: #fff8e1; /* Màu nền nhạt phù hợp với gradient mới */
+            background: #fff8e1;
         }
 
         .ceramic-ai .upload-area input[type="file"] {
@@ -333,17 +336,25 @@
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            display: none;
+            display: block; /* Đảm bảo ảnh không bị ảnh hưởng bởi inline styles */
             animation: zoomIn 0.5s ease;
         }
-
+        .ceramic-ai .preview-area h4 {
+            text-align: left; /* Căn trái tiêu đề, giống Upload Image và Result */
+            margin-bottom: 10px; /* Khoảng cách giữa tiêu đề và ảnh */
+        }
+        .ceramic-ai .preview-area .image-container {
+            flex: 1; /* Chiếm toàn bộ không gian còn lại */
+            display: flex; /* Sử dụng flex để căn giữa ảnh */
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            align-items: center; /* Căn giữa theo chiều dọc */
+        }
         .ceramic-ai .result-area p {
             font-size: 0.95rem;
             color: var(--dark-gray);
             line-height: 1.5;
         }
 
-        /* Chatbot Info Styling */
         .ceramic-ai .chatbot-area .chatbot-content {
             display: flex;
             flex-direction: column;
@@ -360,7 +371,7 @@
         }
 
         .ceramic-ai .chatbot-area .chatbot-content p::before {
-            content: '\f075'; /* FontAwesome comment icon */
+            content: '\f075';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             color: var(--primary-color);
@@ -429,6 +440,140 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
+        /* History Section Styling */
+        .history-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-section th, .history-section td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .history-section th {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .history-section tr:hover {
+            background: var(--light-gray);
+        }
+
+        .history-section img {
+            max-width: 100px;
+            height: auto;
+        }
+
+        .history-section .view-info-btn {
+            padding: 6px 12px;
+            background: var(--gradient);
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .history-section .view-info-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Pagination Styling */
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .pagination .page-item {
+            list-style: none;
+        }
+
+        .pagination .page-link {
+            padding: 8px 12px;
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .pagination .page-link:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .pagination .active .page-link {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* Popup Styling */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 500px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .popup h3 {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .popup p {
+            font-size: 0.95rem;
+            color: var(--dark-gray);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .popup p strong {
+            color: var(--primary-color);
+        }
+
+        .popup button {
+            width: 100%;
+            padding: 10px;
+            background: var(--gradient);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .popup button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -456,6 +601,15 @@
             }
             .header h1 { font-size: 1.4rem; }
             .user-info { font-size: 0.9rem; }
+            .history-section table {
+                font-size: 0.85rem;
+            }
+            .history-section img {
+                max-width: 80px;
+            }
+            .popup {
+                width: 90%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -484,16 +638,15 @@
         <div class="logo">
             <i class="fas fa-cogs"></i>
         </div>
-        <!-- Tên người dùng -->
         <div class="user-name">
             <i class="fas fa-user"></i>
             <span>{{ Auth::user()->name }}</span>
         </div>
         <ul>
             <li><a href="#" class="active" data-section="ceramic-ai"><i class="fas fa-brain"></i><span>CeramicAI</span></a></li>
+            <li><a href="#" data-section="history"><i class="fas fa-history"></i><span>Lịch sử</span></a></li>
             <li><a href="#" data-section="rating"><i class="fas fa-star"></i><span>Rating</span></a></li>
             <li><a href="/recharge"><i class="fas fa-wallet"></i><span>Recharge</span></a></li>
-            <!-- Thêm nút Đăng xuất vào sidebar -->
             <li>
                 <form method="POST" action="{{ route('logout') }}" class="logout-form">
                     @csrf
@@ -509,7 +662,9 @@
     <!-- Main content -->
     <div class="container">
         <div class="header">
+           
             <h1>Ceramic Recognition Dashboard</h1>
+        
             <div class="user-info">
                 Xin chào, {{ Auth::user()->name }}! Bạn còn <span id="tokenCount">{{ Auth::user()->tokens }}</span> lượt dự đoán.
                 <br>
@@ -520,31 +675,73 @@
         <div class="content-wrapper">
             <div class="section ceramic-ai" id="ceramic-ai">
                 <h3>CeramicAI</h3>
+                <h4>Upload Image</h4>
                 <div class="upload-area">
-                    <h4>Upload Image</h4>
                     <input type="file" id="imageInput" accept="image/*">
                     <button onclick="predictImage()" id="predictBtn">
                         <span id="predictSpinner" class="loading" style="display: none;"></span>
                         Dự đoán
                     </button>
                 </div>
+                <h4>Preview</h4>
                 <div class="preview-area">
-                    <h4>Preview</h4>
-                    <img id="previewImage" src="" alt="Image preview">
+                    
+                    <div class="image-container">
+                        <img id="previewImage" src="" alt="Image preview">
+                    </div>
                 </div>
+                <h4>Result</h4>
                 <div class="result-area">
-                    <h4>Result</h4>
-                    <p id="result"><i class="fa-solid fa-brain">  </i> Vui lòng upload ảnh để xem kết quả.</p>
+                    <p id="result"><i class="fa-solid fa-brain">  </i> Vui lòng upload ảnh để xem kết quả.</p>
                 </div>
+                <h4>Information</h4>
                 <div class="chatbot-area">
-                    <h4>Information</h4>
                     <div class="chatbot-content" id="chatbotResponse">
                         <p>Thông tin chi tiết sẽ hiển thị tại đây.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="section rating-section" id="rating">
+            <div class="section history-section" id="history" style="display: none;">
+                <h3>Lịch Sử Nhận Diện</h3>
+                @if ($classifications->isEmpty())
+                    <p>Không có lịch sử nhận diện nào.</p>
+                @else
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Ảnh</th>
+                                <th>Kết quả</th>
+                                <th>Thời gian</th>
+                                <th>Thông tin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($classifications as $classification)
+                                <tr>
+                                    <td>{{ $classification->id }}</td>
+                                    <td>
+                                        <img src="{{ url($classification->image_path) }}" alt="Image" style="max-width: 100px; border-radius: 5px;">
+                                    </td>
+                                    <td>{{ $classification->result }}</td>
+                                    <td>{{ $classification->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <button class="view-info-btn" onclick="showInfoPopup({{ $classification->id }})">
+                                            <i class="fas fa-eye"></i> Xem chi tiết
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                        {{ $classifications->links() }}
+                    </div>
+                @endif
+            </div>
+
+            <div class="section rating-section" id="rating" style="display: none;">
                 <h3>Rate Your Experience</h3>
                 <div class="current-rating">
                     <p><strong>Your Current Rating:</strong></p>
@@ -569,7 +766,16 @@
                 </div>
             </div>
         </div>
-        <!-- Xóa logout-section vì đã chuyển vào sidebar -->
+    </div>
+
+    <!-- Popup hiển thị thông tin chi tiết -->
+    <div class="popup-overlay" id="infoPopupOverlay" onclick="hideInfoPopup()"></div>
+    <div class="popup" id="infoPopup">
+        <h3>Thông tin chi tiết</h3>
+        <div id="infoPopupContent">
+            <!-- Nội dung sẽ được thêm bằng JavaScript -->
+        </div>
+        <button onclick="hideInfoPopup()">Đóng</button>
     </div>
 
     <script>
@@ -612,7 +818,6 @@
             chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
 
             try {
-                // Gọi API bên ngoài để nhận diện
                 const predictResponse = await fetch('http://localhost:60074/predict', {
                     method: 'POST',
                     body: formData
@@ -623,7 +828,6 @@
                     resultElement.textContent = `Lỗi: ${predictData.error}`;
                     chatbotElement.innerHTML = '<p>Đã xảy ra lỗi trong quá trình dự đoán.</p>';
                 } else {
-                    // Gọi route /use-token để cập nhật số lượt dự đoán
                     const tokenResponse = await fetch('/use-token', {
                         method: 'POST',
                         headers: {
@@ -639,7 +843,6 @@
                         tokenCountElement.textContent = tokens;
                         resultElement.textContent = `Dự đoán: ${predictData.predicted_class}`;
 
-                        // Format Chatbot Response
                         const llmResponse = predictData.llm_response;
                         const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
                         let formattedResponse = '';
@@ -649,10 +852,10 @@
                         });
                         chatbotElement.innerHTML = formattedResponse;
 
-                        // Gọi route /classify để lưu dữ liệu vào bảng classifications
                         const classifyFormData = new FormData();
                         classifyFormData.append('image', fileInput.files[0]);
                         classifyFormData.append('result', predictData.predicted_class);
+                        classifyFormData.append('llm_response', predictData.llm_response);
                         classifyFormData.append('_token', '{{ csrf_token() }}');
 
                         const classifyResponse = await fetch('{{ route('classify') }}', {
@@ -665,7 +868,6 @@
                             console.error('Lỗi khi lưu vào lịch sử:', classifyData.error);
                         } else {
                             console.log('Đã lưu vào lịch sử:', classifyData);
-                            // Xóa thông báo "Đã lưu kết quả nhận diện vào lịch sử!"
                         }
                     } else {
                         resultElement.textContent = 'Hết lượt dự đoán!';
@@ -740,7 +942,47 @@
             }
         }
 
-        // Sidebar navigation
+        async function showInfoPopup(classificationId) {
+            const popup = document.getElementById('infoPopup');
+            const overlay = document.getElementById('infoPopupOverlay');
+            const content = document.getElementById('infoPopupContent');
+
+            try {
+                const response = await fetch(`/classification/${classificationId}/info`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+                const data = await response.json();
+
+                if (data.llm_response) {
+                    const paragraphs = data.llm_response.split('\n').filter(p => p.trim() !== '');
+                    let formattedResponse = '';
+                    paragraphs.forEach(paragraph => {
+                        const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
+                        formattedResponse += `<p>${formattedParagraph}</p>`;
+                    });
+                    content.innerHTML = formattedResponse;
+                } else {
+                    content.innerHTML = '<p>Không có thông tin chi tiết.</p>';
+                }
+            } catch (error) {
+                content.innerHTML = '<p>Lỗi khi tải thông tin chi tiết.</p>';
+                console.error('Error fetching classification info:', error);
+            }
+
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        function hideInfoPopup() {
+            const popup = document.getElementById('infoPopup');
+            const overlay = document.getElementById('infoPopupOverlay');
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
         document.querySelectorAll('.sidebar a').forEach(link => {
             link.addEventListener('click', function(e) {
                 if (!this.href.includes('/recharge')) {

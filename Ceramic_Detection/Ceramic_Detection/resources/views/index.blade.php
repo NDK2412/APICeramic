@@ -119,6 +119,18 @@
         #loginButton {
             background-color: var(--secondary-color);
             color: var(--text-light);
+            margin-bottom: 10px;
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  50% {
+    transform: translateY(-12px);
+    box-shadow: 0 15px 20px rgba(0,0,0,0.2);
+  }
         }
 
         #logoutButton {

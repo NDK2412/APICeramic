@@ -36,6 +36,13 @@ class LoginController extends Controller
             'email' => 'Thông tin đăng nhập không chính xác.',
         ])->onlyInput('email');
     }
-
+// Ensure 'remember' is passed to attemptLogin
+protected function attemptLogin(Request $request)
+{
+    return $this->guard()->attempt(
+        $this->credentials($request),
+        $request->filled('remember') // Pass true if 'remember' is checked
+    );
+}
 
 }

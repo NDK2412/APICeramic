@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thư viện đồ gốm - Ceramic Classification</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
             --primary-color: #b3cde0;
@@ -268,7 +272,8 @@
             margin-top: 2rem;
         }
 
-        .pagination a, .pagination span {
+        .pagination a,
+        .pagination span {
             padding: 0.5rem 1rem;
             margin: 0 0.2rem;
             border: 1px solid var(--secondary-color);
@@ -308,6 +313,7 @@
                 transform: translateY(-20px);
                 opacity: 0;
             }
+
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -319,6 +325,7 @@
                 transform: scale(0.8);
                 opacity: 0;
             }
+
             to {
                 transform: scale(1);
                 opacity: 1;
@@ -330,6 +337,7 @@
                 transform: translateY(20px);
                 opacity: 0;
             }
+
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -341,10 +349,12 @@
                 transform: scale(1);
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
+
             50% {
                 transform: scale(1.05);
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
             }
+
             100% {
                 transform: scale(1);
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -355,6 +365,7 @@
             from {
                 transform: rotate(0deg);
             }
+
             to {
                 transform: rotate(90deg);
             }
@@ -452,6 +463,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -497,7 +509,8 @@
             <div class="gallery-list">
                 @forelse ($ceramics as $key => $ceramic)
                     <article class="gallery-item" style="--index: {{ $key + 1 }};">
-                        <img src="{{ $ceramic->image ? asset('storage/' . $ceramic->image) : 'https://via.placeholder.com/300x200' }}" alt="{{ $ceramic->name }}">
+                        <img src="{{ $ceramic->image ? asset('storage/' . $ceramic->image) : 'https://via.placeholder.com/300x200' }}"
+                            alt="{{ $ceramic->name }}">
                         <div class="gallery-content">
                             <h2>{{ $ceramic->name }}</h2>
                             <p><strong>Danh mục:</strong> {{ $ceramic->category ?? 'Không có' }}</p>
@@ -584,4 +597,5 @@
         window.onload = checkLoginStatus;
     </script>
 </body>
+
 </html>

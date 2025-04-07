@@ -528,7 +528,56 @@
     margin-left: 8px;
     vertical-align: middle;
 }
+.menu .logout {
+    margin-top: auto; /* đẩy nút xuống cuối */
+}
+/* Tab Tin tức */
+    /* Định dạng bảng trong tab Quản lý tin tức */
+#news table {
+    table-layout: fixed;
+    width: 100%;
+}
 
+#news th:nth-child(1), #news td:nth-child(1) { width: 5%; } /* ID */
+#news th:nth-child(2), #news td:nth-child(2) { width: 20%; } /* Tiêu đề */
+#news th:nth-child(3), #news td:nth-child(3) { width: 20%; } /* Mô tả ngắn */
+#news th:nth-child(4), #news td:nth-child(4) { width: 15%; } /* Hình ảnh */
+#news th:nth-child(5), #news td:nth-child(5) { width: 25%; } /* Nội dung */
+#news th:nth-child(6), #news td:nth-child(6) { width: 15%; } /* Hành động */
+
+#news .description-cell {
+    max-height: 3em;
+    overflow: hidden;
+    line-height: 1.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+#news .description-cell.expanded {
+    max-height: none;
+    -webkit-line-clamp: unset;
+}
+
+#news .toggle-description {
+    color: var(--secondary-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    display: inline-block;
+    text-decoration: underline;
+}
+
+#news .toggle-description:hover {
+    color: var(--dark-color);
+}
+
+#news .editable.editing .toggle-description {
+    display: none;
+}
+div.sidebar {
+    overflow-y: scroll;
+}
     </style>
 </head>
 <body>
@@ -555,6 +604,7 @@
             </li>
             <li><a href="#" data-tab="revenue"><i class="fas fa-chart-line"></i> Doanh thu</a></li>
             <li><a href="#" data-tab="ceramics"><i class="fa-solid fa-layer-group"></i> Quản lý thư viện đồ gốm</a></li>
+            <li><a href="#" data-tab="news"><i class="fas fa-newspaper"></i> Quản lý tin tức</a></li>
             <li><a href="#" data-tab="classifications"><i class="fas fa-history"></i> Lịch Sử Nhận Diện</a></li>
             <li><a href="#" data-tab="terms"><i class="fas fa-file-alt"></i> Chính sách và điều khoản</a></li>
             <li><a href="#" data-tab="settings"><i class="fas fa-cog"></i> Cài Đặt</a></li>
@@ -644,77 +694,77 @@
                 
             </div>
              <!-- Bảng Doanh Thu Theo Người Dùng -->
- <div class="revenue-by-user">
-        <h3>Doanh Thu Theo Người Dùng</h3>
-        @if ($revenueByUser->isEmpty())
-            <p>Không có dữ liệu doanh thu.</p>
-        @else
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tên người dùng</th>
-                        <th>Doanh thu (VNĐ)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($revenueByUser as $userId => $data)
-                        <tr>
-                            <td>{{ $data['name'] }}</td>
-                            <td>{{ number_format($data['total_revenue']) }} VNĐ</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-    </div>
-</div>
+            <div class="revenue-by-user">
+                    <h3>Doanh Thu Theo Người Dùng</h3>
+                    @if ($revenueByUser->isEmpty())
+                        <p>Không có dữ liệu doanh thu.</p>
+                    @else
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tên người dùng</th>
+                                    <th>Doanh thu (VNĐ)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($revenueByUser as $userId => $data)
+                                    <tr>
+                                        <td>{{ $data['name'] }}</td>
+                                        <td>{{ number_format($data['total_revenue']) }} VNĐ</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                </div>
+            </div>
 <!-- Tab Liên hệ -->
-<div class="container tab-content" id="contacts" style="display: none;">
-    <h2>Danh sách liên hệ từ người dùng</h2>
-    @if (session('success'))
-        <div class="success-message">{{ session('success') }}</div>
-    @endif
-    @if (!isset($contacts) || $contacts->isEmpty())
-        <p>Chưa có liên hệ nào từ người dùng.</p>
-    @else
-        <table>
-            <thead>
-                <tr>
-                    <th>Họ tên</th>
-                    <th>Trạng thái</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($contacts as $contact)
-                <tr style="background-color: {{ $contact->is_read ? 'var(--card-bg)' : 'rgba(42, 92, 139, 0.1)' }}; 
-                                color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
-                                border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
-                        <td>{{ $contact->name }}</td>
-                        <td>
-                            <span style="display: inline-block; 
-                                        padding: 0.25rem 0.5rem;
-                                        border-radius: 12px;
-                                        background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
-                                        color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
-                                        font-size: 0.85rem;
-                                        font-weight: 500;">
-                                {{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}
-                            </span>
-                        </td>
-                        <td>
-                        <button onclick="showContactPopup('{{ $contact->id }}', '{{ $contact->name }}', '{{ $contact->phone }}', '{{ $contact->email }}', '{{ $contact->message }}', '{{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}', {{ $contact->is_read ? 'true' : 'false' }})" 
-                                class="action-btn view-btn" 
-                                style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: var(--primary); color: var(--text-light); border-radius: 6px; border: none; cursor: pointer; transition: var(--transition);">
-                            <i class="fas fa-eye"></i> Xem
-                        </button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-</div>          
+            <div class="container tab-content" id="contacts" style="display: none;">
+                <h2>Danh sách liên hệ từ người dùng</h2>
+                @if (session('success'))
+                    <div class="success-message">{{ session('success') }}</div>
+                @endif
+                @if (!isset($contacts) || $contacts->isEmpty())
+                    <p>Chưa có liên hệ nào từ người dùng.</p>
+                @else
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Họ tên</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($contacts as $contact)
+                            <tr style="background-color: {{ $contact->is_read ? 'var(--card-bg)' : 'rgba(42, 92, 139, 0.1)' }}; 
+                                            color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
+                                            border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
+                                    <td>{{ $contact->name }}</td>
+                                    <td>
+                                        <span style="display: inline-block; 
+                                                    padding: 0.25rem 0.5rem;
+                                                    border-radius: 12px;
+                                                    background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
+                                                    color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
+                                                    font-size: 0.85rem;
+                                                    font-weight: 500;">
+                                            {{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                    <button onclick="showContactPopup('{{ $contact->id }}', '{{ $contact->name }}', '{{ $contact->phone }}', '{{ $contact->email }}', '{{ $contact->message }}', '{{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}', {{ $contact->is_read ? 'true' : 'false' }})" 
+                                            class="action-btn view-btn" 
+                                            style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: var(--primary); color: var(--text-light); border-radius: 6px; border: none; cursor: pointer; transition: var(--transition);">
+                                        <i class="fas fa-eye"></i> Xem
+                                    </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>          
 
 <!-- Tab Quản lý người dùng -->
 <div class="container tab-content" id="users" style="display: none;">
@@ -1058,8 +1108,6 @@
             @endforeach
         </tbody>
     </table>
-
-    <!-- Tab chỉnh sủa lịch sử nhận diện -->
      
 
 </div>
@@ -1079,6 +1127,90 @@
         </div>
         <button type="submit" class="action-btn save-btn"><i class="fas fa-save"></i> Lưu</button>
     </form>
+</div>
+<!-- Tab Quản lý tin tức -->
+<div class="container tab-content" id="news" style="display: none;">
+    <h1>Quản Lý Tin Tức</h1>
+
+    <!-- Nút thêm bài viết mới -->
+    <button type="button" class="action-btn save-btn" onclick="showAddNewsPopup()" style="margin-bottom: 20px;">
+        <i class="fas fa-plus"></i> Thêm bài viết mới
+    </button>
+
+    <!-- Thông báo thành công (nếu có) -->
+    @if (session('news_success'))
+        <div class="success-message">
+            {{ session('news_success') }}
+        </div>
+    @endif
+
+    <!-- Bảng danh sách tin tức -->
+    @if ($news->isEmpty())
+        <p>Không có bài viết tin tức nào.</p>
+    @else
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tiêu đề</th>
+                    <th>Mô tả ngắn</th>
+                    <th>Hình ảnh</th>
+                    <th>Nội dung</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($news as $article)
+                    <tr id="news-row-{{ $article->id }}">
+                    <form action="{{ route('news.update', $article->id) }}" method="POST" class="edit-form" id="news-form-{{ $article->id }}">
+                            @csrf
+                            @method('PUT')
+                            <td>{{ $article->id }}</td>
+                            <td class="editable" data-field="title">
+                                <span class="display">{{ $article->title }}</span>
+                                <input type="text" name="title" value="{{ $article->title }}" style="display:none;">
+                            </td>
+                            <td class="editable" data-field="excerpt">
+                                <span class="display">{{ $article->excerpt ?? 'Không có' }}</span>
+                                <input type="text" name="excerpt" value="{{ $article->excerpt }}" style="display:none;">
+                            </td>
+                            <td class="editable image-cell" data-field="image">
+                                <span class="display">
+                                    @if ($article->image)
+                                        <img src="{{ url('/storage/' . $article->image) }}" alt="{{ $article->title }}" style="max-width: 100px; border-radius: 5px;">
+                                    @else
+                                        Không có ảnh
+                                    @endif
+                                </span>
+                                <input type="text" name="image" value="{{ $article->image }}" style="display:none;" placeholder="Đường dẫn hình ảnh (news/ten_hinh.jpg)">
+                            </td>
+                            <td class="editable" data-field="content">
+                                <span class="display description-cell" id="content-{{ $article->id }}">{{ $article->content ?? 'Không có' }}</span>
+                                <span class="toggle-description" onclick="toggleNewsContent('{{ $article->id }}')" id="toggle-content-{{ $article->id }}">Xem thêm</span>
+                                <textarea name="content" style="display:none;">{{ $article->content }}</textarea>
+                            </td>
+                            <td class="actions">
+                                <button type="button" class="action-btn edit-btn" onclick="editNewsRow({{ $article->id }})"><i class="fas fa-edit"></i> Sửa</button>
+                                <button type="button" class="action-btn cancel-btn" style="display:none;" onclick="cancelNewsEdit({{ $article->id }})"><i class="fas fa-times"></i> Hủy</button>
+                                <form action="{{ route('news.update', $article->id) }}" method="POST" style="display:inline;" >
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="action-btn save-btn" style="display:none;"><i class="fas fa-save"></i> Lưu</button>
+                                </form>
+                                
+                                <button type="button" class="action-btn cancel-btn" style="display:none;" onclick="cancelNewsEdit({{ $article->id }})"><i class="fas fa-times"></i> Hủy</button>
+                                <form action="{{ route('news.delete', $article->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa bài viết này?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="action-btn delete-btn"><i class="fas fa-trash"></i> Xóa</button>
+                                </form>
+                            </td>
+                        </form>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 </div>
     </div>
 <!-- Popup Chi tiết Liên hệ -->
@@ -1144,7 +1276,23 @@
             <button type="submit">Gửi</button>
         </form>
     </div>
-
+<!-- Popup thêm bài viết tin tức mới -->
+<div class="popup-overlay" id="addNewsOverlay" onclick="hideAddNewsPopup()"></div>
+<div class="popup" id="addNewsPopup">
+    <h3>Thêm Bài Viết Tin Tức Mới</h3>
+    <form id="addNewsForm" method="POST" action="{{ route('news.store') }}">
+        @csrf
+        <p><strong>Tiêu đề:</strong></p>
+        <input type="text" name="title" required placeholder="Nhập tiêu đề bài viết">
+        <p><strong>Mô tả ngắn:</strong></p>
+        <input type="text" name="excerpt" placeholder="Nhập mô tả ngắn (tùy chọn)">
+        <p><strong>Hình ảnh:</strong></p>
+        <input type="text" name="image" placeholder="Đường dẫn hình ảnh (news/ten_hinh.jpg)">
+        <p><strong>Nội dung:</strong></p>
+        <textarea name="content" rows="6" placeholder="Nhập nội dung bài viết" required></textarea>
+        <button type="submit">Thêm</button>
+    </form>
+</div>
     <!-- Popup thêm món đồ gốm mới -->
     <div class="popup-overlay" id="addCeramicOverlay" onclick="hideAddCeramicPopup()"></div>
     <div class="popup" id="addCeramicPopup">
@@ -1163,6 +1311,7 @@
             <input type="text" name="origin" placeholder="Nhập nguồn gốc (tùy chọn)">
             <button type="submit">Thêm</button>
         </form>
+
     </div>
 
     <script>
@@ -1891,6 +2040,131 @@ function filterUsers() {
         row.style.display = matchesSearch && matchesRole ? '' : 'none';
     });
 }
+//Quản lý tin tức trang Chủ
+// Biến để lưu giá trị ban đầu của tin tức
+let initialNewsValues = {};
+
+// Edit news row
+function editNewsRow(newsId) {
+    const row = document.getElementById(`news-row-${newsId}`);
+    const editables = row.querySelectorAll('.editable');
+    const editBtn = row.querySelector('.edit-btn');
+    const saveBtn = row.querySelector('.save-btn');
+    const cancelBtn = row.querySelector('.cancel-btn');
+
+    initialNewsValues[newsId] = {};
+    editables.forEach(cell => {
+        const field = cell.dataset.field;
+        const input = cell.querySelector('input, textarea');
+        initialNewsValues[newsId][field] = input.value;
+        cell.classList.add('editing');
+    });
+
+    editables.forEach(cell => {
+        const display = cell.querySelector('.display');
+        const input = cell.querySelector('input, textarea');
+        display.style.display = 'none';
+        input.style.display = 'block';
+    });
+
+    editBtn.style.display = 'none';
+    saveBtn.style.display = 'inline-flex';
+    cancelBtn.style.display = 'inline-flex';
+}
+
+function cancelNewsEdit(newsId) {
+    const row = document.getElementById(`news-row-${newsId}`);
+    const editables = row.querySelectorAll('.editable');
+    const editBtn = row.querySelector('.edit-btn');
+    const saveBtn = row.querySelector('.save-btn');
+    const cancelBtn = row.querySelector('.cancel-btn');
+
+    editables.forEach(cell => {
+        const display = cell.querySelector('.display');
+        const input = cell.querySelector('input, textarea');
+        input.style.display = 'none';
+        display.style.display = 'block';
+        input.value = initialNewsValues[newsId][cell.dataset.field];
+        cell.classList.remove('editing');
+        const contentCell = cell.querySelector('.description-cell');
+        if (contentCell) {
+            contentCell.classList.remove('expanded');
+            const toggleLink = cell.querySelector('.toggle-description');
+            toggleLink.textContent = 'Xem thêm';
+        }
+    });
+
+    editBtn.style.display = 'inline-flex';
+    saveBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
+    delete initialNewsValues[newsId];
+}
+
+// Toggle nội dung tin tức
+function toggleNewsContent(newsId) {
+    const contentCell = document.getElementById(`content-${newsId}`);
+    const toggleLink = document.getElementById(`toggle-content-${newsId}`);
+
+    if (contentCell.classList.contains('expanded')) {
+        contentCell.classList.remove('expanded');
+        toggleLink.textContent = 'Xem thêm';
+    } else {
+        contentCell.classList.add('expanded');
+        toggleLink.textContent = 'Ẩn bớt';
+    }
+}
+
+// Show/Hide Add News Popup
+function showAddNewsPopup() {
+    const popup = document.getElementById('addNewsPopup');
+    const overlay = document.getElementById('addNewsOverlay');
+    popup.style.display = 'block';
+    overlay.style.display = 'block';
+}
+
+function hideAddNewsPopup() {
+    const popup = document.getElementById('addNewsPopup');
+    const overlay = document.getElementById('addNewsOverlay');
+    popup.style.display = 'none';
+    overlay.style.display = 'none';
+}
+
+// Xử lý gửi form trong tab Quản lý tin tức
+document.querySelectorAll('#news .edit-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newsId = this.id.replace('news-form-', '');
+        const editables = document.getElementById(`news-row-${newsId}`).querySelectorAll('.editable');
+        let hasChanges = false;
+
+        const existingHiddenInputs = form.querySelectorAll('input[type="hidden"]:not([name="_token"]):not([name="_method"])');
+        existingHiddenInputs.forEach(input => input.remove());
+
+        editables.forEach(cell => {
+            const field = cell.dataset.field;
+            const input = cell.querySelector('input, textarea');
+            const currentValue = input.value;
+            const initialValue = initialNewsValues[newsId][field];
+
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = field;
+            hiddenInput.value = currentValue;
+            form.appendChild(hiddenInput);
+
+            if (currentValue !== initialValue) {
+                hasChanges = true;
+            }
+        });
+
+        if (!hasChanges) {
+            alert('Không có thay đổi để lưu!');
+            return;
+        }
+
+        form.submit();
+    });
+});
     </script>
 </body>
 </html>

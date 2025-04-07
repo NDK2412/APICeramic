@@ -658,6 +658,25 @@
         <section class="news-section">
             <h1>Tin tức về gốm sứ</h1>
             <div class="news-list">
+                @if ($news->isEmpty())
+                    <p>Chưa có tin tức nào.</p>
+                @else
+                    @foreach ($news as $article)
+                        <article class="news-item">
+                            <img src="{{ url('/storage/' . $article->image) }}" alt="{{ $article->title }}">
+                            <div class="news-content">
+                                <h2>{{ $article->title }}</h2>
+                                <p>{{ $article->excerpt ?? Str::limit($article->content, 100) }}</p>
+                                <a href="{{ route('news.detail', $article->id) }}">Đọc thêm</a>
+                            </div>
+                        </article>
+                    @endforeach
+                @endif
+            </div>
+        </section>
+        <!-- <section class="news-section">
+            <h1>Tin tức về gốm sứ</h1>
+            <div class="news-list">
                 <article class="news-item">
                     <img src="https://file3.qdnd.vn/data/images/0/2024/10/08/upload_2049/gom1.jpg" alt="News 1">
                     <div class="news-content">
@@ -683,7 +702,7 @@
                     </div>
                 </article>
             </div>
-        </section>
+        </section> -->
 
         <!-- About Section - Updated Version -->
         <section class="about-section">

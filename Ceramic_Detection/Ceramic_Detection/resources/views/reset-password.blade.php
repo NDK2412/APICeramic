@@ -1,22 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
     <link rel="stylesheet" href="css/resetpass.css">
     <!-- Thêm Font Awesome để sử dụng icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* CSS cơ bản để giao diện trông đẹp hơn */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 rgba(24, 119, 242, 0.5); }
-            50% { box-shadow: 0 0 15px rgba(24, 119, 242, 0.5); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 rgba(24, 119, 242, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(24, 119, 242, 0.5);
+            }
         }
 
         body {
@@ -93,7 +110,8 @@
 
         input {
             width: 100%;
-            padding: 12px 12px 12px 40px; /* Thêm padding bên trái để chừa chỗ cho icon */
+            padding: 12px 12px 12px 40px;
+            /* Thêm padding bên trái để chừa chỗ cho icon */
             border: 1px solid #dddfe2;
             border-radius: 6px;
             font-size: 16px;
@@ -110,7 +128,8 @@
         .input-group i {
             position: absolute;
             left: 12px;
-            top: 65%; /* Căn giữa icon theo chiều dọc so với input */
+            top: 65%;
+            /* Căn giữa icon theo chiều dọc so với input */
             transform: translateY(-50%);
             color: #606770;
             font-size: 16px;
@@ -131,7 +150,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px; /* Khoảng cách giữa icon và chữ */
+            gap: 10px;
+            /* Khoảng cách giữa icon và chữ */
         }
 
         button:hover {
@@ -140,10 +160,12 @@
         }
 
         button i {
-            font-size: 18px; /* Kích thước icon trong nút */
+            font-size: 18px;
+            /* Kích thước icon trong nút */
         }
     </style>
 </head>
+
 <body>
     <div class="reset-container">
         <h2>ĐỔI MẬT KHẨU</h2>
@@ -182,4 +204,5 @@
         </form>
     </div>
 </body>
+
 </html>

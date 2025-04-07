@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hướng Dẫn Sử Dụng - Ceramic Recognition</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
             --primary-color: rgb(38, 70, 82);
@@ -182,7 +185,7 @@
             border-radius: 0 0 8px 8px;
         }
 
-        
+
 
         /* Social Links */
         .social-links {
@@ -218,8 +221,13 @@
 
         /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         /* Responsive */
@@ -264,6 +272,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <div class="header">
@@ -301,7 +310,8 @@
             <h2><i class="fas fa-question-circle"></i> Câu Hỏi Thường Gặp</h2>
             <details class="faq-item">
                 <summary>Làm thế nào để nạp tiền?</summary>
-                <p>Chọn gói nạp tiền, quét mã QR, chuyển khoản và tải lên ảnh chứng minh. Yêu cầu của bạn sẽ được xử lý trong vòng 24 giờ.</p>
+                <p>Chọn gói nạp tiền, quét mã QR, chuyển khoản và tải lên ảnh chứng minh. Yêu cầu của bạn sẽ được xử lý
+                    trong vòng 24 giờ.</p>
             </details>
             <details class="faq-item">
                 <summary>Tôi có thể nhận diện bao nhiêu hình ảnh với 1 token?</summary>
@@ -309,11 +319,12 @@
             </details>
             <details class="faq-item">
                 <summary>Làm sao để liên hệ hỗ trợ?</summary>
-                <p>Bạn có thể gửi email đến support@ceramicrecognition.com hoặc liên hệ qua các kênh mạng xã hội bên dưới.</p>
+                <p>Bạn có thể gửi email đến support@ceramicrecognition.com hoặc liên hệ qua các kênh mạng xã hội bên
+                    dưới.</p>
             </details>
         </div>
 
-        
+
 
         <!-- Social Links -->
         <div class="section social-links">
@@ -332,7 +343,7 @@
     <script>
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
+            anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 document.querySelector(this.getAttribute('href')).scrollIntoView({
                     behavior: 'smooth'
@@ -341,20 +352,20 @@
         });
 
         // Rating Form Submission
-        document.getElementById('ratingForm').addEventListener('submit', function(e) {
+        document.getElementById('ratingForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const rating = document.querySelector('input[name="rating"]:checked');
             const comment = document.querySelector('.rating-comment').value;
-            
+
             if (!rating) {
                 alert('Vui lòng chọn số sao đánh giá!');
                 return;
             }
-            
+
             // Gửi đánh giá (đoạn này có thể thay bằng AJAX call đến server)
             alert('Cảm ơn bạn đã đánh giá ' + rating.value + ' sao!\nPhản hồi của bạn đã được ghi nhận.');
-            
+
             // Reset form
             this.reset();
             document.querySelectorAll('.rating-stars label').forEach(star => {
@@ -364,18 +375,18 @@
 
         // Star hover effect
         document.querySelectorAll('.rating-stars label').forEach(star => {
-            star.addEventListener('mouseover', function() {
+            star.addEventListener('mouseover', function () {
                 const stars = Array.from(document.querySelectorAll('.rating-stars label'));
                 const currentIndex = stars.indexOf(this);
-                
+
                 stars.forEach((s, index) => {
                     if (index <= currentIndex) {
                         s.style.color = '#ffc107';
                     }
                 });
             });
-            
-            star.addEventListener('mouseout', function() {
+
+            star.addEventListener('mouseout', function () {
                 const checkedStar = document.querySelector('input[name="rating"]:checked');
                 if (!checkedStar) {
                     document.querySelectorAll('.rating-stars label').forEach(s => {
@@ -385,7 +396,8 @@
             });
         });
 
-        
+
     </script>
 </body>
+
 </html>

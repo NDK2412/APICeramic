@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,17 +9,32 @@
     @if (isset($recaptchaEnabled) && $recaptchaEnabled)
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     @endif
-    <!-- Font Awesome để sử dụng icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 rgba(24, 119, 242, 0.5); }
-            50% { box-shadow: 0 0 15px rgba(24, 119, 242, 0.5); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 rgba(24, 119, 242, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(24, 119, 242, 0.5);
+            }
         }
 
         body {
@@ -66,14 +82,14 @@
             font-weight: 500;
         }
 
-        /* Style cho input với icon */
         .input-group {
             position: relative;
         }
 
-        input {
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
-            padding: 12px 12px 12px 40px; /* Padding bên trái để chừa chỗ cho icon */
+            padding: 12px 12px 12px 40px;
             border: 1px solid #dddfe2;
             border-radius: 6px;
             font-size: 16px;
@@ -81,7 +97,8 @@
             transition: all 0.3s;
         }
 
-        input:focus {
+        input[type="email"]:focus,
+        input[type="password"]:focus {
             border-color: #1877f2;
             box-shadow: 0 0 8px rgba(24, 119, 242, 0.5);
             outline: none;
@@ -90,13 +107,12 @@
         .input-group i {
             position: absolute;
             left: 12px;
-            top: 65%; /* Điều chỉnh vị trí icon để căn giữa theo chiều dọc so với input */
+            top: 65%;
             transform: translateY(-50%);
             color: #606770;
             font-size: 16px;
         }
 
-        /* Style cho nút đăng nhập với icon */
         button {
             width: 100%;
             padding: 12px;
@@ -112,7 +128,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px; /* Tăng khoảng cách giữa icon và chữ để trông cân đối hơn */
+            gap: 10px;
         }
 
         button:hover {
@@ -121,7 +137,19 @@
         }
 
         button i {
-            font-size: 18px; /* Tăng kích thước icon trong nút để trông cân đối */
+            font-size: 18px;
+        }
+
+        .google-login-btn {
+            background: #ffffff;
+            color: #4285f4;
+            border: 1px solid #4285f4;
+            margin-top: 10px;
+        }
+
+        .google-login-btn:hover {
+            background: #f1f1f1;
+            animation: pulse 1s infinite;
         }
 
         .links {
@@ -155,8 +183,27 @@
             margin-bottom: 15px;
             animation: fadeIn 0.5s ease-in-out;
         }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        .remember-me label {
+            margin-bottom: 0;
+            font-weight: normal;
+        }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <h2>ĐĂNG NHẬP</h2>
@@ -184,13 +231,19 @@
                 <input type="email" id="email" name="email" value="{{ old('email') }}" required>
                 <i class="fas fa-envelope"></i>
             </div>
-            
+
             <div class="input-group">
                 <label for="password">Mật khẩu</label>
                 <input type="password" id="password" name="password" required>
                 <i class="fas fa-lock"></i>
             </div>
-            <!-- Thêm reCAPTCHA -->
+
+            <!-- Remember Me Checkbox -->
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                <label for="remember">Ghi nhớ tôi</label>
+            </div>
+
             @if ($recaptchaEnabled)
                 <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
                 @error('g-recaptcha-response')
@@ -199,7 +252,7 @@
             @endif
 
             <div class="links">
-                <a href="{{ route('password.request') }}">Đổi mật khẩu? </a>
+                <a href="{{ route('password.request') }}">Đổi mật khẩu?</a>
             </div>
 
             <button type="submit">
@@ -207,7 +260,16 @@
             </button>
         </form>
 
-        <p style="margin-top: 20px; color: #606770;">Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký tại đây</a></p>
+        <!-- Google Login Button -->
+        <a href="{{ route('auth.google') }}">
+            <button class="google-login-btn">
+                <i class="fab fa-google"></i> Đăng nhập với Google
+            </button>
+        </a>
+
+        <p style="margin-top: 20px; color: #606770;">Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký tại
+                đây</a></p>
     </div>
 </body>
+
 </html>

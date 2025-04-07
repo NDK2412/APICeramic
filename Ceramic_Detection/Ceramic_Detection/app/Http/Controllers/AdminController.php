@@ -14,6 +14,7 @@ use App\Models\TermsAndConditions;
 use PhpOffice\PhpSpreadsheet\Spreadsheet; 
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\Ceramic;
+use App\Models\News;
 use App\Models\TokenUsage;
 use App\Models\Setting;
 use App\Models\Classification;
@@ -124,7 +125,9 @@ class AdminController extends Controller
         $rechargeTrend = $this->getTrendData(RechargeRequest::class, 'created_at', ['status' => 'pending']);
         $revenueTrend = $this->getTrendData(RechargeRequest::class, 'created_at', ['status' => 'approved'], 'amount');
         $ratingTrend = $this->getTrendData(User::class, 'updated_at', [], 'rating');
-        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers','transactionHistory','ceramics','currentTimezone','classifications','terms','recaptchaEnabled','revenueByUser','currentTheme','contacts','userTrend','rechargeTrend','revenueTrend','ratingTrend','chatUsers'));
+        //cập nhật tin tức
+        $news = News::all();
+        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers','transactionHistory','ceramics','currentTimezone','classifications','terms','recaptchaEnabled','revenueByUser','currentTheme','contacts','userTrend','rechargeTrend','revenueTrend','ratingTrend','chatUsers','news'));
     }
     public function sendChatMessage(Request $request)
     {

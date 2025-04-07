@@ -505,7 +505,26 @@
         </div>
 
         <!-- News Section -->
+         <!-- News Section -->
         <section class="news-section">
+            <h1>Tin tức về gốm sứ</h1>
+            <div class="news-list">
+                @if ($news->isEmpty())
+                    <p>Chưa có tin tức nào.</p>
+                @else
+                    @foreach ($news as $article)
+                        <article class="news-item">
+                            <div class="news-content">
+                                <h2>{{ $article->title }}</h2>
+                                <p>{{ $article->excerpt ?? Str::limit($article->content, 100) }}</p>
+                                <a href="{{ route('news.detail', $article->id) }}">Đọc thêm</a>
+                            </div>
+                        </article>
+                    @endforeach
+                @endif
+            </div>
+        </section>
+        <!-- <section class="news-section">
             <h1>Tin tức về gốm sứ</h1>
             <div class="news-list">
                 <article class="news-item">
@@ -530,7 +549,7 @@
                     </div>
                 </article>
             </div>
-        </section>
+        </section> -->
 
         <!-- About Section -->
         <section class="about-section">

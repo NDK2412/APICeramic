@@ -14,9 +14,14 @@ use App\Http\Controllers\ContactController;
 // use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\CustomForgotPasswordController;
 
-
+use App\Models\News;
+use App\Models\Setting;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\SocialiteController;
+
+Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
 
 Route::post('/predict-image', [PredictionController::class, 'predict'])->name('predict.image');
 Route::get('/gallery', [CeramicController::class, 'gallery'])->name('gallery');
@@ -200,7 +205,27 @@ Route::get('/admin', [ContactController::class, 'admin'])->name('admin.index');
 Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');
 Route::get('/admin/contact/{id}', [ContactController::class, 'show'])->name('admin.contact.show');
 Route::post('/admin/contact/{id}/mark-read', [ContactController::class, 'markAsRead'])->name('admin.contact.markRead');
+//Phần tin tức
+Route::middleware('auth')->group(function () {
+    Route::get('/news', [NewsController::class, 'index'])->name('news.index');
+    Route::post('/news', [NewsController::class, 'store'])->name('news.store');
+    Route::put('/news/{id}', [NewsController::class, 'update'])->name('news.update');
+    Route::delete('/news/{id}', [NewsController::class, 'destroy'])->name('news.delete');
+});
 
+// Route cho trang chính
+
+
+Route::get('/', function () {
+    $news = News::all();
+    $currentTheme = Setting::where('key', 'theme')->first()->value ?? 'index'; // Mặc định là 'index'
+    return view($currentTheme, compact('news'));
+})->name('home');
+
+Route::get('/news/{id}', function ($id) {
+    $article = App\Models\News::findOrFail($id);
+    return view('newsdetail', compact('article'));
+})->name('news.detail');
 // Route::post('/admin/settings/captcha', [AdminController::class, 'updateCaptchaSetting'])
 //      ->name('admin.settings.captcha')
 //      ->middleware('auth'); // Đảm bảo phải đăng nhập

@@ -12,3 +12,5 @@ MODEL_PATH = "D:\\PY_Code\\Ceramic_Detection\\xception_66class_model.h5"
 
 # Đảm bảo thư mục tồn tại
 os.makedirs(TEXT_FOLDER, exist_ok=True)
+# config.py
+API_KEY = "AuwTLoaTGAWYm2HmDzV0i9ahfemzky"  # Thay bằng khóa mạnh

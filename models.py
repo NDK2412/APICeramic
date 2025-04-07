@@ -7,15 +7,15 @@ logger = logging.getLogger(__name__)
 
 # Danh sách class được định nghĩa sẵn (tiếng Việt có dấu, không có dấu _)
 CLASS_NAMES = [
-    'Bát Tràng Men chảy', 'Bát Tràng Men hoa biển', 'Bát Tràng Men lam',
-    'Bát Tràng Men nâu', 'Bát Tràng Men nâu đa luồng', 'Bát Tràng Men ngọc',
+    'Bát Tràng Men chảy', 'Bát Tràng Men hoa biến', 'Bát Tràng Men lam',
+    'Bát Tràng Men nâu', 'Bát Tràng Men nâu da lươn', 'Bát Tràng Men ngọc',
     'Bát Tràng Men rạn', 'Bát Tràng Men trắng', 'Bát Tràng Men vàng',
     'Bàu Trúc Men nâu đất', 'Cây Mai Men Nâu', 'Cây Mai Men Xanh Lam',
     'Cây Mai Men xanh rêu', 'Chu Đậu Men nâu', 'Chu Đậu Men ngọc',
     'Chu Đậu Men trắng chấm', 'Đồng Triều Men đỏ', 'Đồng Triều Men nâu',
     'Đồng Triều Men trắng vẽ lam', 'Đồng Triều Men vàng đất',
-    'Gốm Biên Hòa Men Nâu', 'Gốm Biên Hòa Men Xanh Đồng Trổ Bóng',
-    'Gốm Biên Hòa Men Xanh Lục', 'Gốm Biên Hòa Men nâu đa luồng',
+    'Gốm Biên Hòa Men Nâu', 'Gốm Biên Hòa Men Xanh Đồng Trổ Bông',
+    'Gốm Biên Hòa Men Xanh Lục', 'Gốm Biên Hòa Men nâu Da lươn',
     'Gốm Biên Hòa Men xanh lam', 'Gốm Bình Dương Men Đen Xanh Chảy',
     'Gốm Bình Dương Men Nâu', 'Gốm Bình Dương Men Trắng',
     'Gốm Bình Dương Men Xanh', 'Gốm Cây Men lam nhạt', 'Gốm Cây Men trắng',

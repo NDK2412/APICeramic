@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Authenticatable
 {
     protected $fillable = [
-        'name', 'email', 'password', 'tokens', 'role', 'rating', 'tokens','tokens_used','feedback'
+        'name', 'email', 'password', 'role', 'rating', 'tokens','tokens_used','feedback'
     ];
 
     protected $hidden = [

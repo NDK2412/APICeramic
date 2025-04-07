@@ -535,7 +535,7 @@
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            width: 500px;
+            width: 1000px;
             max-width: 90%;
             max-height: 80vh;
             overflow-y: auto;
@@ -572,6 +572,11 @@
         .popup button:hover {
             transform: scale(1.02);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        input:his {
+            height: 40px;
+            margin-bottom: 15px;
+            
         }
 
         /* Animations */
@@ -624,6 +629,20 @@
                 font-size: 0.9rem;
             }
         }
+        .upload-area.dragover {
+            border-color: var(--secondary-color);
+            background: rgba(118, 218, 236, 0.1);
+        }
+        input#historySearch {
+            width: 100%; /* Chiều rộng của input */
+            padding: 10px; /* Khoảng cách nội dung so với biên */
+            border: 2px solid #ccc; /* Viền màu xám nhạt */
+            border-radius: 5px; /* Góc bo tròn cho input */
+            font-size: 16px; /* Kích thước chữ */
+            outline: none; /* Loại bỏ viền mặc định khi input được chọn */
+            margin-bottom: 15px;
+           }
+
     </style>
 </head>
 <body>
@@ -676,7 +695,7 @@
             <div class="section ceramic-ai" id="ceramic-ai">
                 <h3>CeramicAI</h3>
                 <h4>Upload Image</h4>
-                <div class="upload-area">
+                <div class="upload-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
                     <input type="file" id="imageInput" accept="image/*">
                     <button onclick="predictImage()" id="predictBtn">
                         <span id="predictSpinner" class="loading" style="display: none;"></span>
@@ -704,6 +723,7 @@
 
             <div class="section history-section" id="history" style="display: none;">
                 <h3>Lịch Sử Nhận Diện</h3>
+                <input type="text" id="historySearch" placeholder="Tìm kiếm theo kết quả..." onkeyup="filterHistory()">
                 @if ($classifications->isEmpty())
                     <p>Không có lịch sử nhận diện nào.</p>
                 @else
@@ -735,9 +755,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="pagination">
-                        {{ $classifications->links() }}
-                    </div>
+                    
                 @endif
             </div>
 
@@ -792,96 +810,59 @@
         });
 
         async function predictImage() {
-            const fileInput = document.getElementById('imageInput');
-            const resultElement = document.getElementById('result');
-            const chatbotElement = document.getElementById('chatbotResponse');
-            const predictBtn = document.getElementById('predictBtn');
-            const spinner = document.getElementById('predictSpinner');
-            const tokenCountElement = document.getElementById('tokenCount');
+        const fileInput = document.getElementById('imageInput');
+        const resultElement = document.getElementById('result');
+        const chatbotElement = document.getElementById('chatbotResponse');
+        const predictBtn = document.getElementById('predictBtn');
+        const spinner = document.getElementById('predictSpinner');
+        const tokenCountElement = document.getElementById('tokenCount');
 
-            let formData = new FormData();
-            if (!fileInput.files[0]) {
-                resultElement.textContent = 'Vui lòng upload ảnh trước!';
-                return;
-            }
-            formData.append('file', fileInput.files[0]);
-
-            if (tokens <= 0) {
-                resultElement.textContent = 'Bạn đã hết lượt dự đoán! Vui lòng nạp thêm.';
-                chatbotElement.innerHTML = '<p>Bạn đã hết lượt dự đoán! Vui lòng nạp thêm.</p>';
-                return;
-            }
-
-            predictBtn.disabled = true;
-            spinner.style.display = 'inline-block';
-            resultElement.textContent = 'Đang phân tích mẫu gốm...';
-            chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
-
-            try {
-                const predictResponse = await fetch('http://localhost:60074/predict', {
-                    method: 'POST',
-                    body: formData
-                });
-                const predictData = await predictResponse.json();
-
-                if (predictData.error) {
-                    resultElement.textContent = `Lỗi: ${predictData.error}`;
-                    chatbotElement.innerHTML = '<p>Đã xảy ra lỗi trong quá trình dự đoán.</p>';
-                } else {
-                    const tokenResponse = await fetch('/use-token', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ userId: userId })
-                    });
-                    const tokenData = await tokenResponse.json();
-
-                    if (tokenData.success) {
-                        tokens = tokenData.tokens;
-                        tokenCountElement.textContent = tokens;
-                        resultElement.textContent = `Dự đoán: ${predictData.predicted_class}`;
-
-                        const llmResponse = predictData.llm_response;
-                        const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
-                        let formattedResponse = '';
-                        paragraphs.forEach(paragraph => {
-                            const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
-                            formattedResponse += `<p>${formattedParagraph}</p>`;
-                        });
-                        chatbotElement.innerHTML = formattedResponse;
-
-                        const classifyFormData = new FormData();
-                        classifyFormData.append('image', fileInput.files[0]);
-                        classifyFormData.append('result', predictData.predicted_class);
-                        classifyFormData.append('llm_response', predictData.llm_response);
-                        classifyFormData.append('_token', '{{ csrf_token() }}');
-
-                        const classifyResponse = await fetch('{{ route('classify') }}', {
-                            method: 'POST',
-                            body: classifyFormData
-                        });
-                        const classifyData = await classifyResponse.json();
-
-                        if (classifyData.error) {
-                            console.error('Lỗi khi lưu vào lịch sử:', classifyData.error);
-                        } else {
-                            console.log('Đã lưu vào lịch sử:', classifyData);
-                        }
-                    } else {
-                        resultElement.textContent = 'Hết lượt dự đoán!';
-                        chatbotElement.innerHTML = '<p>Hết lượt dự đoán! Vui lòng nạp thêm.</p>';
-                    }
-                }
-            } catch (error) {
-                resultElement.textContent = `Lỗi: ${error.message}`;
-                chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
-            } finally {
-                predictBtn.disabled = false;
-                spinner.style.display = 'none';
-            }
+        if (!fileInput.files[0]) {
+            resultElement.textContent = 'Vui lòng upload ảnh trước!';
+            return;
         }
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('_token', '{{ csrf_token() }}');
+
+        predictBtn.disabled = true;
+        spinner.style.display = 'inline-block';
+        resultElement.textContent = 'Đang phân tích mẫu gốm...';
+        chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
+
+        try {
+            const response = await fetch('{{ route('predict.image') }}', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                resultElement.textContent = `Lỗi: ${data.error}`;
+                chatbotElement.innerHTML = `<p>${data.error}</p>`;
+            } else {
+                tokenCountElement.textContent = data.tokens;
+                resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
+
+                const llmResponse = data.llm_response;
+                const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
+                let formattedResponse = '';
+                paragraphs.forEach(paragraph => {
+                    const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
+                    formattedResponse += `<p>${formattedParagraph}</p>`;
+                });
+                chatbotElement.innerHTML = formattedResponse;
+            }
+        } catch (error) {
+            resultElement.textContent = `Lỗi: ${error.message}`;
+            chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
+        } finally {
+            predictBtn.disabled = false;
+            spinner.style.display = 'none';
+        }
+    }
 
         const stars = document.querySelectorAll('.rating-form .rating-stars .fa-star');
         let selectedRating = 0;
@@ -1000,6 +981,36 @@
             document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
             document.getElementById('ceramic-ai').style.display = 'block';
         });
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.target.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                document.getElementById('imageInput').files = e.dataTransfer.files;
+                const preview = document.getElementById('previewImage');
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+            } else {
+                alert('Vui lòng kéo thả file ảnh!');
+            }
+        }
+        function filterHistory() {
+    const query = document.getElementById('historySearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#history table tbody tr');
+    rows.forEach(row => {
+        const result = row.cells[2].textContent.toLowerCase();
+        row.style.display = result.includes(query) ? '' : 'none';
+    });
+}
     </script>
 </body>
 </html>

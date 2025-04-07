@@ -63,7 +63,10 @@
         .sidebar li {
             margin-bottom: 15px;
         }
-
+        input#userSearch {
+            width: 300px;
+            height: 45px;
+        }
         .sidebar a {
             color: white;
             text-decoration: none;
@@ -118,16 +121,24 @@
             gap: 20px;
             margin-bottom: 30px;
         }
+        .stat-card canvas {
+            width: 100% !important;
+            height: 150px !important;
+
+        }
 
         .stat-card {
             flex: 1;
-            padding: 20px;
+            padding: 15px;
             background: var(--gradient);
             color: white;
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .stat-card:hover {
@@ -257,7 +268,9 @@
             border-radius: 10px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            width: 400px;
+            width: 1000px;
+            height: 700px;
+            overflow-y: auto;
             max-width: 90%;
         }
 
@@ -404,6 +417,118 @@
         .action-btn.save-btn i {
             font-size: 0.9rem;
         }
+/* Lich Sử nhán diện .popup */
+/* Cải tiến Popup Lịch Sử Nhận Diện */
+#classificationPopup {
+    width: 1000px;
+    max-width: 95%;
+    height: 700px;
+    overflow-y: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+#classificationPopup h3 {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-align: center;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+#classificationPopup table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#classificationPopup th, #classificationPopup td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--accent-color);
+}
+
+#classificationPopup th {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 500;
+}
+
+#classificationPopup tr:hover {
+    background: var(--light-color);
+}
+
+#classificationPopup td img {
+    max-width: 80px;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* Giới hạn chiều cao và ẩn nội dung dài trong cột Thông Tin */
+#classificationPopup .info-cell {
+    max-height: 3em; /* Giới hạn chiều cao (khoảng 3 dòng) */
+    overflow: hidden;
+    position: relative;
+    line-height: 1.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Giới hạn số dòng hiển thị */
+    -webkit-box-orient: vertical;
+}
+
+/* Hiển thị toàn bộ nội dung khi có class expanded */
+#classificationPopup .info-cell.expanded {
+    max-height: none;
+    -webkit-line-clamp: unset;
+}
+
+/* Định dạng nút Xem thêm */
+#classificationPopup .toggle-info {
+    color: var(--secondary-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    display: inline-block;
+    text-decoration: underline;
+}
+
+#classificationPopup .toggle-info:hover {
+    color: var(--dark-color);
+}
+
+#classificationPopup button {
+    background: var(--gradient);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 0.3s;
+}
+
+#classificationPopup button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Dấu chấm xanh */
+.notification-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--success-color); /* Màu xanh lá cây */
+    border-radius: 50%;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
     </style>
 </head>
 <body>
@@ -412,7 +537,22 @@
         <ul>
             <li><a href="#" data-tab="overview" class="active"><i class="fas fa-tachometer-alt"></i> Tổng quan</a></li>
             <li><a href="#" data-tab="users"><i class="fas fa-users"></i> Quản lý người dùng</a></li>
-            <li><a href="#" data-tab="recharge"><i class="fas fa-money-bill"></i> Yêu cầu nạp tiền</a></li>
+            <li>
+                <a href="#" data-tab="contacts">
+                    <i class="fas fa-envelope"></i> Liên hệ
+                    @if ($contacts->where('is_read', false)->isNotEmpty())
+                        <span class="notification-dot"></span>
+                    @endif
+                </a>
+            </li>
+            <li>
+                <a href="#" data-tab="recharge">
+                    <i class="fas fa-money-bill"></i> Yêu cầu nạp tiền
+                    @if ($rechargeRequests->isNotEmpty())
+                        <span class="notification-dot"></span>
+                    @endif
+                </a>
+            </li>
             <li><a href="#" data-tab="revenue"><i class="fas fa-chart-line"></i> Doanh thu</a></li>
             <li><a href="#" data-tab="ceramics"><i class="fa-solid fa-layer-group"></i> Quản lý thư viện đồ gốm</a></li>
             <li><a href="#" data-tab="classifications"><i class="fas fa-history"></i> Lịch Sử Nhận Diện</a></li>
@@ -426,6 +566,7 @@
     </div>
 
     <div class="content">
+
         <!-- Tab Tổng quan -->
         <div class="container tab-content" id="overview">
             <h1>Tổng Quan</h1>
@@ -433,21 +574,25 @@
                 <div class="stat-card">
                     <h3>Tổng người dùng</h3>
                     <p>{{ $users->count() }}</p>
+                    <canvas id="userTrendChart" style="max-height: 150px;"></canvas>
                 </div>
                 <div class="stat-card">
                     <h3>Yêu cầu chờ duyệt</h3>
                     <p>{{ $rechargeRequests->count() }}</p>
+                    <canvas id="rechargeTrendChart" style="max-height: 150px;"></canvas>
                 </div>
                 <div class="stat-card">
                     <h3>Tổng doanh thu</h3>
                     <p>{{ number_format($totalRevenue) }} VNĐ</p>
+                    <canvas id="revenueTrendChart" style="max-height: 150px;"></canvas>
                 </div>
                 <div class="stat-card">
                     <h3>Đánh giá trung bình</h3>
                     <p>{{ number_format($averageRating, 1) }}/5</p>
+                    <canvas id="ratingTrendChart" style="max-height: 150px;"></canvas>
                 </div>
             </div>
-
+            
             <!-- Bảng lịch sử giao dịch -->
             <div class="transaction-history">
                 <h3>Lịch Sử Giao Dịch</h3>
@@ -496,6 +641,7 @@
                         </tbody>
                     </table>
                 @endif
+                
             </div>
              <!-- Bảng Doanh Thu Theo Người Dùng -->
  <div class="revenue-by-user">
@@ -522,7 +668,53 @@
         @endif
     </div>
 </div>
-        
+<!-- Tab Liên hệ -->
+<div class="container tab-content" id="contacts" style="display: none;">
+    <h2>Danh sách liên hệ từ người dùng</h2>
+    @if (session('success'))
+        <div class="success-message">{{ session('success') }}</div>
+    @endif
+    @if (!isset($contacts) || $contacts->isEmpty())
+        <p>Chưa có liên hệ nào từ người dùng.</p>
+    @else
+        <table>
+            <thead>
+                <tr>
+                    <th>Họ tên</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($contacts as $contact)
+                <tr style="background-color: {{ $contact->is_read ? 'var(--card-bg)' : 'rgba(42, 92, 139, 0.1)' }}; 
+                                color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
+                                border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
+                        <td>{{ $contact->name }}</td>
+                        <td>
+                            <span style="display: inline-block; 
+                                        padding: 0.25rem 0.5rem;
+                                        border-radius: 12px;
+                                        background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
+                                        color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
+                                        font-size: 0.85rem;
+                                        font-weight: 500;">
+                                {{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}
+                            </span>
+                        </td>
+                        <td>
+                        <button onclick="showContactPopup('{{ $contact->id }}', '{{ $contact->name }}', '{{ $contact->phone }}', '{{ $contact->email }}', '{{ $contact->message }}', '{{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}', {{ $contact->is_read ? 'true' : 'false' }})" 
+                                class="action-btn view-btn" 
+                                style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: var(--primary); color: var(--text-light); border-radius: 6px; border: none; cursor: pointer; transition: var(--transition);">
+                            <i class="fas fa-eye"></i> Xem
+                        </button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+</div>          
 
 <!-- Tab Quản lý người dùng -->
 <div class="container tab-content" id="users" style="display: none;">
@@ -541,6 +733,11 @@
             </ul>
         </div>
     @endif
+    <div class="filter-search" style="margin-bottom: 20px;">
+        <input type="text" id="userSearch" placeholder="  Tìm kiếm theo tên hoặc email..." onkeyup="filterUsers()">
+        <a id="roleFilter" onchange="filterUsers()">
+        </a>
+    </div>
     <table>
         <thead>
             <tr>
@@ -795,6 +992,27 @@
                 </div>
                 <button type="submit" class="action-btn save-btn"><i class="fas fa-save"></i> Lưu Múi Giờ</button>
             </form>
+            <!-- Thêm vào dưới phần CAPTCHA hoặc bất kỳ đâu trong tab settings -->
+            <h3>Chọn Giao diện Trang Chủ</h3>
+            @if (session('theme_success'))
+                <div class="success-message">
+                    {{ session('theme_success') }}
+                </div>
+            @endif
+            <form method="POST" action="{{ route('admin.settings.theme') }}">
+                @csrf
+                <div>
+                    <label>
+                        <input type="radio" name="theme" value="index" {{ $currentTheme === 'index' ? 'checked' : '' }}>
+                        Giao diện 1 (Mặc định)
+                    </label>
+                    <label>
+                        <input type="radio" name="theme" value="index2" {{ $currentTheme === 'index2' ? 'checked' : '' }}>
+                        Giao diện 2 (Hiện đại)
+                    </label>
+                </div>
+                <button type="submit" class="action-btn save-btn"><i class="fas fa-save"></i> Lưu Giao Diện</button>
+            </form>
             <!-- Bật/Tắt CAPTCHA -->
     <h3>Bật/Tắt CAPTCHA cho Trang Đăng Nhập</h3>
     @if (session('captcha_success'))
@@ -813,8 +1031,6 @@
         <button type="submit" class="action-btn save-btn"><i class="fas fa-save"></i> Lưu Cài Đặt</button>
     </form>
         </div>
-
-        <!-- Tab lịch sử nhận diện -->
          <!-- Tab Lịch Sử Nhận Diện -->
 <div class="container tab-content" id="classifications" style="display: none;">
     <h1>Lịch Sử Nhận Diện</h1>
@@ -865,6 +1081,18 @@
     </form>
 </div>
     </div>
+<!-- Popup Chi tiết Liên hệ -->
+<div class="popup-overlay" id="contactOverlay" onclick="hideContactPopup()"></div>
+<div class="popup" id="contactPopup">
+    <h3>Chi tiết liên hệ từ <span id="contactName"></span></h3>
+    <div id="contactDetails">
+        <p><strong>Số điện thoại:</strong> <span id="contactPhone"></span></p>
+        <p><strong>Email:</strong> <span id="contactEmail"></span></p>
+        <p><strong>Nội dung:</strong> <span id="contactMessage"></span></p>
+        <p><strong>Trạng thái:</strong> <span id="contactStatus"></span></p>
+    </div>
+    <button onclick="hideContactPopup()">Đóng</button>
+</div>
 <!-- Popup Lịch Sử Nhận Diện -->
 <div class="popup-overlay" id="classificationOverlay" onclick="hideClassificationHistory()"></div>
 <div class="popup" id="classificationPopup">
@@ -876,6 +1104,7 @@
                     <th>ID</th>
                     <th>Ảnh</th>
                     <th>Kết Quả</th>
+                    <th>Thông Tin</th>
                     <th>Thời Gian</th>
                 </tr>
             </thead>
@@ -885,6 +1114,14 @@
         </table>
     </div>
     <button onclick="hideClassificationHistory()">Đóng</button>
+</div>
+
+<!-- Popup "Xem thêm" cho Thông Tin -->
+<div class="popup-overlay" id="llmResponseOverlay" onclick="hideLlmResponsePopup()"></div>
+<div class="popup" id="llmResponsePopup">
+    <h3>Thông Tin Chi Tiết</h3>
+    <div id="llmResponseContent" class="llm-response-content"></div>
+    <button onclick="hideLlmResponsePopup()">Đóng</button>
 </div>
     <!-- Popup thông tin đánh giá -->
     <div class="popup-overlay" onclick="hidePopup()"></div>
@@ -945,6 +1182,9 @@
                         }
                     }
                 }
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        document.getElementById(this.getAttribute('href').substring(1)).classList.add('active');
+   
             });
         });
 
@@ -1308,11 +1548,62 @@ document.querySelectorAll('#ceramics .edit-form').forEach(form => {
 
         // Gọi lần đầu khi trang tải
         document.addEventListener('DOMContentLoaded', function() {
-            const activeTab = document.querySelector('.sidebar a.active').dataset.tab;
-            if (activeTab === 'overview') {
-                document.getElementById('overview').style.display = 'block';
+    // Dữ liệu từ PHP
+    const userTrend = @json($userTrend);
+    const rechargeTrend = @json($rechargeTrend);
+    const revenueTrend = @json($revenueTrend);
+    const ratingTrend = @json($ratingTrend);
+
+    // Hàm tạo biểu đồ
+    function createChart(canvasId, labels, values, label, color, isCurrency = false) {
+        const ctx = document.getElementById(canvasId);
+         // Đặt màu fill là đen (nếu cần)
+        if (!ctx) return;
+
+        new Chart(ctx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: label,
+                    data: values,
+                    borderColor: color,
+                    backgroundColor: `${color}70`, // Màu nền mờ
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => isCurrency ? value.toLocaleString('vi-VN') + ' VNĐ' : value
+                        }
+                    },
+                    x: { ticks: { font: { size: 10 } } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: context => `${context.dataset.label}: ${isCurrency ? context.parsed.y.toLocaleString('vi-VN') + ' VNĐ' : context.parsed.y}`
+                        }
+                    }
+                }
             }
         });
+    }
+
+    // Vẽ các biểu đồ
+    createChart('userTrendChart', userTrend.labels, userTrend.values, 'Người dùng mới', '#42a5f5');
+    createChart('rechargeTrendChart', rechargeTrend.labels, rechargeTrend.values, 'Yêu cầu mới', '#ffca28');
+    createChart('revenueTrendChart', revenueTrend.labels, revenueTrend.values, 'Doanh thu', '#00c853', true);
+    createChart('ratingTrendChart', ratingTrend.labels, ratingTrend.values, 'Đánh giá', '#f44336');
+});
 
 
 
@@ -1342,15 +1633,22 @@ function showClassificationHistory(userId, userName) {
 
     // Nếu không có lịch sử
     if (userClassifications.length === 0) {
-        historyTable.innerHTML = '<tr><td colspan="4">Không có lịch sử nhận diện.</td></tr>';
+        historyTable.innerHTML = '<tr><td colspan="5">Không có lịch sử nhận diện.</td></tr>';
     } else {
         // Thêm các dòng lịch sử
         userClassifications.forEach(item => {
+            const infoText = item.llm_response || 'Không có thông tin';
+            const isLongInfo = infoText.length > 100; // Giới hạn độ dài để hiển thị "Xem thêm"
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${item.id}</td>
                 <td><img src="${item.image_path}" alt="Image"></td>
                 <td>${item.result}</td>
+                <td>
+                    <span class="info-cell" id="info-${item.id}">${infoText}</span>
+                    ${isLongInfo ? `<span class="toggle-info" onclick="toggleInfo('${item.id}')">Xem thêm</span>` : ''}
+                </td>
                 <td>${new Date(item.created_at).toLocaleString('vi-VN')}</td>
             `;
             historyTable.appendChild(row);
@@ -1360,6 +1658,28 @@ function showClassificationHistory(userId, userName) {
     // Hiển thị popup
     popup.style.display = 'block';
     overlay.style.display = 'block';
+}
+
+// Hàm toggleInfo để mở rộng/thu gọn nội dung
+function toggleInfo(id) {
+    const infoCell = document.getElementById(`info-${id}`);
+    const toggleLink = infoCell.nextElementSibling;
+
+    if (infoCell.classList.contains('expanded')) {
+        infoCell.classList.remove('expanded');
+        toggleLink.textContent = 'Xem thêm';
+    } else {
+        infoCell.classList.add('expanded');
+        toggleLink.textContent = 'Ẩn bớt';
+    }
+}
+
+// Ẩn popup lịch sử nhận diện
+function hideClassificationHistory() {
+    const popup = document.getElementById('classificationPopup');
+    const overlay = document.getElementById('classificationOverlay');
+    popup.style.display = 'none';
+    overlay.style.display = 'none';
 }
 
 // Ẩn popup lịch sử nhận diện
@@ -1460,6 +1780,117 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+// popup chi tiết liên hệ
+// Hiển thị Popup Chi tiết Liên hệ
+function showContactPopup(id, name, phone, email, message, status, isRead) {
+    const popup = document.getElementById('contactPopup');
+    const overlay = document.getElementById('contactOverlay');
+    document.getElementById('contactName').textContent = name;
+    document.getElementById('contactPhone').textContent = phone;
+    document.getElementById('contactEmail').textContent = email;
+    document.getElementById('contactMessage').textContent = message;
+    document.getElementById('contactStatus').textContent = status;
+
+    // Hiển thị popup
+    popup.style.display = 'block';
+    overlay.style.display = 'block';
+
+    // Nếu chưa đọc, gửi yêu cầu cập nhật trạng thái
+    if (!isRead) {
+        fetch(`/admin/contact/${id}/mark-read`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('contactStatus').textContent = 'Đã đọc';
+                // Cập nhật giao diện bảng nếu cần
+                const row = document.querySelector(`tr[style*="${id}"]`);
+                if (row) {
+                    row.style.backgroundColor = 'var(--card-bg)';
+                    row.style.color = 'var(--text)';
+                    row.style.borderLeft = '4px solid transparent';
+                    row.querySelector('span').style.backgroundColor = 'var(--border)';
+                    row.querySelector('span').style.color = 'var(--text)';
+                    row.querySelector('span').textContent = 'Đã đọc';
+                }
+                updateContactNotification();
+            }
+        })
+        .catch(error => console.error('Lỗi khi cập nhật trạng thái:', error));
+    }
+}
+
+// Ẩn Popup Chi tiết Liên hệ
+function hideContactPopup() {
+    const popup = document.getElementById('contactPopup');
+    const overlay = document.getElementById('contactOverlay');
+    popup.style.display = 'none';
+    overlay.style.display = 'none';
+}
+// Hàm cập nhật dấu chấm xanh cho tab Liên hệ
+function updateContactNotification() {
+    const contactTabLink = document.querySelector('.sidebar a[data-tab="contacts"]');
+    const notificationDot = contactTabLink.querySelector('.notification-dot');
+    const unreadCount = @json($contacts->where('is_read', false)->count()); // Số liên hệ chưa đọc ban đầu
+
+    // Xóa dấu chấm cũ nếu có
+    if (notificationDot) {
+        notificationDot.remove();
+    }
+
+    // Thêm dấu chấm nếu còn liên hệ chưa đọc
+    if (unreadCount > 0) {
+        const dot = document.createElement('span');
+        dot.className = 'notification-dot';
+        contactTabLink.appendChild(dot);
+    }
+}
+
+// Gọi hàm khi trang tải
+document.addEventListener('DOMContentLoaded', updateContactNotification);
+// Hàm cập nhật dấu chấm xanh
+function updateRechargeNotification() {
+    const rechargeTabLink = document.querySelector('.sidebar a[data-tab="recharge"]');
+    const notificationDot = rechargeTabLink.querySelector('.notification-dot');
+    const rechargeCount = @json($rechargeRequests->count()); // Số lượng ban đầu từ PHP
+
+    // Xóa dấu chấm cũ nếu có
+    if (notificationDot) {
+        notificationDot.remove();
+    }
+
+    // Thêm dấu chấm nếu còn yêu cầu
+    if (rechargeCount > 0) {
+        const dot = document.createElement('span');
+        dot.className = 'notification-dot';
+        rechargeTabLink.appendChild(dot);
+    }
+}
+
+// Gọi hàm khi trang tải
+document.addEventListener('DOMContentLoaded', updateRechargeNotification);
+function filterUsers() {
+    const search = document.getElementById('userSearch').value.toLowerCase();
+    const role = document.getElementById('roleFilter').value;
+    const rows = document.querySelectorAll('#users tbody tr');
+
+    rows.forEach(row => {
+        const name = row.cells[1].textContent.toLowerCase();
+        const email = row.cells[2].textContent.toLowerCase();
+        const roleValue = row.cells[3].textContent.toLowerCase();
+
+        const matchesSearch = name.includes(search) || email.includes(search);
+        const matchesRole = !role || roleValue === role;
+
+        row.style.display = matchesSearch && matchesRole ? '' : 'none';
+    });
+}
     </script>
 </body>
 </html>

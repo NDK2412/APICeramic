@@ -145,7 +145,51 @@
     font-weight: 500;
     border: 1px solid var(--success-color);
 }
+/* Liên Hệ */
+/* Popup Chi tiết Liên hệ */
+#contactPopup {
+    width: 600px;
+    max-width: 90%;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
 
+#contactPopup h3 {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-align: center;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+#contactPopup p {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+#contactPopup button {
+    background: var(--gradient);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 0.3s;
+}
+
+#contactPopup button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
 /* Responsive cho tab Cài Đặt */
 @media (max-width: 768px) {
     #settings {

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Message;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Recharge;
 use App\Models\RechargeRequest;
@@ -54,11 +55,12 @@ class AdminController extends Controller
     public function index()
     {
         $users = User::all();
+        // Lấy giao diện hiện tại từ database
+        $currentTheme = Setting::where('key', 'theme')->first()->value ?? 'index';
         $users = User::with('loginHistories')->get();//lưu lịch sử đăng nhập
         $rechargeRequests = RechargeRequest::where('status', 'pending')->get();
         $totalRevenue = RechargeHistory::sum('amount');
         $averageRating = User::avg('rating') ?? 0;
-
         $revenueData = RechargeHistory::select(
             DB::raw('DATE_FORMAT(approved_at, "%Y-%m") as month'),
             DB::raw('SUM(amount) as total')
@@ -115,8 +117,14 @@ class AdminController extends Controller
         
         $recaptchaEnabled = Setting::where('key', 'recaptcha_enabled')->first();
         $recaptchaEnabled = $recaptchaEnabled ? ($recaptchaEnabled->recaptcha_enabled == 1) : false;
-
-        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers','transactionHistory','ceramics','currentTimezone','classifications','terms','recaptchaEnabled','revenueByUser'));
+        //Liên hệ
+        $contacts = \App\Models\Contact::latest()->get();
+        //stats cho 4 tabtổng quan
+        $userTrend = $this->getTrendData(User::class, 'created_at');
+        $rechargeTrend = $this->getTrendData(RechargeRequest::class, 'created_at', ['status' => 'pending']);
+        $revenueTrend = $this->getTrendData(RechargeRequest::class, 'created_at', ['status' => 'approved'], 'amount');
+        $ratingTrend = $this->getTrendData(User::class, 'updated_at', [], 'rating');
+        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers','transactionHistory','ceramics','currentTimezone','classifications','terms','recaptchaEnabled','revenueByUser','currentTheme','contacts','userTrend','rechargeTrend','revenueTrend','ratingTrend','chatUsers'));
     }
     public function sendChatMessage(Request $request)
     {
@@ -388,5 +396,46 @@ public function exportTransactionHistory(Request $request)
     {
         $tokenUsages = $user->tokenUsages()->latest()->paginate(10);
         return view('admin.token-usage', compact('user', 'tokenUsages'));
+    }
+    //Chọn giao diện
+    public function updateTheme(Request $request)
+    {
+        $request->validate([
+            'theme' => 'required|in:index,index2',
+        ]);
+
+        // Cập nhật hoặc tạo mới setting trong database
+        Setting::updateOrCreate(
+            ['key' => 'theme'],
+            ['value' => $request->theme]
+        );
+
+        
+        return redirect()->back()->with('theme_success', 'Giao diện đã được cập nhật thành công!');
+    }
+    private function getTrendData($model, $dateColumn, $conditions = [], $valueColumn = null)
+    {
+        $query = $model::query();
+        foreach ($conditions as $key => $value) {
+            $query->where($key, $value);
+        }
+
+        $data = $query
+            ->selectRaw("DATE($dateColumn) as date, " . ($valueColumn ? "AVG($valueColumn)" : 'COUNT(*)') . " as value")
+            ->where($dateColumn, '>=', Carbon::now()->subDays(7))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('value', 'date')
+            ->toArray();
+
+        $labels = [];
+        $values = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i)->toDateString();
+            $labels[] = Carbon::parse($date)->format('d/m');
+            $values[] = $data[$date] ?? ($valueColumn ? null : 0);
+        }
+
+        return ['labels' => $labels, 'values' => $values];
     }
 }

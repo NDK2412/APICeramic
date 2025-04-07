@@ -4,35 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Ceramic Classification</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Thêm Font Awesome để sử dụng icon -->
+    <title>Ceramic Classification - Elegant Design</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="css/public.css">
     <style>
         :root {
-            --primary-color: #b3cde0; /* Xanh lam nhạt */
-            --secondary-color: #6497b1; /* Xanh lam trung */
-            --accent-color: #e6f0fa; /* Xanh lam rất nhạt */
-            --light-color: #f5faff; /* Nền nhạt */
-            --dark-color: #03396c; /* Xanh lam đậm */
-            --text-light: #ffffff; /* Trắng cho chữ */
+            --primary-color: #2ecc71; /* Xanh lá cây */
+            --secondary-color: #f1c40f; /* Vàng */
+            --background-color: #f9f9f9; /* Xám nhạt */
+            --text-dark: #333333; /* Đen nhạt */
+            --text-light: #ffffff; /* Trắng */
+            --shadow-color: rgba(0, 0, 0, 0.1);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Montserrat', sans-serif;
         }
 
         body {
-            background-color: var(--light-color);
-            color: #333;
+            background-color: var(--background-color);
+            color: var(--text-dark);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
         }
 
         .container {
@@ -43,306 +40,244 @@
             flex: 1;
         }
 
+        /* Header */
         header {
             background-color: var(--primary-color);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
             position: sticky;
             top: 0;
             z-index: 1000;
-            width: 100%;
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
         }
 
         .logo {
+            color: var(--text-light);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            color: var(--dark-color);
-            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-            font-weight: 600;
-            text-decoration: none;
-            flex-shrink: 0;
+            gap: 0.5rem;
         }
 
-        .logo img {
-            height: clamp(50px, 5vw, 50px);
-            margin-right: 10px;
+        .logo i {
+            font-size: 2rem;
         }
 
         .nav-container {
             display: flex;
             align-items: center;
+            gap: 1.5rem;
         }
 
         .nav-menu {
             list-style: none;
             display: flex;
-            gap: clamp(1rem, 2vw, 1.5rem);
+            gap: 1.2rem;
         }
 
         .nav-menu li a {
-            color: var(--dark-color);
+            color: var(--text-light);
             text-decoration: none;
-            font-weight: 500;
-            font-size: clamp(0.9rem, 1.5vw, 1rem);
-            transition: color 0.3s ease;
+            font-size: 1rem;
+            font-weight: 400;
+            /* padding: 0.5rem 1rem; */
+            transition: background 0.3s ease;
         }
 
         .nav-menu li a:hover {
-            color: var(--secondary-color);
-        }
-
-        .login-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            background-color: var(--secondary-color);
+            color: var(--text-dark);
+            border-radius: 5px;
         }
 
         .login-section button {
-            padding: clamp(0.5rem, 1vw, 0.6rem) clamp(1rem, 2vw, 1.2rem);
+            padding: 0.6rem 1.2rem;
             border: none;
-            border-radius: 20px;
-            font-weight: 500;
-            font-size: clamp(0.8rem, 1.2vw, 1rem);
+            border-radius: 5px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
         }
 
         #loginButton {
             background-color: var(--secondary-color);
-            color: var(--text-light);
-            margin-bottom: 10px;
-            animation: bounce 1s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% {
-    transform: translateY(0);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  }
-  50% {
-    transform: translateY(-12px);
-    box-shadow: 0 15px 20px rgba(0,0,0,0.2);
-  }
+            color: var(--text-dark);
         }
 
         #logoutButton {
-            background-color: var(--dark-color);
+            background-color: var(--text-dark);
             color: var(--text-light);
         }
 
         .login-section button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            transform: scale(1.05);
         }
 
-        /* Hamburger Menu */
         .hamburger {
             display: none;
-            font-size: 2rem;
+            font-size: 1.8rem;
             background: none;
             border: none;
-            color: var(--dark-color);
+            color: var(--text-light);
             cursor: pointer;
-            padding: 0.5rem;
         }
 
-        /* Banner Styles */
+        /* Banner */
         .banner {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            overflow: hidden;
+            background-color: var(--primary-color);
+            padding: 3rem;
+            text-align: center;
+            color: var(--text-light);
             border-radius: 10px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 1rem;
         }
 
-        .banner-slides {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.5s ease-in-out;
+        .banner h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
         }
 
-        .banner-slide {
-            min-width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .banner p {
+            font-size: 1.2rem;
+            font-weight: 300;
         }
 
         /* News Section */
         .news-section {
-            padding: 2rem 0;
+            padding: 3rem 0;
         }
 
         .news-section h1 {
-            font-size: 2.5rem;
-            color: var(--dark-color);
+            font-size: 2rem;
+            color: var(--primary-color);
             text-align: center;
             margin-bottom: 2rem;
         }
 
         .news-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
 
         .news-item {
-            background-color: white;
+            background-color: var(--text-light);
+            padding: 1.5rem;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease;
+            box-shadow: 0 2px 6px var(--shadow-color);
+            transition: box-shadow 0.3s ease;
         }
 
         .news-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .news-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .news-content {
-            padding: 1.5rem;
+            box-shadow: 0 4px 12px var(--shadow-color);
         }
 
         .news-content h2 {
-            font-size: 1.5rem;
-            color: var(--dark-color);
+            font-size: 1.3rem;
+            color: var(--primary-color);
             margin-bottom: 0.5rem;
         }
 
         .news-content p {
-            font-size: 1rem;
-            color: #666;
-            line-height: 1.6;
+            font-size: 0.95rem;
+            color: var(--text-dark);
             margin-bottom: 1rem;
         }
 
         .news-content a {
             color: var(--secondary-color);
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .news-content a:hover {
-            color: var(--dark-color);
+            font-weight: 600;
         }
 
         /* About Section */
         .about-section {
-            background-color: white;
+            background-color: var(--text-light);
             padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px var(--shadow-color);
             margin-bottom: 2rem;
+        }
+
+        .about-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
             text-align: center;
-            animation: fadeIn 1s ease-out;
+            margin-bottom: 1.5rem;
         }
 
         .feature-point {
-            margin: 2rem 0;
-            text-align: left;
+            margin: 1rem 0;
             padding: 1rem;
-            background-color: var(--accent-color);
-            border-radius: 8px;
+            border-left: 4px solid var(--secondary-color);
         }
 
         .feature-point h3 {
-            color: var(--dark-color);
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .feature-point h3 i {
-            color: var(--secondary-color);
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
         }
 
         .feature-point p {
-            color: #555;
-            line-height: 1.7;
+            font-size: 0.95rem;
+            color: var(--text-dark);
         }
 
         .benefits-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 1.5rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
         }
 
         .benefit-card {
-            background-color: white;
-            padding: 1.5rem;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 1rem;
             border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-        }
-
-        .benefit-card:hover {
-            transform: translateY(-5px);
+            text-align: center;
         }
 
         .benefit-card i {
-            font-size: 2rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
         }
 
         .benefit-card h4 {
-            color: var(--dark-color);
-            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
         }
 
         .applications-list {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
-            margin: 1.5rem 0;
+            gap: 0.5rem;
         }
 
         .application-tag {
-            background-color: var(--primary-color);
-            color: var(--dark-color);
-            padding: 0.5rem 1rem;
+            background-color: var(--secondary-color);
+            color: var(--text-dark);
+            padding: 0.4rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
-            font-weight: 500;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
+        /* Footer */
         footer {
+            background-color: var(--text-dark);
+            color: var(--text-light);
             text-align: center;
-            padding: 1.5rem;
-            background-color: var(--primary-color);
-            color: var(--dark-color);
+            padding: 1rem;
             margin-top: auto;
-            width: 100%;
-            font-size: clamp(0.8rem, 1.5vw, 1rem);
         }
 
-        /* Modal Styles */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -357,66 +292,59 @@
         }
 
         .modal-content {
-            background-color: white;
+            background-color: var(--text-light);
             padding: 2rem;
             border-radius: 10px;
             text-align: center;
             max-width: 400px;
             width: 90%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            box-shadow: 0 4px 12px var(--shadow-color);
         }
 
         .modal-content p {
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-            color: var(--dark-color);
+            margin-bottom: 1rem;
+            color: var(--text-dark);
         }
 
         .modal-content button {
-            padding: 0.6rem 1.5rem;
             background-color: var(--primary-color);
-            color: var(--dark-color);
+            color: var(--text-light);
+            padding: 0.6rem 1.2rem;
             border: none;
-            border-radius: 20px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background 0.3s ease;
         }
 
         .modal-content button:hover {
             background-color: var(--secondary-color);
-            color: var(--text-light);
+            color: var(--text-dark);
         }
 
-        /* Contact Sidebar Styles */
+        /* Contact Sidebar */
         .contact-sidebar {
             position: fixed;
             top: 0;
-            right: -450px;
+            left: -450px;
             width: 450px;
             height: 100%;
-            background-color: var(--primary-color);
-            color: var(--dark-color);
+            background-color: var(--text-dark);
+            color: var(--text-light);
             padding: 2rem;
             z-index: 1500;
-            transition: right 0.3s ease-in-out;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            transition: left 0.3s ease;
         }
 
         .contact-sidebar.active {
-            overflow: scroll;
-            right: 0;
+            left: 0;
+            white-space: pre-line;
+            overflow-y: auto;
+            text-overflow: ellipsis;
         }
 
         .contact-sidebar h3 {
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
-            text-align: center;
         }
 
         .contact-sidebar ul {
@@ -424,30 +352,28 @@
         }
 
         .contact-sidebar li {
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            margin-bottom: 1rem;
-            font-size: 1rem;
+            gap: 0.8rem;
+
         }
 
         .contact-sidebar i {
-            margin-right: 10px;
             font-size: 1.2rem;
-            width: 20px;
-            text-align: center;
         }
 
         .contact-sidebar a {
-            color: var(--dark-color);
+            color: var(--secondary-color);
             text-decoration: none;
-            transition: color 0.3s ease;
+            overflow: hidden;
         }
 
         .contact-sidebar a:hover {
-            color: var(--secondary-color);
+            color: var(--primary-color);
         }
 
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 768px) {
             .hamburger {
                 display: block;
@@ -455,203 +381,127 @@
 
             .nav-container {
                 display: none;
-                flex-direction: column;
-                width: 100%;
                 position: absolute;
                 top: 100%;
                 left: 0;
+                width: 100%;
                 background-color: var(--primary-color);
                 padding: 1rem;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             }
 
             .nav-container.active {
-                display: flex;
+                display: block;
             }
 
             .nav-menu {
                 flex-direction: column;
-                width: 100%;
-                gap: 1rem;
                 text-align: center;
             }
 
-            .nav-menu li {
-                width: 100%;
-            }
-
             .login-section {
-                width: 100%;
-                justify-content: center;
                 flex-direction: column;
-                gap: 0.8rem;
+                gap: 0.5rem;
             }
 
-            .login-section button {
-                width: 100%;
+            .banner h1 {
+                font-size: 2rem;
             }
 
-            .header-content {
-                justify-content: space-between;
-            }
-
-            .contact-sidebar {
-                width: 250px;
-            }
-
-            .about-section, .news-section {
-                padding: 1.5rem;
-            }
-
-            .about-section h2, .news-section h1 {
-                font-size: 1.5rem;
-            }
-
-            .about-section p, .news-content p {
+            .banner p {
                 font-size: 1rem;
-            }
-
-            .banner {
-                height: 250px;
-            }
-
-            .news-item img {
-                height: 150px;
-            }
-
-            .news-content h2 {
-                font-size: 1.3rem;
             }
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 1rem;
-            }
-
             .logo {
-                font-size: 1.2rem;
+                font-size: 1.5rem;
             }
 
-            .logo img {
-                width: 100%;
-                height: auto;
+            .logo i {
+                font-size: 1.5rem;
             }
 
-            .modal-content {
-                padding: 1.5rem;
+            .banner h1 {
+                font-size: 1.5rem;
             }
 
-            .modal-content p {
-                font-size: 1rem;
-            }
-
-            .contact-sidebar {
-                width: 200px;
-                padding: 1.5rem;
-            }
-
-            .contact-sidebar h3 {
-                font-size: 1.2rem;
-            }
-
-            .contact-sidebar li {
+            .banner p {
                 font-size: 0.9rem;
-            }
-
-            .banner {
-                height: 200px;
-            }
-
-            .news-item img {
-                height: 120px;
-            }
-
-            .news-content h2 {
-                font-size: 1.2rem;
-            }
-
-            .news-content p {
-                font-size: 0.85rem;
             }
         }
         /* Phần Form Liên hệ */
         .contact-form {
-            margin-top: 1.5rem;
-        }
+    margin-top: 1.5rem;
+}
 
-        .contact-form h4 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: var(--secondary-color);
-        }
+.contact-form h4 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+}
 
-        .contact-form input,
-        .contact-form textarea {
-            width: 100%;
-            padding: 0.6rem;
-            margin-bottom: 0.8rem;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--text-light);
-            color: var(--text-dark);
-            font-size: 0.9rem;
-        }
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 0.6rem;
+    margin-bottom: 0.8rem;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--text-light);
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
 
-        .contact-form textarea {
-            height: 100px;
-            resize: none;
-        }
+.contact-form textarea {
+    height: 100px;
+    resize: none;
+}
 
-        .contact-form button {
-            background-color:rgb(5, 53, 66);
-            color: var(--text-light);
-            padding: 0.6rem 1.2rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            width: 100%;
-        }
+.contact-form button {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+}
 
-        .contact-form button:hover {
-            background-color: var(--secondary-color);
-            color: var(--text-dark);
-        }
+.contact-form button:hover {
+    background-color: var(--secondary-color);
+    color: var(--text-dark);
+}
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-        <div class="header-content">
-            <a href="#" class="logo">
-                <img src="{{ asset('storage/ceramics/logo2.webp') }}" alt="Logo">
-                Ceramic Classification
-            </a>
-            <button class="hamburger" aria-label="Toggle menu">☰</button>
-            <div class="nav-container">
-                <ul class="nav-menu">
-                    <li><a href="#home">Trang chủ</a></li>
-                    <li><a href="gallery">Thư viện đồ gốm</a></li>
-                    <li><a href="#" id="classificationLink">Nhận diện</a></li>
-                    <li><a href="#market">Mua bán</a></li>
-                    <li><a href="#" id="contactLink">Liên hệ</a></li>
-                </ul>
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <i class="fas fa-leaf"></i> Ceramic Classification
+                </a>
+                <button class="hamburger" aria-label="Toggle menu">☰</button>
+                <div class="nav-container">
+                    <ul class="nav-menu">
+                        <li><a href="#home">Trang chủ</a></li>
+                        <li><a href="gallery">Thư viện đồ gốm</a></li>
+                        <li><a href="#" id="classificationLink">Nhận diện</a></li>
+                        <li><a href="#market">Mua bán</a></li>
+                        <li><a href="#" id="contactLink">Liên hệ</a></li>
+                    </ul>
+                    <div class="login-section">
+                        <button id="loginButton" onclick="redirectToLogin()">Try It Out <i class="fa-solid fa-arrow-up-from-bracket"></i></button>
+                        <button id="logoutButton" onclick="logout()" style="display:none;">Đăng xuất</button>
+                    </div>
+                </div>
             </div>
-        </div>
         </header>
-        <div class="login-section">
-            <button id="loginButton" onclick="redirectToLogin()">Try It Out <i class="fa-solid fa-arrow-up-from-bracket"></i></button>
-            <button id="logoutButton" onclick="logout()" style="display:none;">Đăng xuất</button>
-        </div>
 
         <!-- Banner Section -->
         <div class="banner">
-            <div class="banner-slides" id="bannerSlides">
-                <img src="https://www.metizsoft.com/wp-content/uploads/2025/02/Laravel-12-Latest-Features-and-Updates.webp" alt="Banner 1" class="banner-slide">
-                <img src="https://s3-ap-southeast-1.amazonaws.com/vmixvn/wp-media-folder-vmix-viet-nam/wp-content/uploads/2024/08/ai_trong_thi_t_k_logo.jpg" alt="Banner 2" class="banner-slide">
-                <img src="https://thietkelogo.edu.vn/uploads/.thumbs/images/tuyen-dung/1-php-developer-1417084819.jpg" alt="Banner 3" class="banner-slide">
-            </div>
+            <h1>Khám phá Ceramic AI</h1>
+            <p>Hệ thống AI tiên tiến giúp nhận diện và phân loại gốm sứ một cách nhanh chóng</p>
         </div>
 
         <!-- News Section -->
@@ -659,7 +509,6 @@
             <h1>Tin tức về gốm sứ</h1>
             <div class="news-list">
                 <article class="news-item">
-                    <img src="https://file3.qdnd.vn/data/images/0/2024/10/08/upload_2049/gom1.jpg" alt="News 1">
                     <div class="news-content">
                         <h2>Triển lãm gốm sứ 2023</h2>
                         <p>Triển lãm gốm sứ quốc tế diễn ra tại Hà Nội, thu hút hàng trăm nghệ nhân và nhà sưu tập...</p>
@@ -667,7 +516,6 @@
                     </div>
                 </article>
                 <article class="news-item">
-                    <img src="https://www.gomnghethuat.com/wp-content/uploads/5-Buoc-Lam-Do-Gom-Quy-Trinh-Chi-Tiet-Lam-Do-Gom-Ban-Can-Biet.jpg" alt="News 2">
                     <div class="news-content">
                         <h2>Kỹ thuật làm gốm cổ truyền</h2>
                         <p>Tìm hiểu về các phương pháp làm gốm truyền thống đang được bảo tồn tại Việt Nam...</p>
@@ -675,7 +523,6 @@
                     </div>
                 </article>
                 <article class="news-item">
-                    <img src="https://chus.vn/images/Blog/G%E1%BB%91m%20trong%20%C4%91%E1%BB%9Di%20s%E1%BB%91ng/go%CC%82%CC%81m%20xu%CC%9Ba%207.jpg?1713503045290" alt="News 3">
                     <div class="news-content">
                         <h2>Xu hướng gốm sứ hiện đại</h2>
                         <p>Gốm sứ không chỉ là nghệ thuật mà còn là xu hướng trang trí nội thất mới...</p>
@@ -685,17 +532,13 @@
             </div>
         </section>
 
-        <!-- About Section - Updated Version -->
+        <!-- About Section -->
         <section class="about-section">
             <h2>Giới thiệu tổng quan về Ceramic AI</h2>
-            
             <div class="feature-point">
                 <h3><i class="fas fa-question-circle"></i> Ceramic AI là gì?</h3>
-                <p>Ceramic AI là hệ thống trí tuệ nhân tạo tiên tiến chuyên về nhận dạng và phân loại đồ gốm sứ. 
-                Công nghệ của chúng tôi kết hợp học máy và cơ sở dữ liệu phong phú để xác định chính xác niên đại, 
-                xuất xứ và loại hình gốm sứ chỉ từ hình ảnh đầu vào.</p>
+                <p>Ceramic AI là hệ thống trí tuệ nhân tạo tiên tiến chuyên về nhận dạng và phân loại đồ gốm sứ. Công nghệ của chúng tôi kết hợp học máy và cơ sở dữ liệu phong phú để xác định chính xác niên đại, xuất xứ và loại hình gốm sứ chỉ từ hình ảnh đầu vào.</p>
             </div>
-            
             <div class="feature-point">
                 <h3><i class="fas fa-star"></i> Lợi ích nổi bật</h3>
                 <div class="benefits-grid">
@@ -716,10 +559,8 @@
                     </div>
                 </div>
             </div>
-            
             <div class="feature-point">
                 <h3><i class="fas fa-cubes"></i> Ứng dụng đa dạng</h3>
-                <p>Ceramic AI phục vụ nhiều đối tượng và mục đích khác nhau:</p>
                 <div class="applications-list">
                     <span class="application-tag">Bảo tàng</span>
                     <span class="application-tag">Nhà nghiên cứu</span>
@@ -729,14 +570,13 @@
                     <span class="application-tag">Bảo tồn</span>
                 </div>
             </div>
-            
             <div class="feature-point">
                 <h3><i class="fas fa-book-open"></i> Hướng dẫn sử dụng</h3>
                 <p>1. Tải lên hình ảnh đồ gốm cần phân tích<br>
                 2. Hệ thống AI sẽ tự động nhận diện và phân loại<br>
                 3. Nhận kết quả chi tiết về niên đại, xuất xứ và đặc điểm<br>
                 4. Lưu trữ hoặc chia sẻ kết quả phân tích</p>
-                <h4 id="guideButton" href="#" onclick="redirectToGuide()">Xem hướng dẫn chi tiết</h4>
+                <h4 id="guideButton" onclick="redirectToGuide()">Xem hướng dẫn chi tiết</h4>
             </div>
         </section>
     </div>
@@ -789,27 +629,12 @@
         const contactLink = document.querySelector('#contactLink');
         const loginPrompt = document.querySelector('#loginPrompt');
         const contactSidebar = document.querySelector('#contactSidebar');
-        const bannerSlides = document.querySelector('#bannerSlides');
-        const slides = document.querySelectorAll('.banner-slide');
-        let currentSlide = 0;
+        let isAuthenticated = false;
 
         hamburger.addEventListener('click', () => {
             navContainer.classList.toggle('active');
         });
 
-        // Banner slideshow
-        function showNextSlide() {
-            currentSlide = (currentSlide + 1) % slides.length;
-            bannerSlides.style.transform = `translateX(-${currentSlide * 100}%)`;
-        }
-
-        // Tự động chạy banner mỗi 3 giây
-        setInterval(showNextSlide, 3000);
-
-        // Biến kiểm tra trạng thái đăng nhập
-        let isAuthenticated = false;
-
-        // Hàm kiểm tra trạng thái đăng nhập
         async function checkLoginStatus() {
             try {
                 let response = await fetch("http://localhost:8000/api/check-auth", {
@@ -831,17 +656,14 @@
             }
         }
 
-        // Chuyển hướng đến trang đăng nhập
         function redirectToLogin() {
             window.location.href = "http://localhost:8000/login";
         }
 
-        // Chuyển hướng đến trang hướng dẫn
         function redirectToGuide() {
             window.location.href = "http://localhost:8000/guide";
         }
 
-        // Đăng xuất người dùng
         async function logout() {
             try {
                 document.getElementById('logoutButton').innerHTML = '<span class="loading"></span> Processing...';
@@ -856,7 +678,6 @@
             }
         }
 
-        // Hiển thị modal khi nhấp "Nhận diện" nếu chưa đăng nhập
         classificationLink.addEventListener('click', (e) => {
             if (!isAuthenticated) {
                 e.preventDefault();
@@ -864,20 +685,17 @@
             }
         });
 
-        // Đóng modal khi nhấp ra ngoài
         loginPrompt.addEventListener('click', (e) => {
             if (e.target === loginPrompt) {
                 loginPrompt.style.display = 'none';
             }
         });
 
-        // Hiển thị sidebar khi nhấp "Liên hệ"
         contactLink.addEventListener('click', (e) => {
             e.preventDefault();
             contactSidebar.classList.add('active');
         });
 
-        // Đóng sidebar khi nhấp ra ngoài
         document.addEventListener('click', (e) => {
             if (contactSidebar.classList.contains('active') && 
                 !contactSidebar.contains(e.target) && 
@@ -916,7 +734,6 @@ contactForm.addEventListener('submit', async (e) => {
         alert('Không thể gửi liên hệ. Vui lòng thử lại sau.');
     }
 });
-        // Kiểm tra trạng thái đăng nhập khi trang tải
         window.onload = checkLoginStatus;
     </script>
 </body>

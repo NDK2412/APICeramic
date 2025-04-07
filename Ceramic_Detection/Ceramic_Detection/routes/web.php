@@ -5,12 +5,11 @@ use App\Http\Controllers\ImagePredictionController;
 
 use App\Http\Controllers\CeramicController;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RechargeController;
 use App\Models\TermsAndConditions;
 use Illuminate\Support\Facades\Auth;
-use App\Models\TokenUsage;
+use App\Http\Controllers\ContactController;
 // use App\Http\Controllers\ImageController;
 // use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\CustomForgotPasswordController;
@@ -19,8 +18,7 @@ use App\Http\Controllers\Auth\CustomForgotPasswordController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\Auth\LoginController;
 
-
-
+Route::post('/predict-image', [PredictionController::class, 'predict'])->name('predict.image');
 Route::get('/gallery', [CeramicController::class, 'gallery'])->name('gallery');
 Route::get('/ceramics/{id}', [CeramicController::class, 'show'])->name('ceramics.show');
 
@@ -189,6 +187,20 @@ Route::get('/classification/{id}/info', [CeramicController::class, 'getClassific
 Route::get('/dashboard', [CeramicController::class, 'dashboard'])->middleware('auth')->name('dashboard');
 //Kiểm tra mật khẩu capcha khi nạp tiền
 Route::post('/recharge/verify', [App\Http\Controllers\RechargeController::class, 'verify'])->middleware('auth')->name('recharge.verify');
+//Settings theme
+Route::post('/admin/settings/theme', [AdminController::class, 'updateTheme'])->name('admin.settings.theme');
+
+// Route trang chủ
+Route::get('/', function () {
+    $theme = \App\Models\Setting::where('key', 'theme')->first()->value ?? 'index';
+    return view($theme);
+})->name('home');
+//Phần liên hệ người dùng
+Route::get('/admin', [ContactController::class, 'admin'])->name('admin.index');
+Route::post('/contact/submit', [ContactController::class, 'submit'])->name('contact.submit');
+Route::get('/admin/contact/{id}', [ContactController::class, 'show'])->name('admin.contact.show');
+Route::post('/admin/contact/{id}/mark-read', [ContactController::class, 'markAsRead'])->name('admin.contact.markRead');
+
 // Route::post('/admin/settings/captcha', [AdminController::class, 'updateCaptchaSetting'])
 //      ->name('admin.settings.captcha')
 //      ->middleware('auth'); // Đảm bảo phải đăng nhập

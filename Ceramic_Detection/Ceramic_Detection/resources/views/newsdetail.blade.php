@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $article->title }} - Ceramic Classification</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
             --primary-color: #b3cde0;
@@ -16,12 +20,14 @@
             --text-light: #ffffff;
             --accent-color: #e6f0fa;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
+
         body {
             background-color: var(--light-color);
             color: #333;
@@ -30,6 +36,7 @@
             flex-direction: column;
             overflow-x: hidden;
         }
+
         .container {
             width: 100%;
             max-width: 1200px;
@@ -37,6 +44,7 @@
             padding: 2rem;
             flex: 1;
         }
+
         header {
             background-color: var(--primary-color);
             padding: 1rem 2rem;
@@ -46,6 +54,7 @@
             z-index: 1000;
             width: 100%;
         }
+
         .header-content {
             display: flex;
             justify-content: space-between;
@@ -54,6 +63,7 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .logo {
             display: flex;
             align-items: center;
@@ -63,19 +73,23 @@
             text-decoration: none;
             flex-shrink: 0;
         }
+
         .logo img {
             height: clamp(50px, 5vw, 50px);
             margin-right: 10px;
         }
+
         .nav-container {
             display: flex;
             align-items: center;
         }
+
         .nav-menu {
             list-style: none;
             display: flex;
             gap: clamp(1rem, 2vw, 1.5rem);
         }
+
         .nav-menu li a {
             color: var(--dark-color);
             text-decoration: none;
@@ -83,14 +97,17 @@
             font-size: clamp(0.9rem, 1.5vw, 1rem);
             transition: color 0.3s ease;
         }
+
         .nav-menu li a:hover {
             color: var(--secondary-color);
         }
+
         .login-section {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
+
         .login-section button {
             padding: clamp(0.5rem, 1vw, 0.6rem) clamp(1rem, 2vw, 1.2rem);
             border: none;
@@ -101,24 +118,38 @@
             transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         #loginButton {
             background-color: var(--secondary-color);
             color: var(--text-light);
             margin-bottom: 10px;
             animation: bounce 1s infinite;
         }
+
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-            50% { transform: translateY(-12px); box-shadow: 0 15px 20px rgba(0,0,0,0.2); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            50% {
+                transform: translateY(-12px);
+                box-shadow: 0 15px 20px rgba(0, 0, 0, 0.2);
+            }
         }
+
         #logoutButton {
             background-color: var(--dark-color);
             color: var(--text-light);
         }
+
         .login-section button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
         }
+
         .hamburger {
             display: none;
             font-size: 2rem;
@@ -128,6 +159,7 @@
             cursor: pointer;
             padding: 0.5rem;
         }
+
         .content-container {
             max-width: 800px;
             margin: 0 auto;
@@ -136,26 +168,31 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
             font-size: 2rem;
             color: var(--dark-color);
             margin-bottom: 1rem;
         }
+
         img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
             margin-bottom: 1rem;
         }
+
         p.excerpt {
             font-style: italic;
             color: #666;
             margin-bottom: 1rem;
         }
+
         p.content {
             line-height: 1.6;
             margin-bottom: 1rem;
         }
+
         a.back {
             display: inline-block;
             padding: 0.6rem 1.2rem;
@@ -165,9 +202,11 @@
             border-radius: 20px;
             transition: background-color 0.3s ease;
         }
+
         a.back:hover {
             background-color: var(--dark-color);
         }
+
         .contact-sidebar {
             position: fixed;
             top: 0;
@@ -181,46 +220,56 @@
             transition: right 0.3s ease-in-out;
             box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
         }
+
         .contact-sidebar.active {
             overflow: scroll;
             right: 0;
         }
+
         .contact-sidebar h3 {
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
             text-align: center;
         }
+
         .contact-sidebar ul {
             list-style: none;
         }
+
         .contact-sidebar li {
             display: flex;
             align-items: center;
             margin-bottom: 1rem;
             font-size: 1rem;
         }
+
         .contact-sidebar i {
             margin-right: 10px;
             font-size: 1.2rem;
             width: 20px;
             text-align: center;
         }
+
         .contact-sidebar a {
             color: var(--dark-color);
             text-decoration: none;
             transition: color 0.3s ease;
         }
+
         .contact-sidebar a:hover {
             color: var(--secondary-color);
         }
+
         .contact-form {
             margin-top: 1.5rem;
         }
+
         .contact-form h4 {
             font-size: 1.2rem;
             margin-bottom: 1rem;
             color: var(--secondary-color);
         }
+
         .contact-form input,
         .contact-form textarea {
             width: 100%;
@@ -232,10 +281,12 @@
             color: #333;
             font-size: 0.9rem;
         }
+
         .contact-form textarea {
             height: 100px;
             resize: none;
         }
+
         .contact-form button {
             background-color: rgb(5, 53, 66);
             color: var(--text-light);
@@ -246,10 +297,12 @@
             transition: background 0.3s ease;
             width: 100%;
         }
+
         .contact-form button:hover {
             background-color: var(--secondary-color);
             color: var(--dark-color);
         }
+
         footer {
             text-align: center;
             padding: 1.5rem;
@@ -259,10 +312,12 @@
             width: 100%;
             font-size: clamp(0.8rem, 1.5vw, 1rem);
         }
+
         @media (max-width: 768px) {
             .hamburger {
                 display: block;
             }
+
             .nav-container {
                 display: none;
                 flex-direction: column;
@@ -274,36 +329,44 @@
                 padding: 1rem;
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             }
+
             .nav-container.active {
                 display: flex;
             }
+
             .nav-menu {
                 flex-direction: column;
                 width: 100%;
                 gap: 1rem;
                 text-align: center;
             }
+
             .nav-menu li {
                 width: 100%;
             }
+
             .login-section {
                 width: 100%;
                 justify-content: center;
                 flex-direction: column;
                 gap: 0.8rem;
             }
+
             .login-section button {
                 width: 100%;
             }
+
             .header-content {
                 justify-content: space-between;
             }
+
             .contact-sidebar {
                 width: 250px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -344,10 +407,14 @@
         <h3>Liên hệ với chúng tôi</h3>
         <ul>
             <li><i class="fas fa-phone"></i> <span>SĐT: 0982638519</span></li>
-            <li><i class="fas fa-envelope"></i> <a href="mailto:khangkhang1111777@gmail.com">Email: khangkhang1111777@gmail.com</a></li>
-            <li><i class="fab fa-facebook-f"></i> <a href="https://facebook.com/ceramic" target="_blank">Facebook</a></li>
-            <li><i class="fab fa-instagram"></i> <a href="https://instagram.com/ceramic" target="_blank">Instagram</a></li>
-            <li><i class="fa-brands fa-x-twitter"></i> <a href="https://twitter.com/ceramic" target="_blank">Twitter</a></li>
+            <li><i class="fas fa-envelope"></i> <a href="mailto:khangkhang1111777@gmail.com">Email:
+                    khangkhang1111777@gmail.com</a></li>
+            <li><i class="fab fa-facebook-f"></i> <a href="https://facebook.com/ceramic" target="_blank">Facebook</a>
+            </li>
+            <li><i class="fab fa-instagram"></i> <a href="https://instagram.com/ceramic" target="_blank">Instagram</a>
+            </li>
+            <li><i class="fa-brands fa-x-twitter"></i> <a href="https://twitter.com/ceramic" target="_blank">Twitter</a>
+            </li>
             <li><i class="fas fa-map-marker-alt"></i> <span>Địa chỉ: 123 Đường Gốm, TP. Hà Nội</span></li>
         </ul>
         <div class="contact-form">
@@ -427,9 +494,9 @@
         });
 
         document.addEventListener('click', (e) => {
-            if (contactSidebar.classList.contains('active') && 
-                !contactSidebar.contains(e.target) && 
-                e.target !== contactLink && 
+            if (contactSidebar.classList.contains('active') &&
+                !contactSidebar.contains(e.target) &&
+                e.target !== contactLink &&
                 !navContainer.contains(e.target)) {
                 contactSidebar.classList.remove('active');
             }
@@ -466,4 +533,5 @@
         window.onload = checkLoginStatus;
     </script>
 </body>
+
 </html>

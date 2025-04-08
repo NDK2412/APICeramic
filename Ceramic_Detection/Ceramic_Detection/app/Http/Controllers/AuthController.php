@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Setting;
+
 class AuthController extends Controller
 {
     // Hiển thị form đăng nhập
     public function showLoginForm()
     {
-        // Lấy trạng thái CAPTCHA từ bảng settings
         $recaptchaEnabled = Setting::where('key', 'recaptcha_enabled')->first();
         $recaptchaEnabled = $recaptchaEnabled ? ($recaptchaEnabled->recaptcha_enabled == '1') : false;
         \Log::info("recaptchaEnabled in showLoginForm: " . ($recaptchaEnabled ? 'true' : 'false'));
@@ -22,27 +22,45 @@ class AuthController extends Controller
 
     // Xử lý đăng nhập
     public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
+        // Tìm người dùng dựa trên email trước khi xác thực
+        $user = User::where('email', $credentials['email'])->first();
 
-        // Chuyển hướng dựa trên role
-        if (Auth::user()->role === 'admin') {
-            return redirect()->intended('/admin');
-        } else {
-            return redirect()->intended('/dashboard');
+        // Nếu tài khoản không tồn tại, trả về lỗi
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'Thông tin đăng nhập không chính xác.',
+            ])->onlyInput('email');
         }
-    }
 
-    return back()->withErrors([
-        'email' => 'Thông tin đăng nhập không chính xác.',
-    ])->onlyInput('email');
-}
+        // Kiểm tra trạng thái tài khoản
+        if (!$user->isActive()) {
+            return back()->withErrors([
+                'email' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
+            ])->onlyInput('email');
+        }
+
+        // Nếu tài khoản hoạt động, tiến hành xác thực
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            // Chuyển hướng dựa trên role
+            if (Auth::user()->role === 'admin') {
+                return redirect()->intended('/admin');
+            } else {
+                return redirect()->intended('/dashboard');
+            }
+        }
+
+        return back()->withErrors([
+            'email' => 'Thông tin đăng nhập không chính xác.',
+        ])->onlyInput('email');
+    }
 
     // Hiển thị form đăng ký
     public function showRegisterForm()
@@ -63,11 +81,13 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'tokens' => 3, 
+            'tokens' => 3,
+            'status' => 'active', // Đảm bảo tài khoản mới tạo có status là active
         ]);
 
         return redirect()->route('login')->with('success', 'Tài khoản đã được tạo! Vui lòng đăng nhập.');
     }
+
     public function logout(Request $request)
     {
         Auth::logout();
@@ -75,7 +95,6 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/'); // Chuyển hướng về http://localhost:8000/
     }
-
 
     public function useToken(Request $request)
     {
@@ -87,5 +106,24 @@ class AuthController extends Controller
             return response()->json(['success' => true, 'tokens' => $user->tokens]);
         }
         return response()->json(['success' => false, 'message' => 'Hết lượt dự đoán']);
+    }
+    //Đổi tên
+    public function changeName(Request $request)
+    {
+        $request->validate([
+            'userId' => 'required',
+            'name' => 'required|string|min:3|max:255',
+        ]);
+
+        $user = User::find($request->userId);
+
+        if (!$user || $user->id !== Auth::id()) {
+            return response()->json(['error' => 'Không có quyền thay đổi tên!'], 403);
+        }
+
+        $user->name = $request->name;
+        $user->save();
+
+        return response()->json(['success' => true]);
     }
 }

@@ -41,8 +41,8 @@ class PredictionController extends Controller
             $response = Http::withHeaders([
                 'api-key' => $apiKey // Thay 'api_key' thành 'api-key'
             ])
-            ->attach('file', file_get_contents($formData->path()), $formData->getClientOriginalName())
-            ->post('http://localhost:60074/predict');
+                ->attach('file', file_get_contents($formData->path()), $formData->getClientOriginalName())
+                ->post('http://localhost:60074/predict');
 
             Log::info('API Response', [
                 'status' => $response->status(),

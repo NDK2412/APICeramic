@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Ceramic Classification - Elegant Design</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
-            --primary-color: #2ecc71; /* Xanh lá cây */
-            --secondary-color: #f1c40f; /* Vàng */
-            --background-color: #f9f9f9; /* Xám nhạt */
-            --text-dark: #333333; /* Đen nhạt */
-            --text-light: #ffffff; /* Trắng */
+            --primary-color: #2ecc71;
+            /* Xanh lá cây */
+            --secondary-color: #f1c40f;
+            /* Vàng */
+            --background-color: #f9f9f9;
+            /* Xám nhạt */
+            --text-dark: #333333;
+            /* Đen nhạt */
+            --text-light: #ffffff;
+            /* Trắng */
             --shadow-color: rgba(0, 0, 0, 0.1);
         }
 
@@ -429,51 +437,53 @@
                 font-size: 0.9rem;
             }
         }
+
         /* Phần Form Liên hệ */
         .contact-form {
-    margin-top: 1.5rem;
-}
+            margin-top: 1.5rem;
+        }
 
-.contact-form h4 {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    color: var(--secondary-color);
-}
+        .contact-form h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
 
-.contact-form input,
-.contact-form textarea {
-    width: 100%;
-    padding: 0.6rem;
-    margin-bottom: 0.8rem;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--text-light);
-    color: var(--text-dark);
-    font-size: 0.9rem;
-}
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 0.6rem;
+            margin-bottom: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--text-light);
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
 
-.contact-form textarea {
-    height: 100px;
-    resize: none;
-}
+        .contact-form textarea {
+            height: 100px;
+            resize: none;
+        }
 
-.contact-form button {
-    background-color: var(--primary-color);
-    color: var(--text-light);
-    padding: 0.6rem 1.2rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    width: 100%;
-}
+        .contact-form button {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
 
-.contact-form button:hover {
-    background-color: var(--secondary-color);
-    color: var(--text-dark);
-}
+        .contact-form button:hover {
+            background-color: var(--secondary-color);
+            color: var(--text-dark);
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -491,7 +501,8 @@
                         <li><a href="#" id="contactLink">Liên hệ</a></li>
                     </ul>
                     <div class="login-section">
-                        <button id="loginButton" onclick="redirectToLogin()">Try It Out <i class="fa-solid fa-arrow-up-from-bracket"></i></button>
+                        <button id="loginButton" onclick="redirectToLogin()">Try It Out <i
+                                class="fa-solid fa-arrow-up-from-bracket"></i></button>
                         <button id="logoutButton" onclick="logout()" style="display:none;">Đăng xuất</button>
                     </div>
                 </div>
@@ -505,7 +516,7 @@
         </div>
 
         <!-- News Section -->
-         <!-- News Section -->
+        <!-- News Section -->
         <section class="news-section">
             <h1>Tin tức về gốm sứ</h1>
             <div class="news-list">
@@ -556,7 +567,9 @@
             <h2>Giới thiệu tổng quan về Ceramic AI</h2>
             <div class="feature-point">
                 <h3><i class="fas fa-question-circle"></i> Ceramic AI là gì?</h3>
-                <p>Ceramic AI là hệ thống trí tuệ nhân tạo tiên tiến chuyên về nhận dạng và phân loại đồ gốm sứ. Công nghệ của chúng tôi kết hợp học máy và cơ sở dữ liệu phong phú để xác định chính xác niên đại, xuất xứ và loại hình gốm sứ chỉ từ hình ảnh đầu vào.</p>
+                <p>Ceramic AI là hệ thống trí tuệ nhân tạo tiên tiến chuyên về nhận dạng và phân loại đồ gốm sứ. Công
+                    nghệ của chúng tôi kết hợp học máy và cơ sở dữ liệu phong phú để xác định chính xác niên đại, xuất
+                    xứ và loại hình gốm sứ chỉ từ hình ảnh đầu vào.</p>
             </div>
             <div class="feature-point">
                 <h3><i class="fas fa-star"></i> Lợi ích nổi bật</h3>
@@ -592,9 +605,9 @@
             <div class="feature-point">
                 <h3><i class="fas fa-book-open"></i> Hướng dẫn sử dụng</h3>
                 <p>1. Tải lên hình ảnh đồ gốm cần phân tích<br>
-                2. Hệ thống AI sẽ tự động nhận diện và phân loại<br>
-                3. Nhận kết quả chi tiết về niên đại, xuất xứ và đặc điểm<br>
-                4. Lưu trữ hoặc chia sẻ kết quả phân tích</p>
+                    2. Hệ thống AI sẽ tự động nhận diện và phân loại<br>
+                    3. Nhận kết quả chi tiết về niên đại, xuất xứ và đặc điểm<br>
+                    4. Lưu trữ hoặc chia sẻ kết quả phân tích</p>
                 <h4 id="guideButton" onclick="redirectToGuide()">Xem hướng dẫn chi tiết</h4>
             </div>
         </section>
@@ -610,31 +623,35 @@
 
     <!-- Contact Sidebar -->
     <div class="contact-sidebar" id="contactSidebar">
-    <h3>Liên hệ với chúng tôi</h3>
-    <ul>
-        <li><i class="fas fa-phone"></i> <span>SĐT: 0982638519</span></li>
-        <li><i class="fas fa-envelope"></i> <a href="mailto:khangkhang1111777@gmail.com">Email: khangkhang1111777@gmail.com</a></li>
-        <li><i class="fab fa-facebook-f"></i> <a href="https://facebook.com/ceramic" target="_blank">Facebook</a></li>
-        <li><i class="fab fa-instagram"></i> <a href="https://instagram.com/ceramic" target="_blank">Instagram</a></li>
-        <li><i class="fa-brands fa-x-twitter"></i> <a href="https://twitter.com/ceramic" target="_blank">Twitter</a></li>
-        <li><i class="fas fa-map-marker-alt"></i> <span>Địa chỉ: 123 Đường Gốm, TP. Hà Nội</span></li>
-    </ul>
-    <div class="contact-form">
-        <h4>Gửi liên hệ</h4>
-        <form id="contactForm" method="POST" action="{{ route('contact.submit') }}">
-            @csrf
-            <h8>Nhập họ tên:</h8>
-            <input type="text" name="name" placeholder="Họ tên" required>
-            <h8>Nhập SĐT:</h8>
-            <input type="tel" name="phone" placeholder="Số điện thoại" required>
-            <h8>Nhập email:</h8>
-            <input type="email" name="email" placeholder="Email" required>
-            <h8>Nhập nội dung:</h8>
-            <textarea name="message" placeholder="Nội dung" required></textarea>
-            <button type="submit">Gửi</button>
-        </form>
+        <h3>Liên hệ với chúng tôi</h3>
+        <ul>
+            <li><i class="fas fa-phone"></i> <span>SĐT: 0982638519</span></li>
+            <li><i class="fas fa-envelope"></i> <a href="mailto:khangkhang1111777@gmail.com">Email:
+                    khangkhang1111777@gmail.com</a></li>
+            <li><i class="fab fa-facebook-f"></i> <a href="https://facebook.com/ceramic" target="_blank">Facebook</a>
+            </li>
+            <li><i class="fab fa-instagram"></i> <a href="https://instagram.com/ceramic" target="_blank">Instagram</a>
+            </li>
+            <li><i class="fa-brands fa-x-twitter"></i> <a href="https://twitter.com/ceramic" target="_blank">Twitter</a>
+            </li>
+            <li><i class="fas fa-map-marker-alt"></i> <span>Địa chỉ: 123 Đường Gốm, TP. Hà Nội</span></li>
+        </ul>
+        <div class="contact-form">
+            <h4>Gửi liên hệ</h4>
+            <form id="contactForm" method="POST" action="{{ route('contact.submit') }}">
+                @csrf
+                <h8>Nhập họ tên:</h8>
+                <input type="text" name="name" placeholder="Họ tên" required>
+                <h8>Nhập SĐT:</h8>
+                <input type="tel" name="phone" placeholder="Số điện thoại" required>
+                <h8>Nhập email:</h8>
+                <input type="email" name="email" placeholder="Email" required>
+                <h8>Nhập nội dung:</h8>
+                <textarea name="message" placeholder="Nội dung" required></textarea>
+                <button type="submit">Gửi</button>
+            </form>
+        </div>
     </div>
-</div>
 
     <footer>
         <p>© 2023 Ceramic Classification System. All rights reserved.</p>
@@ -716,44 +733,45 @@
         });
 
         document.addEventListener('click', (e) => {
-            if (contactSidebar.classList.contains('active') && 
-                !contactSidebar.contains(e.target) && 
-                e.target !== contactLink && 
+            if (contactSidebar.classList.contains('active') &&
+                !contactSidebar.contains(e.target) &&
+                e.target !== contactLink &&
                 !navContainer.contains(e.target)) {
                 contactSidebar.classList.remove('active');
             }
         });
-//Form liên hệ
-// Thêm vào cuối phần <script>
-const contactForm = document.getElementById('contactForm');
+        //Form liên hệ
+        // Thêm vào cuối phần <script>
+        const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(contactForm);
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(contactForm);
 
-    try {
-        const response = await fetch("{{ route('contact.submit') }}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            try {
+                const response = await fetch("{{ route('contact.submit') }}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Thông tin liên hệ đã được gửi thành công!');
+                    contactForm.reset();
+                    contactSidebar.classList.remove('active');
+                } else {
+                    alert('Có lỗi xảy ra: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Lỗi gửi liên hệ:', error);
+                alert('Không thể gửi liên hệ. Vui lòng thử lại sau.');
             }
         });
-
-        const result = await response.json();
-        if (response.ok) {
-            alert('Thông tin liên hệ đã được gửi thành công!');
-            contactForm.reset();
-            contactSidebar.classList.remove('active');
-        } else {
-            alert('Có lỗi xảy ra: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Lỗi gửi liên hệ:', error);
-        alert('Không thể gửi liên hệ. Vui lòng thử lại sau.');
-    }
-});
         window.onload = checkLoginStatus;
     </script>
 </body>
+
 </html>

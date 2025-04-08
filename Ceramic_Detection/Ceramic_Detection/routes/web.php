@@ -104,7 +104,7 @@ Route::get('/admin', function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::put('/admin/users/{id}', [AdminController::class, 'update'])->name('admin.update');
-    
+
     Route::delete('/admin/users/{id}', [AdminController::class, 'destroy'])->name('admin.delete');
     Route::post('/admin/recharge/approve/{id}', [AdminController::class, 'approveRecharge'])->name('admin.recharge.approve');
     Route::post('/admin/recharge/reject', [AdminController::class, 'rejectRecharge'])->name('admin.recharge.reject');
@@ -152,7 +152,7 @@ Route::get('/admin/terms', function () {
 })->name('admin.terms');
 
 Route::post('/admin/terms/update', function (Request $request) {
-  
+
     $request->validate([
         'content' => 'required|string',
     ]);
@@ -226,6 +226,8 @@ Route::get('/news/{id}', function ($id) {
     $article = App\Models\News::findOrFail($id);
     return view('newsdetail', compact('article'));
 })->name('news.detail');
+//đổi tên
+Route::post('/change-name', [AuthController::class, 'changeName'])->middleware('auth');
 // Route::post('/admin/settings/captcha', [AdminController::class, 'updateCaptchaSetting'])
 //      ->name('admin.settings.captcha')
 //      ->middleware('auth'); // Đảm bảo phải đăng nhập

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ceramic Recognition Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <style>
         :root {
@@ -49,7 +52,7 @@
         }
 
         .sidebar:hover {
-            width: 240px;
+            width: 300px;
         }
 
         .sidebar .logo {
@@ -86,7 +89,8 @@
             transition: background 0.3s, padding-left 0.3s;
         }
 
-        .sidebar a:hover, .sidebar a.active {
+        .sidebar a:hover,
+        .sidebar a.active {
             background: var(--secondary-color);
             padding-left: 30px;
         }
@@ -252,7 +256,7 @@
         /* CeramicAI Section */
         .ceramic-ai {
             display: grid;
-            grid-template-areas: 
+            grid-template-areas:
                 "upload preview"
                 "result chatbot";
             grid-template-columns: 1fr 1fr;
@@ -273,11 +277,16 @@
             padding: 15px;
             background: var(--light-gray);
             border-radius: 10px;
-            display: flex; /* Thêm display: flex */
-            flex-direction: column; /* Sắp xếp theo cột */
-            justify-content: center; /* Căn giữa theo chiều dọc */
-            align-items: center; /* Căn giữa theo chiều ngang */
-            min-height: 200px; /* Đảm bảo khu vực preview có chiều cao tối thiểu để căn giữa hiệu quả */
+            display: flex;
+            /* Thêm display: flex */
+            flex-direction: column;
+            /* Sắp xếp theo cột */
+            justify-content: center;
+            /* Căn giữa theo chiều dọc */
+            align-items: center;
+            /* Căn giữa theo chiều ngang */
+            min-height: 200px;
+            /* Đảm bảo khu vực preview có chiều cao tối thiểu để căn giữa hiệu quả */
         }
 
         .ceramic-ai .result-area {
@@ -336,19 +345,29 @@
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            display: block; /* Đảm bảo ảnh không bị ảnh hưởng bởi inline styles */
+            display: block;
+            /* Đảm bảo ảnh không bị ảnh hưởng bởi inline styles */
             animation: zoomIn 0.5s ease;
         }
+
         .ceramic-ai .preview-area h4 {
-            text-align: left; /* Căn trái tiêu đề, giống Upload Image và Result */
-            margin-bottom: 10px; /* Khoảng cách giữa tiêu đề và ảnh */
+            text-align: left;
+            /* Căn trái tiêu đề, giống Upload Image và Result */
+            margin-bottom: 10px;
+            /* Khoảng cách giữa tiêu đề và ảnh */
         }
+
         .ceramic-ai .preview-area .image-container {
-            flex: 1; /* Chiếm toàn bộ không gian còn lại */
-            display: flex; /* Sử dụng flex để căn giữa ảnh */
-            justify-content: center; /* Căn giữa theo chiều ngang */
-            align-items: center; /* Căn giữa theo chiều dọc */
+            flex: 1;
+            /* Chiếm toàn bộ không gian còn lại */
+            display: flex;
+            /* Sử dụng flex để căn giữa ảnh */
+            justify-content: center;
+            /* Căn giữa theo chiều ngang */
+            align-items: center;
+            /* Căn giữa theo chiều dọc */
         }
+
         .ceramic-ai .result-area p {
             font-size: 0.95rem;
             color: var(--dark-gray);
@@ -363,7 +382,7 @@
 
         .ceramic-ai .chatbot-area .chatbot-content p {
             font-size: 0.95rem;
-            color: var(--dark-gray);
+            color: var(--dark-color);
             line-height: 1.6;
             margin: 0;
             padding-left: 25px;
@@ -393,7 +412,7 @@
         }
 
         /* Rating Section */
-        .rating-section .current-rating p, 
+        .rating-section .current-rating p,
         .rating-form p {
             font-size: 0.9rem;
             margin-bottom: 8px;
@@ -446,7 +465,8 @@
             border-collapse: collapse;
         }
 
-        .history-section th, .history-section td {
+        .history-section th,
+        .history-section td {
             padding: 10px;
             text-align: left;
             border-bottom: 1px solid var(--light-gray);
@@ -573,30 +593,56 @@
             transform: scale(1.02);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+
         input:his {
             height: 40px;
             margin-bottom: 15px;
-            
+
         }
 
         /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes zoomIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         @media (max-width: 768px) {
-            .sidebar { width: 60px; }
-            .sidebar:hover { width: 200px; }
-            .container { margin-left: 80px; padding: 10px; }
-            .content-wrapper { gap: 10px; }
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar:hover {
+                width: 200px;
+            }
+
+            .container {
+                margin-left: 80px;
+                padding: 10px;
+            }
+
+            .content-wrapper {
+                gap: 10px;
+            }
+
             .ceramic-ai {
-                grid-template-areas: 
+                grid-template-areas:
                     "upload"
                     "preview"
                     "result"
@@ -604,47 +650,145 @@
                 grid-template-columns: 1fr;
                 grid-template-rows: auto auto auto auto;
             }
-            .header h1 { font-size: 1.4rem; }
-            .user-info { font-size: 0.9rem; }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .user-info {
+                font-size: 0.9rem;
+            }
+
             .history-section table {
                 font-size: 0.85rem;
             }
+
             .history-section img {
                 max-width: 80px;
             }
+
             .popup {
                 width: 90%;
             }
         }
 
         @media (max-width: 480px) {
-            .container { margin-left: 70px; padding: 8px; }
-            .ceramic-ai .preview-area img { max-height: 150px; }
-            .ceramic-ai .chatbot-area { max-height: 150px; }
+            .container {
+                margin-left: 70px;
+                padding: 8px;
+            }
+
+            .ceramic-ai .preview-area img {
+                max-height: 150px;
+            }
+
+            .ceramic-ai .chatbot-area {
+                max-height: 150px;
+            }
+
             .ceramic-ai .chatbot-area .chatbot-content p {
                 font-size: 0.9rem;
                 padding-left: 20px;
             }
+
             .ceramic-ai .chatbot-area .chatbot-content p::before {
                 font-size: 0.9rem;
             }
         }
+
         .upload-area.dragover {
             border-color: var(--secondary-color);
             background: rgba(118, 218, 236, 0.1);
         }
-        input#historySearch {
-            width: 100%; /* Chiều rộng của input */
-            padding: 10px; /* Khoảng cách nội dung so với biên */
-            border: 2px solid #ccc; /* Viền màu xám nhạt */
-            border-radius: 5px; /* Góc bo tròn cho input */
-            font-size: 16px; /* Kích thước chữ */
-            outline: none; /* Loại bỏ viền mặc định khi input được chọn */
-            margin-bottom: 15px;
-           }
 
+        input#historySearch {
+            width: 100%;
+            /* Chiều rộng của input */
+            padding: 10px;
+            /* Khoảng cách nội dung so với biên */
+            border: 2px solid #ccc;
+            /* Viền màu xám nhạt */
+            border-radius: 5px;
+            /* Góc bo tròn cho input */
+            font-size: 16px;
+            /* Kích thước chữ */
+            outline: none;
+            /* Loại bỏ viền mặc định khi input được chọn */
+            margin-bottom: 15px;
+        }
+
+        .dark-theme {
+            --primary-color: #90caf9;
+            --secondary-color: #42a5f5;
+            --light-blue: #0d47a1;
+            --white: #263238;
+            --dark-gray: #e0e0e0;
+            --light-gray: #37474f;
+        }
+
+        /* Thêm các animation mới */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadePulse {
+            0% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Áp dụng animation cho các phần tử khi đang xử lý */
+        .processing {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .result-processing {
+            animation: fadePulse 1.5s infinite ease-in-out;
+        }
+
+        .chatbot-processing {
+            animation: fadePulse 1.5s infinite ease-in-out;
+        }
+
+        .result-loaded {
+            animation: slideUp 0.5s ease-in-out;
+        }
     </style>
 </head>
+
 <body>
     @if (!Auth::check())
         <script>
@@ -661,11 +805,16 @@
             <i class="fas fa-user"></i>
             <span>{{ Auth::user()->name }}</span>
         </div>
+
         <ul>
-            <li><a href="#" class="active" data-section="ceramic-ai"><i class="fas fa-brain"></i><span>CeramicAI</span></a></li>
+            <li><a href="#" class="active" data-section="ceramic-ai"><i
+                        class="fas fa-brain"></i><span>CeramicAI</span></a></li>
             <li><a href="#" data-section="history"><i class="fas fa-history"></i><span>Lịch sử</span></a></li>
             <li><a href="#" data-section="rating"><i class="fas fa-star"></i><span>Rating</span></a></li>
             <li><a href="/recharge"><i class="fas fa-wallet"></i><span>Recharge</span></a></li>
+            <li><a href="#" onclick="toggleTheme()"><i class="fas fa-adjust"></i><span>Đổi Theme</span></a></li>
+            <li><a href="#" onclick="showChangeNamePopup()"><i class="fas fa-user-edit"></i><span>Đổi tên</span></a>
+            </li>
             <li>
                 <form method="POST" action="{{ route('logout') }}" class="logout-form">
                     @csrf
@@ -681,11 +830,12 @@
     <!-- Main content -->
     <div class="container">
         <div class="header">
-           
+
             <h1>Ceramic Recognition Dashboard</h1>
-        
+
             <div class="user-info">
-                Xin chào, {{ Auth::user()->name }}! Bạn còn <span id="tokenCount">{{ Auth::user()->tokens }}</span> lượt dự đoán.
+                Xin chào, {{ Auth::user()->name }}! Bạn còn <span id="tokenCount">{{ Auth::user()->tokens }}</span> lượt
+                dự đoán.
                 <br>
                 <a href="/recharge">Nạp thêm lượt</a>
             </div>
@@ -695,7 +845,8 @@
             <div class="section ceramic-ai" id="ceramic-ai">
                 <h3>CeramicAI</h3>
                 <h4>Upload Image</h4>
-                <div class="upload-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div class="upload-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)">
                     <input type="file" id="imageInput" accept="image/*">
                     <button onclick="predictImage()" id="predictBtn">
                         <span id="predictSpinner" class="loading" style="display: none;"></span>
@@ -704,14 +855,14 @@
                 </div>
                 <h4>Preview</h4>
                 <div class="preview-area">
-                    
+
                     <div class="image-container">
                         <img id="previewImage" src="" alt="Image preview">
                     </div>
                 </div>
                 <h4>Result</h4>
                 <div class="result-area">
-                    <p id="result"><i class="fa-solid fa-brain">  </i> Vui lòng upload ảnh để xem kết quả.</p>
+                    <p id="result"><i class="fa-solid fa-brain"> </i> Vui lòng upload ảnh để xem kết quả.</p>
                 </div>
                 <h4>Information</h4>
                 <div class="chatbot-area">
@@ -742,7 +893,8 @@
                                 <tr>
                                     <td>{{ $classification->id }}</td>
                                     <td>
-                                        <img src="{{ url($classification->image_path) }}" alt="Image" style="max-width: 100px; border-radius: 5px;">
+                                        <img src="{{ url($classification->image_path) }}" alt="Image"
+                                            style="max-width: 100px; border-radius: 5px;">
                                     </td>
                                     <td>{{ $classification->result }}</td>
                                     <td>{{ $classification->created_at->format('d/m/Y H:i') }}</td>
@@ -755,7 +907,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    
+
                 @endif
             </div>
 
@@ -795,14 +947,25 @@
         </div>
         <button onclick="hideInfoPopup()">Đóng</button>
     </div>
-
+    <!-- Popup đổi tên -->
+    <div class="popup-overlay" id="changeNamePopupOverlay" onclick="hideChangeNamePopup()"></div>
+    <div class="popup" id="changeNamePopup">
+        <h3>Đổi Tên Người Dùng</h3>
+        <div id="changeNameContent">
+            <p>Tên hiện tại: <strong>{{ Auth::user()->name }}</strong></p>
+            <input type="text" id="newName" placeholder="Nhập tên mới"
+                style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid var(--light-gray);">
+            <p id="changeNameError" style="color: #f44336; display: none;"></p>
+        </div>
+        <button onclick="submitNewName()">Lưu</button>
+    </div>
     <script>
         const userId = "{{ Auth::user()->id ?? 'anonymous' }}";
         let tokens = {{ Auth::user()->tokens ?? 0 }};
         console.log("User ID:", userId);
         console.log("Tokens còn lại:", tokens);
 
-        document.getElementById('imageInput').addEventListener('change', function(e) {
+        document.getElementById('imageInput').addEventListener('change', function (e) {
             const file = e.target.files[0];
             const preview = document.getElementById('previewImage');
             preview.src = URL.createObjectURL(file);
@@ -810,65 +973,84 @@
         });
 
         async function predictImage() {
-        const fileInput = document.getElementById('imageInput');
-        const resultElement = document.getElementById('result');
-        const chatbotElement = document.getElementById('chatbotResponse');
-        const predictBtn = document.getElementById('predictBtn');
-        const spinner = document.getElementById('predictSpinner');
-        const tokenCountElement = document.getElementById('tokenCount');
-
-        if (!fileInput.files[0]) {
-            resultElement.textContent = 'Vui lòng upload ảnh trước!';
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        formData.append('_token', '{{ csrf_token() }}');
-
-        predictBtn.disabled = true;
-        spinner.style.display = 'inline-block';
-        resultElement.textContent = 'Đang phân tích mẫu gốm...';
-        chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
-
-        try {
-            const response = await fetch('{{ route('predict.image') }}', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.error) {
-                resultElement.textContent = `Lỗi: ${data.error}`;
-                chatbotElement.innerHTML = `<p>${data.error}</p>`;
-            } else {
-                tokenCountElement.textContent = data.tokens;
-                resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
-
-                const llmResponse = data.llm_response;
-                const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
-                let formattedResponse = '';
-                paragraphs.forEach(paragraph => {
-                    const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
-                    formattedResponse += `<p>${formattedParagraph}</p>`;
-                });
-                chatbotElement.innerHTML = formattedResponse;
+            const fileInput = document.getElementById('imageInput');
+            const resultElement = document.getElementById('result');
+            const chatbotElement = document.getElementById('chatbotResponse');
+            const predictBtn = document.getElementById('predictBtn');
+            const spinner = document.getElementById('predictSpinner');
+            const tokenCountElement = document.getElementById('tokenCount');
+            // Bật animation khi bắt đầu xử lý
+            predictBtn.disabled = true;
+            predictBtn.classList.add('processing'); // Animation pulse cho nút
+            spinner.style.display = 'inline-block';
+            resultElement.textContent = 'Đang phân tích mẫu gốm...';
+            resultElement.classList.add('result-processing'); // Animation nhấp nháy cho Result
+            chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
+            chatbotElement.classList.add('chatbot-processing'); // Animation nhấp nháy cho Chatbot
+            if (!fileInput.files[0]) {
+                resultElement.textContent = 'Vui lòng upload ảnh trước!';
+                return;
             }
-        } catch (error) {
-            resultElement.textContent = `Lỗi: ${error.message}`;
-            chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
-        } finally {
-            predictBtn.disabled = false;
-            spinner.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            predictBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            resultElement.textContent = 'Đang phân tích mẫu gốm...';
+            chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
+
+            try {
+                const response = await fetch('{{ route('predict.image') }}', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                // Xóa animation khi xử lý xong
+                predictBtn.classList.remove('processing');
+                resultElement.classList.remove('result-processing');
+                chatbotElement.classList.remove('chatbot-processing');
+                if (data.error) {
+                    resultElement.textContent = `Lỗi: ${data.error}`;
+                    chatbotElement.innerHTML = `<p>${data.error}</p>`;
+                } else {
+                    tokenCountElement.textContent = data.tokens;
+                    resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
+                    resultElement.classList.add('result-loaded');
+                    const llmResponse = data.llm_response;
+                    const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
+                    let formattedResponse = '';
+                    paragraphs.forEach(paragraph => {
+                        const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
+                        formattedResponse += `<p>${formattedParagraph}</p>`;
+                    });
+                    chatbotElement.innerHTML = formattedResponse;
+                    chatbotElement.classList.add('result-loaded');
+                }
+            } catch (error) {
+                predictBtn.classList.remove('processing');
+                resultElement.classList.remove('result-processing');
+                chatbotElement.classList.remove('chatbot-processing');
+                resultElement.textContent = `Lỗi: ${error.message}`;
+                chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
+            } finally {
+                predictBtn.disabled = false;
+                spinner.style.display = 'none';
+                // Xóa class result-loaded sau khi animation hoàn tất (để có thể tái sử dụng)
+                setTimeout(() => {
+                    resultElement.classList.remove('result-loaded');
+                    chatbotElement.classList.remove('result-loaded');
+                }, 500); // Thời gian khớp với animation slideUp
+            }
         }
-    }
 
         const stars = document.querySelectorAll('.rating-form .rating-stars .fa-star');
         let selectedRating = 0;
 
         stars.forEach(star => {
-            star.addEventListener('click', function() {
+            star.addEventListener('click', function () {
                 selectedRating = this.getAttribute('data-value');
                 stars.forEach(s => {
                     s.classList.remove('active');
@@ -965,7 +1147,7 @@
         }
 
         document.querySelectorAll('.sidebar a').forEach(link => {
-            link.addEventListener('click', function(e) {
+            link.addEventListener('click', function (e) {
                 if (!this.href.includes('/recharge')) {
                     e.preventDefault();
                     document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
@@ -1004,13 +1186,85 @@
             }
         }
         function filterHistory() {
-    const query = document.getElementById('historySearch').value.toLowerCase();
-    const rows = document.querySelectorAll('#history table tbody tr');
-    rows.forEach(row => {
-        const result = row.cells[2].textContent.toLowerCase();
-        row.style.display = result.includes(query) ? '' : 'none';
-    });
-}
+            const query = document.getElementById('historySearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#history table tbody tr');
+            rows.forEach(row => {
+                const result = row.cells[2].textContent.toLowerCase();
+                row.style.display = result.includes(query) ? '' : 'none';
+            });
+        }
+        //Đổi theme
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+        }
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+        // Hiển thị popup đổi tên
+        function showChangeNamePopup() {
+            const popup = document.getElementById('changeNamePopup');
+            const overlay = document.getElementById('changeNamePopupOverlay');
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+            document.getElementById('newName').value = ''; // Xóa nội dung input khi mở
+            document.getElementById('changeNameError').style.display = 'none'; // Ẩn thông báo lỗi
+        }
+
+        // Ẩn popup đổi tên
+        function hideChangeNamePopup() {
+            const popup = document.getElementById('changeNamePopup');
+            const overlay = document.getElementById('changeNamePopupOverlay');
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        // Gửi yêu cầu đổi tên
+        async function submitNewName() {
+            const newName = document.getElementById('newName').value.trim();
+            const errorElement = document.getElementById('changeNameError');
+
+            if (!newName) {
+                errorElement.textContent = 'Vui lòng nhập tên mới!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (newName.length < 3) {
+                errorElement.textContent = 'Tên phải có ít nhất 3 ký tự!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/change-name', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        name: newName
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Tên của bạn đã được cập nhật thành công!');
+                    document.querySelector('.user-name span').textContent = newName; // Cập nhật tên trong sidebar
+                    document.querySelector('.user-info').innerHTML = `Xin chào, ${newName}! Bạn còn <span id="tokenCount">${tokens}</span> lượt dự đoán.<br><a href="/recharge">Nạp thêm lượt</a>`; // Cập nhật tên trong header
+                    hideChangeNamePopup();
+                } else {
+                    errorElement.textContent = data.error || 'Có lỗi xảy ra khi đổi tên!';
+                    errorElement.style.display = 'block';
+                }
+            } catch (error) {
+                errorElement.textContent = `Lỗi: ${error.message}`;
+                errorElement.style.display = 'block';
+            }
+        }
+
+        // Các hàm khác giữ nguyên...
     </script>
 </body>
+
 </html>

@@ -10,10 +10,7 @@ use App\Models\RechargeHistory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Message;    
- 
-    // Thêm import cho Message
-
+use App\Models\Message;
 
 class RechargeController extends Controller
 {
@@ -25,25 +22,27 @@ class RechargeController extends Controller
     public function index()
     {
         $rechargeHistory = RechargeHistory::where('user_id', Auth::id())->get();
-        $requests = RechargeRequest::where('user_id', auth()->id())->get();
-        $messages = Message::where('user_id', auth()->id())->orderBy('created_at')->get();
-        
+        $requests = RechargeRequest::where('user_id', Auth::id())->get();
+        $messages = Message::where('user_id', Auth::id())->orderBy('created_at')->get();
 
-        return view('recharge', compact('requests', 'messages', 'rechargeHistory'));
-     
+        // Tính toán các thống kê
+        $pendingRequestsCount = $requests->where('status', 'pending')->count(); // Số yêu cầu đang chờ duyệt
+        $approvedRequestsCount = $requests->where('status', 'approved')->count(); // Số yêu cầu đã duyệt
+        $totalAmount = $rechargeHistory->sum('amount'); // Tổng số tiền đã nạp
+        $totalTokens = $rechargeHistory->sum('tokens_added'); // Tổng số token đã nạp
+
+        return view('recharge', compact(
+            'requests',
+            'messages',
+            'rechargeHistory',
+            'pendingRequestsCount',
+            'approvedRequestsCount',
+            'totalAmount',
+            'totalTokens'
+        ));
     }
-    // public function sendMessage(Request $request)
-    // {
-    //     $request->validate(['message' => 'required|string|max:500']);
 
-    //     Message::create([
-    //         'user_id' => auth()->id(),
-    //         'admin_id' => null,
-    //         'message' => $request->message,
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Đã gửi tin nhắn cho admin.');
-    // }
+    // Các phương thức khác giữ nguyên
     public function submit(Request $request)
     {
         $request->validate([
@@ -54,12 +53,10 @@ class RechargeController extends Controller
         $amount = $request->amount;
         $tokens = $this->calculateTokens($amount);
 
-        // Lưu ảnh vào public/storage/proof_images
         $fileName = $request->file('proof_image')->hashName();
         $request->file('proof_image')->move(public_path('storage/proof_images'), $fileName);
         $proofPath = 'proof_images/' . $fileName;
 
-        // Lưu vào database
         RechargeRequest::create([
             'user_id' => Auth::id(),
             'amount' => $amount,
@@ -84,17 +81,13 @@ class RechargeController extends Controller
         }
     }
 
-
-
-
-    // Trong RechargeController.php
     public function exportReceipt($id)
     {
         $record = RechargeHistory::findOrFail($id);
         $request = RechargeRequest::where('user_id', $record->user_id)
-                                ->where('amount', $record->amount)
-                                ->where('requested_tokens', $record->tokens_added)
-                                ->first();
+            ->where('amount', $record->amount)
+            ->where('requested_tokens', $record->tokens_added)
+            ->first();
 
         $proofImagePath = $request ? public_path('storage/' . $request->proof_image) : null;
 
@@ -105,43 +98,41 @@ class RechargeController extends Controller
 
         return $pdf->download('HoaDon_NapTien_' . $id . '.pdf');
     }
+
     public function verify(Request $request)
-{
-    // Kiểm tra mật khẩu
-    $password = $request->input('password');
-    $user = Auth::user();
+    {
+        $password = $request->input('password');
+        $user = Auth::user();
 
-    if (!Hash::check($password, $user->password)) {
+        if (!Hash::check($password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mật khẩu không chính xác!'
+            ], 401);
+        }
+
+        $recaptchaResponse = $request->input('g-recaptcha-response');
+        $client = new Client();
+        $response = $client->post('https://www.google.com/recaptcha/api/siteverify', [
+            'form_params' => [
+                'secret' => env('RECAPTCHA_SECRET_KEY'),
+                'response' => $recaptchaResponse,
+                'remoteip' => $request->ip()
+            ]
+        ]);
+
+        $recaptchaData = json_decode($response->getBody(), true);
+
+        if (!$recaptchaData['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Xác nhận CAPTCHA không thành công!'
+            ], 401);
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'Mật khẩu không chính xác!'
-        ], 401);
+            'success' => true,
+            'message' => 'Xác nhận thành công!'
+        ]);
     }
-
-    // Kiểm tra CAPTCHA
-    $recaptchaResponse = $request->input('g-recaptcha-response');
-    $client = new Client();
-    $response = $client->post('https://www.google.com/recaptcha/api/siteverify', [
-        'form_params' => [
-            'secret' => env('RECAPTCHA_SECRET_KEY'), // Thêm Secret Key vào file .env
-            'response' => $recaptchaResponse,
-            'remoteip' => $request->ip()
-        ]
-    ]);
-
-    $recaptchaData = json_decode($response->getBody(), true);
-
-    if (!$recaptchaData['success']) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Xác nhận CAPTCHA không thành công!'
-        ], 401);
-    }
-
-    // Nếu cả mật khẩu và CAPTCHA hợp lệ
-    return response()->json([
-        'success' => true,
-        'message' => 'Xác nhận thành công!'
-    ]);
-}
 }

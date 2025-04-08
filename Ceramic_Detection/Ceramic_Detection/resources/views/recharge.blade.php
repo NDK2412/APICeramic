@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Nạp Tiền - Ceramic Recognition</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <!-- Thêm script Google reCAPTCHA -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -19,6 +22,14 @@
             --dark-color: #263238;
             --success-color: #00c853;
             --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --pending-color: #ffca28;
+            /* Màu vàng cho yêu cầu đang chờ */
+            --approved-color: #00c853;
+            /* Màu xanh lá cho yêu cầu đã duyệt */
+            --amount-color: #42a5f5;
+            /* Màu xanh dương cho tổng số tiền */
+            --tokens-color: #f44336;
+            /* Màu đỏ cho tổng token */
         }
 
         * {
@@ -29,7 +40,7 @@
         }
 
         body {
-            background: linear-gradient(to bottom right,rgb(12, 40, 64),rgb(182, 192, 218));
+            background: linear-gradient(to bottom right, rgb(12, 40, 64), rgb(182, 192, 218));
             color: var(--dark-color);
             min-height: 100vh;
             display: flex;
@@ -51,7 +62,8 @@
         }
 
         .sidebar:hover {
-            width: 240px;
+            width: 300px;
+            
         }
 
         .sidebar .logo {
@@ -88,9 +100,11 @@
             transition: background 0.3s, padding-left 0.3s;
         }
 
-        .sidebar a:hover, .sidebar a.active {
+        .sidebar a:hover,
+        .sidebar a.active {
             background: var(--secondary-color);
             padding-left: 30px;
+            padding: auto;
         }
 
         .sidebar a i {
@@ -214,7 +228,7 @@
             border: 2px solid var(--primary-color);
         }
 
-        .recharge-options input[type="radio"]:checked + .card {
+        .recharge-options input[type="radio"]:checked+.card {
             background: var(--gradient);
             color: white;
             transform: scale(1.05);
@@ -240,8 +254,8 @@
             font-style: italic;
         }
 
-        .recharge-options input[type="radio"]:checked + .card .tokens,
-        .recharge-options input[type="radio"]:checked + .card .description {
+        .recharge-options input[type="radio"]:checked+.card .tokens,
+        .recharge-options input[type="radio"]:checked+.card .description {
             color: white;
         }
 
@@ -255,7 +269,7 @@
             transition: opacity 0.3s ease;
         }
 
-        .recharge-options input[type="radio"]:checked + .card .icon {
+        .recharge-options input[type="radio"]:checked+.card .icon {
             opacity: 1;
             color: white;
         }
@@ -450,26 +464,131 @@
 
         /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @media (max-width: 768px) {
-            .sidebar { width: 60px; }
-            .sidebar:hover { width: 200px; }
-            .container { margin-left: 80px; padding: 10px; }
-            .recharge-options { flex-direction: column; }
-            .recharge-options label { margin-bottom: 10px; }
-            .header h1 { font-size: 1.8rem; }
-            .user-info { font-size: 0.9rem; }
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar:hover {
+                width: 200px;
+            }
+
+            .container {
+                margin-left: 80px;
+                padding: 10px;
+            }
+
+            .recharge-options {
+                flex-direction: column;
+            }
+
+            .recharge-options label {
+                margin-bottom: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .user-info {
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 480px) {
-            .container { margin-left: 70px; padding: 8px; }
-            .qr-code img { width: 120px; }
+            .container {
+                margin-left: 70px;
+                padding: 8px;
+            }
+
+            .qr-code img {
+                width: 120px;
+            }
+        }
+
+        .stats-section {
+            background: var(--light-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+        }
+
+        .stats-section h3 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h4 {
+            font-size: 1.1rem;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .stat-card.pending {
+            background: var(--pending-color);
+            color: white;
+        }
+
+        .stat-card.approved {
+            background: var(--approved-color);
+            color: white;
+        }
+
+        .stat-card.amount {
+            background: var(--amount-color);
+            color: white;
+        }
+
+        .stat-card.tokens {
+            background: var(--tokens-color);
+            color: white;
+        }
+
+        .stat-card.pending h4,
+        .stat-card.approved h4,
+        .stat-card.amount h4,
+        .stat-card.tokens h4 {
+            color: white;
         }
     </style>
 </head>
+
 <body>
     @if (!Auth::check())
         <script>
@@ -477,13 +596,13 @@
         </script>
     @endif
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
             <i class="fas fa-wallet"></i>
         </div>
         <ul>
-            <li><a href="#" class="active" data-section="recharge-section"><i class="fas fa-money-bill-wave"></i><span>Nạp Tiền</span></a></li>
+            <li><a href="#" class="active" data-section="recharge-section"><i
+                        class="fas fa-money-bill-wave"></i><span>Nạp Tiền</span></a></li>
             <li><a href="#" data-section="recharge-history"><i class="fas fa-history"></i><span>Lịch Sử</span></a></li>
             <li><a href="#" data-section="notifications"><i class="fas fa-bell"></i><span>Thông Báo</span></a></li>
             <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Quay Lại Dashboard</span></a></li>
@@ -495,18 +614,45 @@
         <div class="header">
             <h1>Nạp Tiền</h1>
             <div class="user-info">
-                Xin chào, {{ Auth::user()->name }}! Bạn hiện có <span id="tokenCount">{{ Auth::user()->tokens }}</span> lượt dự đoán.
+                Xin chào, {{ Auth::user()->name }}! Bạn hiện có <span id="tokenCount">{{ Auth::user()->tokens }}</span>
+                lượt dự đoán.
             </div>
         </div>
 
         <div class="content-wrapper">
+            <!-- Recharge Stats Section - Không dùng class .section -->
+            <div class="stats-section">
+                <h3>Thống Kê Nạp Tiền</h3>
+                <div class="stats-grid">
+                    <div class="stat-card pending">
+                        <h4>Yêu Cầu Đang Chờ</h4>
+                        <p>{{ $pendingRequestsCount }}</p>
+                    </div>
+                    <div class="stat-card approved">
+                        <h4>Yêu Cầu Đã Duyệt</h4>
+                        <p>{{ $approvedRequestsCount }}</p>
+                    </div>
+                    <div class="stat-card amount">
+                        <h4>Tổng Số Tiền Đã Nạp</h4>
+                        <p>{{ number_format($totalAmount) }} VNĐ</p>
+                    </div>
+                    <div class="stat-card tokens">
+                        <h4>Tổng Token Đã Nạp</h4>
+                        <p>{{ $totalTokens }}</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Recharge Section -->
             <div class="section recharge-section" id="recharge-section">
                 <h3>Chọn Số Tiền Nạp</h3>
                 @if (session('success'))
-                    <p style="color: var(--success-color); text-align: center; margin-bottom: 20px;">{{ session('success') }}</p>
+                    <p style="color: var(--success-color); text-align: center; margin-bottom: 20px;">
+                        {{ session('success') }}
+                    </p>
                 @endif
-                <form id="rechargeForm" method="POST" action="{{ route('recharge.submit') }}" enctype="multipart/form-data">
+                <form id="rechargeForm" method="POST" action="{{ route('recharge.submit') }}"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="recharge-options">
                         <label for="amount1">
@@ -518,7 +664,6 @@
                                 <i class="fas fa-check-circle icon"></i>
                             </div>
                         </label>
-
                         <label for="amount2">
                             <input type="radio" name="amount" value="100000" id="amount2">
                             <div class="card">
@@ -528,7 +673,6 @@
                                 <i class="fas fa-check-circle icon"></i>
                             </div>
                         </label>
-
                         <label for="amount3">
                             <input type="radio" name="amount" value="200000" id="amount3">
                             <div class="card">
@@ -566,7 +710,7 @@
                         @foreach ($rechargeHistory as $record)
                             <li>
                                 <span>
-                                    Nạp {{ number_format($record->amount) }} VNĐ → Nhận {{ $record->tokens_added }} tokens 
+                                    Nạp {{ number_format($record->amount) }} VNĐ → Nhận {{ $record->tokens_added }} tokens
                                     ({{ $record->approved_at }})
                                 </span>
                                 <button class="export-btn" onclick="exportReceipt({{ $record->id }})">Xuất Hóa Đơn</button>
@@ -601,7 +745,8 @@
                 <h3>Xác Nhận Giao Dịch</h3>
                 <form id="confirmForm">
                     <p><strong>Nhập lại mật khẩu:</strong></p>
-                    <input type="password" id="confirmPassword" name="password" required placeholder="Nhập mật khẩu của bạn">
+                    <input type="password" id="confirmPassword" name="password" required
+                        placeholder="Nhập mật khẩu của bạn">
                     <p><strong>Xác nhận CAPTCHA:</strong></p>
                     <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
                     <button type="button" onclick="submitRechargeForm()">Xác Nhận</button>
@@ -614,7 +759,7 @@
     <script>
         // Sidebar navigation
         document.querySelectorAll('.sidebar a').forEach(link => {
-            link.addEventListener('click', function(e) {
+            link.addEventListener('click', function (e) {
                 if (!this.href.includes('/dashboard')) {
                     e.preventDefault();
                     document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
@@ -627,17 +772,20 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
+            document.querySelectorAll('.section').forEach(section => {
+                if (section.id !== 'stats-section') {
+                    section.style.display = 'none';
+                }
+            });
             document.getElementById('recharge-section').style.display = 'block';
         });
 
         // Hiển thị popup xác nhận khi nhấn nút "Xác Nhận Mua Thêm Lượt"
-        document.getElementById('rechargeForm').addEventListener('submit', function(e) {
+        document.getElementById('rechargeForm').addEventListener('submit', function (e) {
             e.preventDefault();
             showConfirmPopup();
         });
 
-        // Hiển thị popup
         function showConfirmPopup() {
             const popup = document.getElementById('confirmPopup');
             const overlay = document.getElementById('confirmPopupOverlay');
@@ -646,7 +794,6 @@
             grecaptcha.reset();
         }
 
-        // Ẩn popup
         function hideConfirmPopup() {
             const popup = document.getElementById('confirmPopup');
             const overlay = document.getElementById('confirmPopupOverlay');
@@ -655,7 +802,6 @@
             document.getElementById('confirmPassword').value = '';
         }
 
-        // Xử lý gửi form sau khi xác nhận mật khẩu và CAPTCHA
         function submitRechargeForm() {
             const password = document.getElementById('confirmPassword').value;
             const recaptchaResponse = grecaptcha.getResponse();
@@ -682,24 +828,23 @@
                     'g-recaptcha-response': recaptchaResponse
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('rechargeForm').submit();
-                } else {
-                    alert(data.message || 'Mật khẩu hoặc CAPTCHA không hợp lệ!');
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('rechargeForm').submit();
+                    } else {
+                        alert(data.message || 'Mật khẩu hoặc CAPTCHA không hợp lệ!');
+                        grecaptcha.reset();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra. Vui lòng thử lại!');
                     grecaptcha.reset();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra. Vui lòng thử lại!');
-                grecaptcha.reset();
-            });
+                });
         }
 
-        // Preview proof image
-        document.getElementById('proofImage').addEventListener('change', function(e) {
+        document.getElementById('proofImage').addEventListener('change', function (e) {
             const file = e.target.files[0];
             const preview = document.getElementById('proofPreview');
             if (file) {
@@ -708,7 +853,6 @@
             }
         });
 
-        // Export receipt
         function exportReceipt(recordId) {
             fetch(`/recharge/export/${recordId}`, { method: 'GET' })
                 .then(response => response.blob())
@@ -725,4 +869,5 @@
         }
     </script>
 </body>
+
 </html>

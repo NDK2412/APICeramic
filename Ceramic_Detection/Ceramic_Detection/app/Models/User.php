@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Authenticatable
 {
     protected $fillable = [
-        'name', 'email', 'email_verified_at', 'password', 'role', 'tokens', 'tokens_used', 'rating', 'feedback'
+        'name', 'email', 'email_verified_at', 'password', 'role', 'tokens', 'tokens_used', 'rating', 'feedback', 'status'
     ];
 
     protected $hidden = [
@@ -26,5 +26,10 @@ class User extends Authenticatable
     public function loginHistories()
     {
         return $this->hasMany(LoginHistory::class);
+    }
+    // Check if user is active
+    public function isActive()
+    {
+        return $this->status === 'active';
     }
 }

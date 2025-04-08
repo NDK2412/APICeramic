@@ -11,7 +11,7 @@ use App\Models\Recharge;
 use App\Models\RechargeRequest;
 use App\Models\RechargeHistory;
 use App\Models\TermsAndConditions;
-use PhpOffice\PhpSpreadsheet\Spreadsheet; 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\Ceramic;
 use App\Models\News;
@@ -62,22 +62,30 @@ class AdminController extends Controller
         $rechargeRequests = RechargeRequest::where('status', 'pending')->get();
         $totalRevenue = RechargeHistory::sum('amount');
         $averageRating = User::avg('rating') ?? 0;
+        // Thêm số liệu mới
+        $approvedRequests = RechargeRequest::where('status', 'approved')->count();
+        $rejectedRequests = RechargeRequest::where('status', 'rejected')->count();
+        // Thêm số liệu cho người dùng hoạt động và không hoạt động
+        $activeUsers = User::where('status', 'active')->count();
+        $inactiveUsers = User::where('status', 'inactive')->count();
+        // Cập nhật để tính doanh thu theo ngày
         $revenueData = RechargeHistory::select(
-            DB::raw('DATE_FORMAT(approved_at, "%Y-%m") as month'),
+            DB::raw('DATE_FORMAT(approved_at, "%Y-%m-%d") as day'),
             DB::raw('SUM(amount) as total')
         )
-        ->whereNotNull('approved_at')
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+            ->whereNotNull('approved_at')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->get();
 
         // Lấy múi giờ hiện tại từ bảng settings
         $currentTimezone = \App\Models\Setting::where('key', 'timezone')->first()->value ?? config('app.timezone');
 
         // Lấy lịch sử giao dịch (tất cả các yêu cầu nạp tiền)
+
         $transactionHistory = RechargeRequest::with('user')
-            ->orderBy('created_at', 'desc')
-            ->take(10) // Giới hạn 10 giao dịch gần nhất để tránh quá tải
+            //     ->orderBy('created_at', 'desc')
+            //     ->take(10) // Giới hạn 10 giao dịch gần nhất để tránh quá tải
             ->get();
         // Tính tổng doanh thu
         $totalRevenue = RechargeRequest::where('status', 'approved')->sum('amount');
@@ -90,12 +98,14 @@ class AdminController extends Controller
             ->with('user') // Lấy thông tin user liên quan
             ->get()
             ->mapWithKeys(function ($item) {
-                return [$item->user_id => [
-                    'name' => $item->user ? $item->user->name : 'Người dùng không tồn tại',
-                    'total_revenue' => $item->total_revenue,
-                ]];
+                return [
+                    $item->user_id => [
+                        'name' => $item->user ? $item->user->name : 'Người dùng không tồn tại',
+                        'total_revenue' => $item->total_revenue,
+                    ]
+                ];
             });
-        $revenueLabels = $revenueData->pluck('month')->toArray();
+        $revenueLabels = $revenueData->pluck('day')->toArray();
         $revenueData = $revenueData->pluck('total')->toArray();
 
         if (empty($revenueLabels)) {
@@ -115,7 +125,7 @@ class AdminController extends Controller
         //Chính sáchd  và điều khoản
         $terms = \App\Models\TermsAndConditions::first();
         // Lấy trạng thái CAPTCHA từ cột mới
-        
+
         $recaptchaEnabled = Setting::where('key', 'recaptcha_enabled')->first();
         $recaptchaEnabled = $recaptchaEnabled ? ($recaptchaEnabled->recaptcha_enabled == 1) : false;
         //Liên hệ
@@ -127,7 +137,7 @@ class AdminController extends Controller
         $ratingTrend = $this->getTrendData(User::class, 'updated_at', [], 'rating');
         //cập nhật tin tức
         $news = News::all();
-        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers','transactionHistory','ceramics','currentTimezone','classifications','terms','recaptchaEnabled','revenueByUser','currentTheme','contacts','userTrend','rechargeTrend','revenueTrend','ratingTrend','chatUsers','news'));
+        return view('admin', compact('users', 'rechargeRequests', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers', 'transactionHistory', 'ceramics', 'currentTimezone', 'classifications', 'terms', 'recaptchaEnabled', 'revenueByUser', 'currentTheme', 'contacts', 'userTrend', 'rechargeTrend', 'revenueTrend', 'ratingTrend', 'chatUsers', 'news', 'approvedRequests', 'rejectedRequests', 'activeUsers', 'inactiveUsers'));
     }
     public function sendChatMessage(Request $request)
     {
@@ -148,7 +158,8 @@ class AdminController extends Controller
     {
         $messages = Message::where('user_id', $userId)->orderBy('created_at')->get();
         return response()->json(['messages' => $messages]);
-    }    public function edit($id)
+    }
+    public function edit($id)
     {
         $user = User::findOrFail($id);
         return view('admin.edit', compact('user'));
@@ -157,27 +168,29 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        
+
         // Xác thực dữ liệu
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'role' => 'required|in:user,admin',
             'tokens' => 'required|integer|min:0',
+            'status' => 'required|in:active,inactive', // Validate status
         ]);
-    
+
         // Cập nhật dữ liệu
         $user->update([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'role' => $request->input('role'),
             'tokens' => $request->input('tokens'),
+            'status' => $request->input('status'), // Update status
         ]);
-    
+
         // Xóa dòng $user->save() vì update() đã tự động lưu
         return redirect()->route('admin.index')->with('success', 'Cập nhật người dùng thành công!');
     }
-    
+
     public function destroy($id)
     {
         $user = User::findOrFail($id);
@@ -209,57 +222,57 @@ class AdminController extends Controller
         return redirect()->route('admin.index')->with('success', 'Yêu cầu nạp tiền đã được xác nhận!');
     }
 
-    
+
 
 
 
     // Lưu món đồ gốm mới
-public function storeCeramic(Request $request)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'image' => 'nullable|string|max:255',
-        'category' => 'nullable|string|max:255',
-        'origin' => 'nullable|string|max:255',
-    ]);
+    public function storeCeramic(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'origin' => 'nullable|string|max:255',
+        ]);
 
-    Ceramic::create($validated);
+        Ceramic::create($validated);
 
-    return redirect()->route('admin.index')->with('success', 'Thêm món đồ gốm thành công!');
-}
+        return redirect()->route('admin.index')->with('success', 'Thêm món đồ gốm thành công!');
+    }
 
-// Cập nhật thông tin món đồ gốm
-public function updateCeramic(Request $request, $id)
-{
-    $ceramic = Ceramic::findOrFail($id);
+    // Cập nhật thông tin món đồ gốm
+    public function updateCeramic(Request $request, $id)
+    {
+        $ceramic = Ceramic::findOrFail($id);
 
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'image' => 'nullable|string|max:255',
-        'category' => 'nullable|string|max:255',
-        'origin' => 'nullable|string|max:255',
-    ]);
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'origin' => 'nullable|string|max:255',
+        ]);
 
-    $ceramic->update($validated);
+        $ceramic->update($validated);
 
-    return redirect()->route('admin.index')->with('success', 'Cập nhật món đồ gốm thành công!');
-}
+        return redirect()->route('admin.index')->with('success', 'Cập nhật món đồ gốm thành công!');
+    }
 
-// Xóa món đồ gốm
-public function deleteCeramic($id)
-{
-    $ceramic = Ceramic::findOrFail($id);
-    $ceramic->delete();
+    // Xóa món đồ gốm
+    public function deleteCeramic($id)
+    {
+        $ceramic = Ceramic::findOrFail($id);
+        $ceramic->delete();
 
-    return redirect()->route('admin.index')->with('success', 'Xóa món đồ gốm thành công!');
+        return redirect()->route('admin.index')->with('success', 'Xóa món đồ gốm thành công!');
 
-}
+    }
 
 
-//Settings thay đổi múi giờ
-public function updateTimezone(Request $request)
+    //Settings thay đổi múi giờ
+    public function updateTimezone(Request $request)
     {
         // Xác thực dữ liệu đầu vào
         $request->validate([
@@ -280,34 +293,34 @@ public function updateTimezone(Request $request)
         return redirect()->back()->with('timezone_success', 'Múi giờ đã được cập nhật thành công!');
     }
 
-//Lịch sử giao dịch
+    //Lịch sử giao dịch
 
-public function getRecognitionHistory(Request $request)
-{
-    $query = RecognitionHistory::with('user')
-        ->orderBy('created_at', 'desc');
+    public function getRecognitionHistory(Request $request)
+    {
+        $query = RecognitionHistory::with('user')
+            ->orderBy('created_at', 'desc');
 
-    if ($request->has('user_id') && $request->user_id) {
-        $query->where('user_id', $request->user_id);
+        if ($request->has('user_id') && $request->user_id) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->has('method') && $request->method) {
+            $query->where('method', $request->method);
+        }
+
+        if ($request->has('date') && $request->date) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        $history = $query->paginate(15);
+
+        return view('admin.dashboard', [
+            'recognitionHistory' => $history,
+            // Các biến khác...
+        ]);
     }
-
-    if ($request->has('method') && $request->method) {
-        $query->where('method', $request->method);
-    }
-
-    if ($request->has('date') && $request->date) {
-        $query->whereDate('created_at', $request->date);
-    }
-
-    $history = $query->paginate(15);
-
-    return view('admin.dashboard', [
-        'recognitionHistory' => $history,
-        // Các biến khác...
-    ]);
-}
-//Chính sách và điều khoản
-public function terms()
+    //Chính sách và điều khoản
+    public function terms()
     {
         $terms = TermsAndConditions::first();
         return view('admin.terms', compact('terms'));
@@ -328,8 +341,8 @@ public function terms()
 
         return redirect()->route('admin.index')->with('success', 'Chính sách và điều khoản đã được cập nhật.');
     }
-//Xuât file excel
-public function exportTransactionHistory(Request $request)
+    //Xuât file excel
+    public function exportTransactionHistory(Request $request)
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -413,7 +426,7 @@ public function exportTransactionHistory(Request $request)
             ['value' => $request->theme]
         );
 
-        
+
         return redirect()->back()->with('theme_success', 'Giao diện đã được cập nhật thành công!');
     }
     private function getTrendData($model, $dateColumn, $conditions = [], $valueColumn = null)

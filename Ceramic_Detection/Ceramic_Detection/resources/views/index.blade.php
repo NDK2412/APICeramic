@@ -1,22 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Ceramic Classification</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <!-- Thêm Font Awesome để sử dụng icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="css/public.css">
     <style>
         :root {
-            --primary-color: #b3cde0; /* Xanh lam nhạt */
-            --secondary-color: #6497b1; /* Xanh lam trung */
-            --accent-color: #e6f0fa; /* Xanh lam rất nhạt */
-            --light-color: #f5faff; /* Nền nhạt */
-            --dark-color: #03396c; /* Xanh lam đậm */
-            --text-light: #ffffff; /* Trắng cho chữ */
+            --primary-color: #b3cde0;
+            /* Xanh lam nhạt */
+            --secondary-color: #6497b1;
+            /* Xanh lam trung */
+            --accent-color: #e6f0fa;
+            /* Xanh lam rất nhạt */
+            --light-color: #f5faff;
+            /* Nền nhạt */
+            --dark-color: #03396c;
+            /* Xanh lam đậm */
+            --text-light: #ffffff;
+            /* Trắng cho chữ */
         }
 
         * {
@@ -123,16 +133,19 @@
             margin-bottom: 10px;
             animation: bounce 1s infinite;
         }
-        
+
         @keyframes bounce {
-            0%, 100% {
-    transform: translateY(0);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  }
-  50% {
-    transform: translateY(-12px);
-    box-shadow: 0 15px 20px rgba(0,0,0,0.2);
-  }
+
+            0%,
+            100% {
+                transform: translateY(0);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            50% {
+                transform: translateY(-12px);
+                box-shadow: 0 15px 20px rgba(0, 0, 0, 0.2);
+            }
         }
 
         #logoutButton {
@@ -328,8 +341,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         footer {
@@ -368,8 +386,15 @@
         }
 
         @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-content p {
@@ -499,15 +524,18 @@
                 width: 250px;
             }
 
-            .about-section, .news-section {
+            .about-section,
+            .news-section {
                 padding: 1.5rem;
             }
 
-            .about-section h2, .news-section h1 {
+            .about-section h2,
+            .news-section h1 {
                 font-size: 1.5rem;
             }
 
-            .about-section p, .news-content p {
+            .about-section p,
+            .news-content p {
                 font-size: 1rem;
             }
 
@@ -575,6 +603,7 @@
                 font-size: 0.85rem;
             }
         }
+
         /* Phần Form Liên hệ */
         .contact-form {
             margin-top: 1.5rem;
@@ -604,7 +633,7 @@
         }
 
         .contact-form button {
-            background-color:rgb(5, 53, 66);
+            background-color: rgb(5, 53, 66);
             color: var(--text-light);
             padding: 0.6rem 1.2rem;
             border: none;
@@ -620,37 +649,42 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
-        <div class="header-content">
-            <a href="#" class="logo">
-                <img src="{{ asset('storage/ceramics/logo2.webp') }}" alt="Logo">
-                Ceramic Classification
-            </a>
-            <button class="hamburger" aria-label="Toggle menu">☰</button>
-            <div class="nav-container">
-                <ul class="nav-menu">
-                    <li><a href="#home">Trang chủ</a></li>
-                    <li><a href="gallery">Thư viện đồ gốm</a></li>
-                    <li><a href="#" id="classificationLink">Nhận diện</a></li>
-                    <li><a href="#market">Mua bán</a></li>
-                    <li><a href="#" id="contactLink">Liên hệ</a></li>
-                </ul>
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <img src="{{ asset('storage/ceramics/logo2.webp') }}" alt="Logo">
+                    Ceramic Classification
+                </a>
+                <button class="hamburger" aria-label="Toggle menu">☰</button>
+                <div class="nav-container">
+                    <ul class="nav-menu">
+                        <li><a href="#home">Trang chủ</a></li>
+                        <li><a href="gallery">Thư viện đồ gốm</a></li>
+                        <li><a href="#" id="classificationLink">Nhận diện</a></li>
+                        <li><a href="#market">Mua bán</a></li>
+                        <li><a href="#" id="contactLink">Liên hệ</a></li>
+                    </ul>
+                </div>
             </div>
-        </div>
         </header>
         <div class="login-section">
-            <button id="loginButton" onclick="redirectToLogin()">Try It Out <i class="fa-solid fa-arrow-up-from-bracket"></i></button>
+            <button id="loginButton" onclick="redirectToLogin()">Try It Out <i
+                    class="fa-solid fa-arrow-up-from-bracket"></i></button>
             <button id="logoutButton" onclick="logout()" style="display:none;">Đăng xuất</button>
         </div>
 
         <!-- Banner Section -->
         <div class="banner">
             <div class="banner-slides" id="bannerSlides">
-                <img src="https://www.metizsoft.com/wp-content/uploads/2025/02/Laravel-12-Latest-Features-and-Updates.webp" alt="Banner 1" class="banner-slide">
-                <img src="https://s3-ap-southeast-1.amazonaws.com/vmixvn/wp-media-folder-vmix-viet-nam/wp-content/uploads/2024/08/ai_trong_thi_t_k_logo.jpg" alt="Banner 2" class="banner-slide">
-                <img src="https://thietkelogo.edu.vn/uploads/.thumbs/images/tuyen-dung/1-php-developer-1417084819.jpg" alt="Banner 3" class="banner-slide">
+                <img src="https://www.metizsoft.com/wp-content/uploads/2025/02/Laravel-12-Latest-Features-and-Updates.webp"
+                    alt="Banner 1" class="banner-slide">
+                <img src="https://s3-ap-southeast-1.amazonaws.com/vmixvn/wp-media-folder-vmix-viet-nam/wp-content/uploads/2024/08/ai_trong_thi_t_k_logo.jpg"
+                    alt="Banner 2" class="banner-slide">
+                <img src="https://thietkelogo.edu.vn/uploads/.thumbs/images/tuyen-dung/1-php-developer-1417084819.jpg"
+                    alt="Banner 3" class="banner-slide">
             </div>
         </div>
 
@@ -707,14 +741,14 @@
         <!-- About Section - Updated Version -->
         <section class="about-section">
             <h2>Giới thiệu tổng quan về Ceramic AI</h2>
-            
+
             <div class="feature-point">
                 <h3><i class="fas fa-question-circle"></i> Ceramic AI là gì?</h3>
-                <p>Ceramic AI là hệ thống trí tuệ nhân tạo tiên tiến chuyên về nhận dạng và phân loại đồ gốm sứ. 
-                Công nghệ của chúng tôi kết hợp học máy và cơ sở dữ liệu phong phú để xác định chính xác niên đại, 
-                xuất xứ và loại hình gốm sứ chỉ từ hình ảnh đầu vào.</p>
+                <p>Ceramic AI là hệ thống trí tuệ nhân tạo tiên tiến chuyên về nhận dạng và phân loại đồ gốm sứ.
+                    Công nghệ của chúng tôi kết hợp học máy và cơ sở dữ liệu phong phú để xác định chính xác niên đại,
+                    xuất xứ và loại hình gốm sứ chỉ từ hình ảnh đầu vào.</p>
             </div>
-            
+
             <div class="feature-point">
                 <h3><i class="fas fa-star"></i> Lợi ích nổi bật</h3>
                 <div class="benefits-grid">
@@ -735,7 +769,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="feature-point">
                 <h3><i class="fas fa-cubes"></i> Ứng dụng đa dạng</h3>
                 <p>Ceramic AI phục vụ nhiều đối tượng và mục đích khác nhau:</p>
@@ -748,13 +782,13 @@
                     <span class="application-tag">Bảo tồn</span>
                 </div>
             </div>
-            
+
             <div class="feature-point">
                 <h3><i class="fas fa-book-open"></i> Hướng dẫn sử dụng</h3>
                 <p>1. Tải lên hình ảnh đồ gốm cần phân tích<br>
-                2. Hệ thống AI sẽ tự động nhận diện và phân loại<br>
-                3. Nhận kết quả chi tiết về niên đại, xuất xứ và đặc điểm<br>
-                4. Lưu trữ hoặc chia sẻ kết quả phân tích</p>
+                    2. Hệ thống AI sẽ tự động nhận diện và phân loại<br>
+                    3. Nhận kết quả chi tiết về niên đại, xuất xứ và đặc điểm<br>
+                    4. Lưu trữ hoặc chia sẻ kết quả phân tích</p>
                 <h4 id="guideButton" href="#" onclick="redirectToGuide()">Xem hướng dẫn chi tiết</h4>
             </div>
         </section>
@@ -770,31 +804,35 @@
 
     <!-- Contact Sidebar -->
     <div class="contact-sidebar" id="contactSidebar">
-    <h3>Liên hệ với chúng tôi</h3>
-    <ul>
-        <li><i class="fas fa-phone"></i> <span>SĐT: 0982638519</span></li>
-        <li><i class="fas fa-envelope"></i> <a href="mailto:khangkhang1111777@gmail.com">Email: khangkhang1111777@gmail.com</a></li>
-        <li><i class="fab fa-facebook-f"></i> <a href="https://facebook.com/ceramic" target="_blank">Facebook</a></li>
-        <li><i class="fab fa-instagram"></i> <a href="https://instagram.com/ceramic" target="_blank">Instagram</a></li>
-        <li><i class="fa-brands fa-x-twitter"></i> <a href="https://twitter.com/ceramic" target="_blank">Twitter</a></li>
-        <li><i class="fas fa-map-marker-alt"></i> <span>Địa chỉ: 123 Đường Gốm, TP. Hà Nội</span></li>
-    </ul>
-    <div class="contact-form">
-        <h4>Gửi liên hệ</h4>
-        <form id="contactForm" method="POST" action="{{ route('contact.submit') }}">
-            @csrf
-            <h8>Nhập họ tên:</h8>
-            <input type="text" name="name" placeholder="Họ tên" required>
-            <h8>Nhập SĐT:</h8>
-            <input type="tel" name="phone" placeholder="Số điện thoại" required>
-            <h8>Nhập email:</h8>
-            <input type="email" name="email" placeholder="Email" required>
-            <h8>Nhập nội dung:</h8>
-            <textarea name="message" placeholder="Nội dung" required></textarea>
-            <button type="submit">Gửi</button>
-        </form>
+        <h3>Liên hệ với chúng tôi</h3>
+        <ul>
+            <li><i class="fas fa-phone"></i> <span>SĐT: 0982638519</span></li>
+            <li><i class="fas fa-envelope"></i> <a href="mailto:khangkhang1111777@gmail.com">Email:
+                    khangkhang1111777@gmail.com</a></li>
+            <li><i class="fab fa-facebook-f"></i> <a href="https://facebook.com/ceramic" target="_blank">Facebook</a>
+            </li>
+            <li><i class="fab fa-instagram"></i> <a href="https://instagram.com/ceramic" target="_blank">Instagram</a>
+            </li>
+            <li><i class="fa-brands fa-x-twitter"></i> <a href="https://twitter.com/ceramic" target="_blank">Twitter</a>
+            </li>
+            <li><i class="fas fa-map-marker-alt"></i> <span>Địa chỉ: 123 Đường Gốm, TP. Hà Nội</span></li>
+        </ul>
+        <div class="contact-form">
+            <h4>Gửi liên hệ</h4>
+            <form id="contactForm" method="POST" action="{{ route('contact.submit') }}">
+                @csrf
+                <h8>Nhập họ tên:</h8>
+                <input type="text" name="name" placeholder="Họ tên" required>
+                <h8>Nhập SĐT:</h8>
+                <input type="tel" name="phone" placeholder="Số điện thoại" required>
+                <h8>Nhập email:</h8>
+                <input type="email" name="email" placeholder="Email" required>
+                <h8>Nhập nội dung:</h8>
+                <textarea name="message" placeholder="Nội dung" required></textarea>
+                <button type="submit">Gửi</button>
+            </form>
+        </div>
     </div>
-</div>
 
     <footer>
         <p>© 2023 Ceramic Classification System. All rights reserved.</p>
@@ -898,45 +936,46 @@
 
         // Đóng sidebar khi nhấp ra ngoài
         document.addEventListener('click', (e) => {
-            if (contactSidebar.classList.contains('active') && 
-                !contactSidebar.contains(e.target) && 
-                e.target !== contactLink && 
+            if (contactSidebar.classList.contains('active') &&
+                !contactSidebar.contains(e.target) &&
+                e.target !== contactLink &&
                 !navContainer.contains(e.target)) {
                 contactSidebar.classList.remove('active');
             }
         });
-//Form liên hệ
-// Thêm vào cuối phần <script>
-const contactForm = document.getElementById('contactForm');
+        //Form liên hệ
+        // Thêm vào cuối phần <script>
+        const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(contactForm);
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(contactForm);
 
-    try {
-        const response = await fetch("{{ route('contact.submit') }}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            try {
+                const response = await fetch("{{ route('contact.submit') }}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Thông tin liên hệ đã được gửi thành công!');
+                    contactForm.reset();
+                    contactSidebar.classList.remove('active');
+                } else {
+                    alert('Có lỗi xảy ra: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Lỗi gửi liên hệ:', error);
+                alert('Không thể gửi liên hệ. Vui lòng thử lại sau.');
             }
         });
-
-        const result = await response.json();
-        if (response.ok) {
-            alert('Thông tin liên hệ đã được gửi thành công!');
-            contactForm.reset();
-            contactSidebar.classList.remove('active');
-        } else {
-            alert('Có lỗi xảy ra: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Lỗi gửi liên hệ:', error);
-        alert('Không thể gửi liên hệ. Vui lòng thử lại sau.');
-    }
-});
         // Kiểm tra trạng thái đăng nhập khi trang tải
         window.onload = checkLoginStatus;
     </script>
 </body>
+
 </html>

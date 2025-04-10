@@ -23,13 +23,39 @@ class LoginController extends Controller
         return view('login', compact('recaptchaEnabled'));
     }
 
-    public function login(LoginRequest $request)
+    public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-
+       
+        $recaptchaEnabled = Setting::where('key', 'recaptcha_enabled')->first();
+        $recaptchaEnabled = $recaptchaEnabled ? ($recaptchaEnabled->value == '1') : false;
         // Tìm người dùng dựa trên email trước khi xác thực
-        $user = User::where('email', $credentials['email'])->first();
+       
+        $rules = [
+            'email' => 'required|email',
+            'password' => 'required',
+        ];
+        if ($recaptchaEnabled) {
+            if ($request->has('g-recaptcha-response') && !empty($request->input('g-recaptcha-response'))) {
+                // Kiểm tra tính hợp lệ của CAPTCHA
+                $validator = validator(['g-recaptcha-response' => $request->input('g-recaptcha-response')], [
+                    'g-recaptcha-response' => 'required|captcha'
+                ]);
 
+                if ($validator->fails()) {
+                    return back()->withErrors([
+                        'g-recaptcha-response' => 'CAPTCHA không hợp lệ. Vui lòng thử lại.',
+                    ])->onlyInput('email');
+                }
+            } else {
+                // Nếu không có g-recaptcha-response hoặc rỗng
+                return back()->withErrors([
+                    'g-recaptcha-response' => 'Vui lòng tích vào CAPTCHA để xác nhận.',
+                ])->onlyInput('email');
+            }
+        }
+        $request->validate($rules);
+        $credentials = $request->only('email', 'password');
+        $user = User::where('email', $credentials['email'])->first();
         // Nếu tài khoản không tồn tại hoặc không hoạt động, trả về lỗi ngay lập tức
         if (!$user) {
             return back()->withErrors([

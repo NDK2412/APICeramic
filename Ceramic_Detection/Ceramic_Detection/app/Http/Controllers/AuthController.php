@@ -23,6 +23,9 @@ class AuthController extends Controller
     // Xử lý đăng nhập
     public function login(Request $request)
     {
+        
+        $recaptchaEnabled = Setting::where('key', 'recaptcha_enabled')->first();
+        $recaptchaEnabled = $recaptchaEnabled ? ($recaptchaEnabled->value == '1') : false;
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -30,7 +33,11 @@ class AuthController extends Controller
 
         // Tìm người dùng dựa trên email trước khi xác thực
         $user = User::where('email', $credentials['email'])->first();
-
+        if ($recaptchaEnabled && empty($request->input('g-recaptcha-response'))) {
+            return back()->withErrors([
+                'g-recaptcha-response' => 'Vui lòng tích vào CAPTCHA.',
+            ])->onlyInput('email');
+        }
         // Nếu tài khoản không tồn tại, trả về lỗi
         if (!$user) {
             return back()->withErrors([

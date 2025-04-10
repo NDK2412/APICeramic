@@ -41,7 +41,7 @@
         }
 
         .sidebar {
-            width: 250px;
+            width: 285px;
             background: var(--dark-color);
             color: white;
             height: 100vh;
@@ -131,7 +131,6 @@
         .stat-card canvas {
             width: 100% !important;
             height: 150px !important;
-
         }
 
         .stat-card {
@@ -146,6 +145,8 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            margin: 0 10px;
+            min-width: 200px;
         }
 
         .stat-card:hover {
@@ -160,6 +161,19 @@
         .stat-card p {
             font-size: 1.5rem;
             font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .stat-card {
+                flex: 0 0 48%;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stat-card {
+                flex: 0 0 100%;
+            }
         }
 
         table {
@@ -187,6 +201,13 @@
         .actions {
             display: flex;
             gap: 6px;
+        }
+
+        .tab-content canvas {
+            margin: 10px 0;
+            max-width: 100%;
+            max-height: 300px;
+            /* Đảm bảo không vượt quá container */
         }
 
         .action-btn {
@@ -446,7 +467,6 @@
         }
 
         /* Hành động */
-
         /* Giới hạn chiều cao và ẩn nội dung dài trong cột Mô tả */
         #ceramics .description-cell {
             max-height: 3em;
@@ -689,7 +709,6 @@
         }
 
         /* Hành động */
-
         #news .description-cell {
             max-height: 3em;
             overflow: hidden;
@@ -769,8 +788,87 @@
             max-height: 526px;
             overflow-y: auto;
         }
+
         div#contacts.container.tab-content table tbody tr td span {
             background-color: greenyellow;
+        }
+
+        /* Thông tin hệ thống */
+        /* Định dạng menu con */
+        .system-info-menu {
+            position: relative;
+        }
+
+        .submenu {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            width: 150px;
+            background: var(--dark-color);
+            list-style: none;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .submenu li {
+            margin-bottom: 10px;
+        }
+
+        .submenu a {
+            padding: 8px;
+            font-size: 0.9rem;
+        }
+
+        .submenu a:hover {
+            background: var(--gradient);
+        }
+
+        /* Hiển thị submenu khi hover */
+        .system-info-menu:hover .submenu {
+            display: block;
+        }
+
+        /* Định dạng tab nội dung */
+        #system-info .tab-container {
+            margin-top: 20px;
+        }
+
+        #system-info .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: var(--accent-color);
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #system-info .tab-button.active {
+            background: var(--gradient);
+            color: white;
+        }
+
+        #system-info .tab-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Cảnh báo khẩn cấp */
+        .alert-emergency {
+            background-color: #ff3333;
+            color: white;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
     </style>
 </head>
@@ -801,6 +899,13 @@
             <li><a href="#" data-tab="ceramics"><i class="fa-solid fa-layer-group"></i> Quản lý thư viện đồ gốm</a></li>
             <li><a href="#" data-tab="news"><i class="fas fa-newspaper"></i> Quản lý tin tức</a></li>
             <li><a href="#" data-tab="classifications"><i class="fas fa-history"></i> Lịch Sử Nhận Diện</a></li>
+            <li class="system-info-menu">
+                <a href="#" data-tab="system-info"><i class="fas fa-server"></i> Thông tin hệ thống</a>
+                <ul class="submenu" style="display: none;">
+                    <li><a href="#" data-tab="system-info" data-subtab="fastapi">FastAPI</a></li>
+                    <li><a href="#" data-tab="system-info" data-subtab="laravel">Laravel</a></li>
+                </ul>
+            </li>
             <li><a href="#" data-tab="terms"><i class="fas fa-file-alt"></i> Chính sách và điều khoản</a></li>
             <li><a href="#" data-tab="settings"><i class="fas fa-cog"></i> Cài Đặt</a></li>
             <li><a href="{{ route('logout') }}"
@@ -811,109 +916,112 @@
             @csrf
         </form>
     </div>
-
     <div class="content">
-
         <!-- Tab Tổng quan -->
         <div class="container tab-content" id="overview">
-            <h1>Tổng Quan</h1>
-            <div class="stats">
-                <div class="stat-card">
-                    <h3>Tổng người dùng</h3>
-                    <p>{{ $users->count() }} </p>
-                    <canvas id="userStatusPieChart"></canvas>
-                </div>
-                <div class="stat-card">
-                    <h3>Yêu cầu chờ duyệt</h3>
-                    <p>{{ $rechargeRequests->count() }}</p>
-                    <canvas id="rechargeTrendChart"></canvas>
-                </div>
-                <div class="stat-card">
-                    <h3>Trạng thái yêu cầu</h3>
-                    <p> Duyệt: {{ $approvedRequests }}
-                        Hủy: {{ $rejectedRequests }}
-                    </p>
-                    <canvas id="requestStatusPieChart"></canvas>
-                </div>
-                <div class="stat-card">
-                    <h3>Tổng doanh thu</h3>
-                    <p>{{ number_format($totalRevenue) }} VNĐ</p>
-                    <canvas id="revenueTrendChart"></canvas>
-                </div>
-                <div class="stat-card">
-                    <h3>Đánh giá trung bình</h3>
-                    <p>{{ number_format($averageRating, 1) }}/5</p>
-                    <canvas id="ratingTrendChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Bảng lịch sử giao dịch -->
-            <div class="transaction-history">
-                <h3>Lịch Sử Giao Dịch</h3>
-                <form action="{{ route('admin.export.transaction.history') }}" method="GET"
-                    style="margin-bottom: 20px;">
-                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                        <div>
-                            <label for="start_date">Từ ngày:</label>
-                            <input type="date" id="start_date" name="start_date" required>
-                        </div>
-                        <div>
-                            <label for="end_date">Đến ngày:</label>
-                            <input type="date" id="end_date" name="end_date" required>
-                        </div>
-                        <button type="submit" class="action-btn save-btn">
-                            <i class="fas fa-file-excel"></i> Xuất Excel
-                        </button>
+            <<h1>Tổng Quan</h1>
+                <!-- Hàng 1 -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <h3>Tổng người dùng</h3>
+                        <p>{{ $users->count() }}</p>
+                        <canvas id="userStatusPieChart"></canvas>
                     </div>
-                </form>
-                @if ($transactionHistory->isEmpty())
-                    <p>Không có giao dịch nào.</p>
-                @else
-                    <table id="transactionTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Tên người dùng</th>
-                                <th>Số tiền</th>
-                                <th>Tokens tương ứng</th>
-                                <th>Trạng thái</th>
-                                <th>Thời gian</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionBody">
-                            <!-- Nội dung sẽ được xử lý bằng JavaScript -->
-                        </tbody>
-                    </table>
-                    <div class="pagination" id="transactionPagination" style="text-align: center; margin-top: 20px;">
-                        <!-- Phân trang sẽ được thêm bằng JavaScript -->
+                    <div class="stat-card">
+                        <h3>Yêu cầu chờ duyệt</h3>
+                        <p>{{ $rechargeRequests->count() }}</p>
+                        <canvas id="rechargeTrendChart"></canvas>
                     </div>
-                @endif
-            </div>
-
-            <!-- Bảng Doanh Thu Theo Người Dùng -->
-            <div class="revenue-by-user">
-                <h3>Doanh Thu Theo Người Dùng</h3>
-                @if ($revenueByUser->isEmpty())
-                    <p>Không có dữ liệu doanh thu.</p>
-                @else
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Tên người dùng</th>
-                                <th>Doanh thu (VNĐ)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($revenueByUser as $userId => $data)
+                    <div class="stat-card">
+                        <h3>Tổng doanh thu</h3>
+                        <p>{{ number_format($totalRevenue) }} VNĐ</p>
+                        <canvas id="revenueTrendChart"></canvas>
+                    </div>
+                </div>
+                <!-- Hàng 2 -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <h3>Trạng thái yêu cầu</h3>
+                        <p> Duyệt: {{ $approvedRequests }} Hủy: {{ $rejectedRequests }}</p>
+                        <canvas id="requestStatusPieChart"></canvas>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Đánh giá trung bình</h3>
+                        <p>{{ number_format($averageRating, 1) }}/5</p>
+                        <canvas id="ratingTrendChart"></canvas>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Tổng lượt nhận diện</h3>
+                        <p>{{ number_format($totalTokenUsed) }}</p>
+                        <canvas id="tokenTrendChart"></canvas>
+                    </div>
+                </div>
+                <!-- Bảng lịch sử giao dịch -->
+                <div class="transaction-history">
+                    <h3>Lịch Sử Giao Dịch</h3>
+                    <form action="{{ route('admin.export.transaction.history') }}" method="GET"
+                        style="margin-bottom: 20px;">
+                        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                            <div>
+                                <label for="start_date">Từ ngày:</label>
+                                <input type="date" id="start_date" name="start_date" required>
+                            </div>
+                            <div>
+                                <label for="end_date">Đến ngày:</label>
+                                <input type="date" id="end_date" name="end_date" required>
+                            </div>
+                            <button type="submit" class="action-btn save-btn">
+                                <i class="fas fa-file-excel"></i> Xuất Excel
+                            </button>
+                        </div>
+                    </form>
+                    @if ($transactionHistory->isEmpty())
+                        <p>Không có giao dịch nào.</p>
+                    @else
+                        <table id="transactionTable">
+                            <thead>
                                 <tr>
-                                    <td>{{ $data['name'] }}</td>
-                                    <td>{{ number_format($data['total_revenue']) }} VNĐ</td>
+                                    <th>ID</th>
+                                    <th>Tên người dùng</th>
+                                    <th>Số tiền</th>
+                                    <th>Tokens tương ứng</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thời gian</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
-            </div>
+                            </thead>
+                            <tbody id="transactionBody">
+                                <!-- Nội dung sẽ được xử lý bằng JavaScript -->
+                            </tbody>
+                        </table>
+                        <div class="pagination" id="transactionPagination" style="text-align: center; margin-top: 20px;">
+                            <!-- Phân trang sẽ được thêm bằng JavaScript -->
+                        </div>
+                    @endif
+                </div>
+                <!-- Bảng Doanh Thu Theo Người Dùng -->
+                <div class="revenue-by-user">
+                    <h3>Doanh Thu Theo Người Dùng</h3>
+                    @if ($revenueByUser->isEmpty())
+                        <p>Không có dữ liệu doanh thu.</p>
+                    @else
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tên người dùng</th>
+                                    <th>Doanh thu (VNĐ)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($revenueByUser as $userId => $data)
+                                    <tr>
+                                        <td>{{ $data['name'] }}</td>
+                                        <td>{{ number_format($data['total_revenue']) }} VNĐ</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                </div>
         </div>
         <!-- Tab Liên hệ -->
         <div class="container tab-content" id="contacts" style="display: none;">
@@ -936,18 +1044,18 @@
                         @foreach ($contacts as $contact)
                             <tr
                                 style="background-color: {{ $contact->is_read ? 'var(--card-bg)' : 'rgba(42, 92, 139, 0.1)' }}; 
-                                                                                                                                                                                    color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
-                                                                                                                                                                                    border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
+                                                                                                                                                                                                                                                                                                                                                                    color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
+                                                                                                                                                                                                                                                                                                                                                                    border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
                                 <td>{{ $contact->name }}</td>
                                 <td>
                                     <span
                                         style="display: inline-block; 
-                                                                                                                                                                                            padding: 0.25rem 0.5rem;
-                                                                                                                                                                                            border-radius: 12px;
-                                                                                                                                                                                            background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
-                                                                                                                                                                                            color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
-                                                                                                                                                                                            font-size: 0.85rem;
-                                                                                                                                                                                            font-weight: 500;">
+                                                                                                                                                                                                                                                                                                                                                                            padding: 0.25rem 0.5rem;
+                                                                                                                                                                                                                                                                                                                                                                            border-radius: 12px;
+                                                                                                                                                                                                                                                                                                                                                                            background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
+                                                                                                                                                                                                                                                                                                                                                                            color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
+                                                                                                                                                                                                                                                                                                                                                                            font-size: 0.85rem;
+                                                                                                                                                                                                                                                                                                                                                                            font-weight: 500;">
                                         {{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}
                                     </span>
                                 </td>
@@ -965,7 +1073,6 @@
                 </table>
             @endif
         </div>
-
         <!-- Tab Quản lý người dùng -->
         <div class="container tab-content" id="users" style="display: none;">
             <h1>Quản Lý Người Dùng</h1>
@@ -1142,30 +1249,25 @@
                 </table>
             @endif
         </div>
-
         <!-- Tab Doanh thu -->
         <div class="container tab-content" id="revenue" style="display: none;">
             <h1>Doanh Thu Theo Thời Gian</h1>
             <canvas id="revenueChart" width="800" height="400"></canvas>
         </div>
-
         <!-- Tab Quản lý thư viện đồ gốm -->
         <div class="container tab-content" id="ceramics" style="display: none;">
             <h1>Quản Lý Thư Viện Đồ Gốm</h1>
-
             <!-- Nút thêm món đồ gốm mới -->
             <button type="button" class="action-btn save-btn" onclick="showAddCeramicPopup()"
                 style="margin-bottom: 20px;">
                 <i class="fas fa-plus"></i> Thêm món đồ gốm mới
             </button>
-
             <!-- Thông báo thành công (nếu có) -->
             @if (session('success'))
                 <div class="success-message">
                     {{ session('success') }}
                 </div>
             @endif
-
             <!-- Bảng danh sách đồ gốm -->
             @if ($ceramics->isEmpty())
                 <p>Không có món đồ gốm nào trong thư viện.</p>
@@ -1234,7 +1336,6 @@
                                             <button type="submit" class="action-btn save-btn" style="display:none;"><i
                                                     class="fas fa-save"></i> Lưu</button>
                                         </form>
-
                                         <button type="button" class="action-btn cancel-btn" style="display:none;"
                                             onclick="cancelCeramicEdit({{ $ceramic->id }})"><i class="fas fa-times"></i>
                                             Hủy</button>
@@ -1257,6 +1358,26 @@
         <!-- Tab Yêu Cầu Settings -->
         <div class="container tab-content" id="settings" style="display: none;">
             <h1>Cài Đặt</h1>
+            <h3>Sao Lưu Dữ Liệu</h3>
+            @if (session('backup_success'))
+                <div class="success-message">
+                    <!-- Ngay dưới phần success message -->
+                    @if (session('error'))
+                        <div
+                            style="color: var(--error-color); background: #f8d7da; padding: 8px; border-radius: 4px; margin-bottom: 15px; text-align: center;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    {{ session('backup_success') }}
+                </div>
+            @endif
+            <form method="POST" action="{{ route('admin.backup') }}">
+                @csrf
+                <p>Sao lưu toàn bộ cơ sở dữ liệu thành tệp SQL.</p>
+                <button type="submit" class="action-btn save-btn">
+                    <i class="fas fa-download"></i> Sao Lưu Dữ Liệu
+                </button>
+            </form>
             <h3>Thay Đổi Múi Giờ</h3>
             @if (session('timezone_success'))
                 <div class="success-message">
@@ -1352,8 +1473,6 @@
                     @endforeach
                 </tbody>
             </table>
-
-
         </div>
         <!-- Tab Chính sách và điều khoản -->
         <div class="container tab-content" id="terms" style="display: none;">
@@ -1376,19 +1495,16 @@
         <!-- Tab Quản lý tin tức -->
         <div class="container tab-content" id="news" style="display: none;">
             <h1>Quản Lý Tin Tức</h1>
-
             <!-- Nút thêm bài viết mới -->
             <button type="button" class="action-btn save-btn" onclick="showAddNewsPopup()" style="margin-bottom: 20px;">
                 <i class="fas fa-plus"></i> Thêm bài viết mới
             </button>
-
             <!-- Thông báo thành công (nếu có) -->
             @if (session('news_success'))
                 <div class="success-message">
                     {{ session('news_success') }}
                 </div>
             @endif
-
             <!-- Bảng danh sách tin tức -->
             @if ($news->isEmpty())
                 <p>Không có bài viết tin tức nào.</p>
@@ -1452,7 +1568,6 @@
                                             <button type="submit" class="action-btn save-btn" style="display:none;"><i
                                                     class="fas fa-save"></i> Lưu</button>
                                         </form>
-
                                         <button type="button" class="action-btn cancel-btn" style="display:none;"
                                             onclick="cancelNewsEdit({{ $article->id }})"><i class="fas fa-times"></i>
                                             Hủy</button>
@@ -1471,6 +1586,83 @@
                     </tbody>
                 </table>
             @endif
+        </div>
+        <!-- Tab Thông tin hệ thống -->
+        <div class="container tab-content" id="system-info" style="display: none;">
+            <h1>Thông tin hệ thống</h1>
+            <!-- Hiển thị cảnh báo khẩn cấp -->
+            @if(!empty($alerts))
+                <div class="alert-emergency">
+                    <h3>CẢNH BÁO KHẨN CẤP</h3>
+                    <ul>
+                        @foreach($alerts as $alert)
+                            <li>{{ $alert }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <div style="margin-bottom: 20px;">
+                <h3>Tối ưu hóa thông tin hệ thống</h3>
+                <form method="POST" action="{{ route('admin.toggle-optimization') }}">
+                    @csrf
+                    <label>
+                        <input type="checkbox" name="optimization" {{ $isSystemInfoEnabled ? 'checked' : '' }}
+                            onchange="this.form.submit()">
+                        Bật thông tin hệ thống
+                    </label>
+                </form>
+            </div>
+            <div class="tab-container">
+                <button class="tab-button active" onclick="openSubTab('fastapi')">FastAPI</button>
+                <button class="tab-button" onclick="openSubTab('laravel')">Laravel</button>
+                <!-- Tab FastAPI -->
+                <div id="fastapi" class="tab-content active">
+                    <h3>Tài nguyên FastAPI</h3>
+                    @if($isSystemInfoEnabled)
+                        <div>
+                            <h2>Tổng quan FastAPI</h2>
+                            <ul>
+                                <li>CPU Usage: {{ $fastapistats['cpu_usage_percent'] ?? 0 }}%</li>
+                                <li>RAM Total: {{ $fastapistats['ram_total_mb'] ?? 0 }} MB</li>
+                                <li>RAM Used: {{ $fastapistats['ram_used_mb'] ?? 0 }} MB</li>
+                                <li>RAM Usage: {{ $fastapistats['ram_usage_percent'] ?? 0 }}%</li>
+                                <li>GPU Usage: {{ $fastapistats['gpu_usage_percent'] ?? 0 }}%</li>
+                                <li>GPU Total: {{ $fastapistats['gpu_total_mb'] ?? 0 }} MB</li>
+                                <li>GPU Used: {{ $fastapistats['gpu_used_mb'] ?? 0 }} MB</li>
+                                @if(isset($fastapistats['error']))
+                                    <li>Lỗi: {{ $fastapistats['error'] }}</li>
+                                @endif
+                            </ul>
+                        </div>
+                        <canvas id="fastApiRamChart" width="300" height="150"></canvas>
+                        <canvas id="fastApiCpuChart" width="300" height="150"></canvas>
+                        <canvas id="fastApiGpuChart" width="300" height="150"></canvas>
+                    @else
+                        <p>Thông tin hệ thống đã bị tắt để tối ưu hiệu suất.</p>
+                    @endif
+                </div>
+                <!-- Tab Laravel -->
+                <div id="laravel" class="tab-content" style="display: none;">
+                    <h3>Tài nguyên Laravel</h3>
+                    @if($isSystemInfoEnabled)
+                        <div>
+                            <h2>Tổng quan Laravel</h2>
+                            <ul>
+                                <li>Phiên bản PHP: {{ $laravelStats['php_version'] ?? 'N/A' }}</li>
+                                <li>Phiên bản Laravel: {{ $laravelStats['laravel_version'] ?? 'N/A' }}</li>
+                                <li>Phiên bản MySQL: {{ $laravelStats['mysql_version'] ?? 'N/A' }}</li>
+                                <li>Uptime Server: {{ $laravelStats['server_uptime'] ?? 'N/A' }}</li>
+                                <li>Dung lượng ổ cứng còn trống: {{ $laravelStats['disk_space'] ?? 0 }}%</li>
+                            </ul>
+                        </div>
+                        <canvas id="laravelRamChart" width="300" height="150"></canvas>
+                        <canvas id="laravelCpuChart" width="300" height="150"></canvas>
+                        <canvas id="laravelGpuChart" width="300" height="150"></canvas>
+                    @else
+                        <p>Thông tin hệ thống đã bị tắt để tối ưu hiệu suất.</p>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
     <!-- Popup Chi tiết Liên hệ -->
@@ -1507,7 +1699,6 @@
         </div>
         <button onclick="hideClassificationHistory()">Đóng</button>
     </div>
-
     <!-- Popup "Xem thêm" cho Thông Tin -->
     <div class="popup-overlay" id="llmResponseOverlay" onclick="hideLlmResponsePopup()"></div>
     <div class="popup" id="llmResponsePopup">
@@ -1523,7 +1714,6 @@
         <p><strong>Phản hồi:</strong> <span id="popupFeedback"></span></p>
         <button onclick="hidePopup()">Đóng</button>
     </div>
-
     <!-- Popup từ chối yêu cầu nạp tiền -->
     <div class="popup-overlay" id="rejectOverlay" onclick="hideRejectPopup()"></div>
     <div class="popup" id="rejectPopup">
@@ -1571,9 +1761,7 @@
             <input type="text" name="origin" placeholder="Nhập nguồn gốc (tùy chọn)">
             <button type="submit">Thêm</button>
         </form>
-
     </div>
-
     <script>
         // Tab switching
         document.querySelectorAll('.sidebar a').forEach(link => {
@@ -1593,14 +1781,11 @@
                 }
                 document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                 document.getElementById(this.getAttribute('href').substring(1)).classList.add('active');
-
             });
         });
-
         // Edit user row
         // Biến để lưu giá trị ban đầu của các trường
         let initialValues = {};
-
         // Edit user row
         function editRow(userId) {
             const row = document.getElementById(`row-${userId}`);
@@ -1608,7 +1793,6 @@
             const editBtn = row.querySelector('.edit-btn');
             const saveBtn = row.querySelector('.save-btn');
             const cancelBtn = row.querySelector('.cancel-btn');
-
             // Lưu giá trị ban đầu của các trường
             initialValues[userId] = {};
             editables.forEach(cell => {
@@ -1616,26 +1800,22 @@
                 const input = cell.querySelector('input, select');
                 initialValues[userId][field] = input.value;
             });
-
             editables.forEach(cell => {
                 const display = cell.querySelector('.display');
                 const input = cell.querySelector('input, select');
                 display.style.display = 'none';
                 input.style.display = 'block';
             });
-
             editBtn.style.display = 'none';
             saveBtn.style.display = 'inline-flex';
             cancelBtn.style.display = 'inline-flex';
         }
-
         function cancelEdit(userId) {
             const row = document.getElementById(`row-${userId}`);
             const editables = row.querySelectorAll('.editable');
             const editBtn = row.querySelector('.edit-btn');
             const saveBtn = row.querySelector('.save-btn');
             const cancelBtn = row.querySelector('.cancel-btn');
-
             editables.forEach(cell => {
                 const display = cell.querySelector('.display');
                 const input = cell.querySelector('input, select');
@@ -1644,69 +1824,53 @@
                 // Khôi phục giá trị ban đầu
                 input.value = initialValues[userId][cell.dataset.field];
             });
-
             editBtn.style.display = 'inline-flex';
             saveBtn.style.display = 'none';
             cancelBtn.style.display = 'none';
-
             // Xóa giá trị ban đầu khi hủy
             delete initialValues[userId];
         }
-
         // Kiểm tra thay đổi trước khi gửi form
         document.querySelectorAll('.edit-form').forEach(form => {
             form.addEventListener('submit', function (e) {
                 e.preventDefault(); // Ngăn gửi form mặc định để kiểm tra
-
                 const userId = this.id.replace('form-', '');
                 const editables = document.getElementById(`row-${userId}`).querySelectorAll('.editable');
                 let hasChanges = false;
-
                 // Xóa các hidden input cũ (nếu có) để tránh trùng lặp
                 const existingHiddenInputs = form.querySelectorAll('input[type="hidden"]:not([name="_token"]):not([name="_method"])');
                 existingHiddenInputs.forEach(input => input.remove());
-
                 // Thêm các trường ẩn vào form để gửi dữ liệu
                 editables.forEach(cell => {
                     const field = cell.dataset.field;
                     const input = cell.querySelector('input, select');
                     const currentValue = input.value;
                     const initialValue = initialValues[userId][field];
-
                     // Tạo input ẩn để gửi dữ liệu
                     const hiddenInput = document.createElement('input');
                     hiddenInput.type = 'hidden';
                     hiddenInput.name = field;
                     hiddenInput.value = currentValue;
                     form.appendChild(hiddenInput);
-
                     // So sánh giá trị hiện tại với giá trị ban đầu
                     if (currentValue !== initialValue) {
                         hasChanges = true;
                     }
                 });
-
                 // Nếu không có thay đổi, hiển thị thông báo và dừng
                 if (!hasChanges) {
                     alert('Không có thay đổi để lưu!');
                     return;
                 }
-
                 // Kiểm tra dữ liệu gửi đi
                 const formData = new FormData(this);
                 console.log('Dữ liệu gửi đi:', Object.fromEntries(formData));
-
                 // Gửi form
                 form.submit();
             });
         });
-
-
-
-
         // Biến để lưu giá trị ban đầu của các trường trong tab Quản lý thư viện đồ gốm
         let initialCeramicValues = {};
-
         // Edit ceramic row
         function editCeramicRow(ceramicId) {
             const row = document.getElementById(`ceramic-row-${ceramicId}`);
@@ -1714,7 +1878,6 @@
             const editBtn = row.querySelector('.edit-btn');
             const saveBtn = row.querySelector('.save-btn');
             const cancelBtn = row.querySelector('.cancel-btn');
-
             // Lưu giá trị ban đầu của các trường
             initialCeramicValues[ceramicId] = {};
             editables.forEach(cell => {
@@ -1723,26 +1886,22 @@
                 initialCeramicValues[ceramicId][field] = input.value;
                 cell.classList.add('editing');
             });
-
             editables.forEach(cell => {
                 const display = cell.querySelector('.display');
                 const input = cell.querySelector('input, textarea');
                 display.style.display = 'none';
                 input.style.display = 'block';
             });
-
             editBtn.style.display = 'none';
             saveBtn.style.display = 'inline-flex';
             cancelBtn.style.display = 'inline-flex';
         }
-
         function cancelCeramicEdit(ceramicId) {
             const row = document.getElementById(`ceramic-row-${ceramicId}`);
             const editables = row.querySelectorAll('.editable');
             const editBtn = row.querySelector('.edit-btn');
             const saveBtn = row.querySelector('.save-btn');
             const cancelBtn = row.querySelector('.cancel-btn');
-
             editables.forEach(cell => {
                 const display = cell.querySelector('.display');
                 const input = cell.querySelector('input, textarea');
@@ -1758,62 +1917,50 @@
                     toggleLink.textContent = 'Xem thêm';
                 }
             });
-
             editBtn.style.display = 'inline-flex';
             saveBtn.style.display = 'none';
             cancelBtn.style.display = 'none';
-
             // Xóa giá trị ban đầu khi hủy
             delete initialCeramicValues[ceramicId];
         }
-
         // Xử lý gửi form trong tab Quản lý thư viện đồ gốm
         document.querySelectorAll('#ceramics .edit-form').forEach(form => {
             form.addEventListener('submit', function (e) {
                 e.preventDefault(); // Ngăn gửi form mặc định để kiểm tra
-
                 const ceramicId = this.id.replace('ceramic-form-', '');
                 const editables = document.getElementById(`ceramic-row-${ceramicId}`).querySelectorAll('.editable');
                 let hasChanges = false;
-
                 // Xóa các hidden input cũ (nếu có) để tránh trùng lặp
                 const existingHiddenInputs = form.querySelectorAll('input[type="hidden"]:not([name="_token"]):not([name="_method"])');
                 existingHiddenInputs.forEach(input => input.remove());
-
                 // Thêm các trường ẩn vào form để gửi dữ liệu
                 editables.forEach(cell => {
                     const field = cell.dataset.field;
                     const input = cell.querySelector('input, textarea');
                     const currentValue = input.value;
                     const initialValue = initialCeramicValues[ceramicId][field];
-
                     // Tạo input ẩn để gửi dữ liệu
                     const hiddenInput = document.createElement('input');
                     hiddenInput.type = 'hidden';
                     hiddenInput.name = field;
                     hiddenInput.value = currentValue;
                     form.appendChild(hiddenInput);
-
                     // So sánh giá trị hiện tại với giá trị ban đầu
                     if (currentValue !== initialValue) {
                         hasChanges = true;
                     }
                 });
-
                 // Nếu không có thay đổi, hiển thị thông báo và dừng
                 if (!hasChanges) {
                     alert('Không có thay đổi để lưu!');
                     return;
                 }
-
                 // Kiểm tra dữ liệu gửi đi
                 const formData = new FormData(this);
                 console.log('Dữ liệu gửi đi:', Object.fromEntries(formData));
-
                 // Gửi form
                 form.submit();
             });
-
             // Ngăn chặn gửi form khi nhấn Enter trong khi chỉnh sửa
             form.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
@@ -1821,7 +1968,6 @@
                 }
             });
         });
-
         // Show/Hide Add Ceramic Popup
         function showAddCeramicPopup() {
             const popup = document.getElementById('addCeramicPopup');
@@ -1829,19 +1975,16 @@
             popup.style.display = 'block';
             overlay.style.display = 'block';
         }
-
         function hideAddCeramicPopup() {
             const popup = document.getElementById('addCeramicPopup');
             const overlay = document.getElementById('addCeramicOverlay');
             popup.style.display = 'none';
             overlay.style.display = 'none';
         }
-
         // Popup thông tin đánh giá
         function toggleDescription(ceramicId) {
             const descriptionCell = document.getElementById(`description-${ceramicId}`);
             const toggleLink = document.getElementById(`toggle-${ceramicId}`);
-
             if (descriptionCell.classList.contains('expanded')) {
                 descriptionCell.classList.remove('expanded');
                 toggleLink.textContent = 'Xem thêm';
@@ -1856,28 +1999,23 @@
             const popupName = document.getElementById('popupName');
             const popupRating = document.getElementById('popupRating');
             const popupFeedback = document.getElementById('popupFeedback');
-
             popupName.textContent = name;
             popupFeedback.textContent = feedback;
-
             popupRating.innerHTML = '';
             for (let i = 1; i <= 5; i++) {
                 const star = document.createElement('i');
                 star.classList.add('fa-star', i <= rating ? 'fas' : 'far');
                 popupRating.appendChild(star);
             }
-
             popup.style.display = 'block';
             overlay.style.display = 'block';
         }
-
         function hidePopup() {
             const popup = document.getElementById('userPopup');
             const overlay = document.querySelector('.popup-overlay');
             popup.style.display = 'none';
             overlay.style.display = 'none';
         }
-
         // Popup từ chối yêu cầu
         function showRejectPopup(requestId, userName) {
             const popup = document.getElementById('rejectPopup');
@@ -1885,22 +2023,18 @@
             const rejectUserName = document.getElementById('rejectUserName');
             const rejectRequestId = document.getElementById('rejectRequestId');
             const form = document.getElementById('rejectForm');
-
             rejectUserName.textContent = userName;
             rejectRequestId.value = requestId;
             form.action = '{{ route("admin.recharge.reject") }}';
-
             popup.style.display = 'block';
             overlay.style.display = 'block';
         }
-
         function hideRejectPopup() {
             const popup = document.getElementById('rejectPopup');
             const overlay = document.getElementById('rejectOverlay');
             popup.style.display = 'none';
             overlay.style.display = 'none';
         }
-
         // Revenue Chart
         function renderRevenueChart() {
             const ctx = document.getElementById('revenueChart');
@@ -1908,17 +2042,13 @@
                 console.error('Không tìm thấy canvas #revenueChart');
                 return;
             }
-
             const labels = {!! json_encode($revenueLabels) !!} || ['Chưa có dữ liệu'];
             const data = {!! json_encode($revenueData) !!} || [0];
-
             console.log('Revenue Labels:', labels);
             console.log('Revenue Data:', data);
-
             if (window.revenueChart && typeof window.revenueChart.destroy === 'function') {
                 window.revenueChart.destroy();
             }
-
             window.revenueChart = new Chart(ctx.getContext('2d'), {
                 type: 'line',
                 data: {
@@ -1954,7 +2084,6 @@
                 }
             });
         });
-
         // Gọi lần đầu khi trang tải
         document.addEventListener('DOMContentLoaded', function () {
             // Dữ liệu từ PHP
@@ -1969,13 +2098,12 @@
             const inactiveUsers = @json($inactiveUsers);
             const revenueLabels = @json($revenueLabels); // Dữ liệu ngày
             const revenueData = @json($revenueData);
-
+            const tokenTrend = @json($tokenTrend);
             // Hàm tạo biểu đồ
             function createChart(canvasId, labels, values, label, color, isCurrency = false) {
                 const ctx = document.getElementById(canvasId);
                 // Đặt màu fill là đen (nếu cần)
                 if (!ctx) return;
-
                 new Chart(ctx.getContext('2d'), {
                     type: 'line',
                     data: {
@@ -2017,7 +2145,6 @@
             function createPieChart(canvasId, data, labels, colors) {
                 const ctx = document.getElementById(canvasId);
                 if (!ctx) return;
-
                 new Chart(ctx.getContext('2d'), {
                     type: 'pie',
                     data: {
@@ -2044,6 +2171,7 @@
             }
             // Vẽ các biểu đồ
             // createChart('userTrendChart', userTrend.labels, userTrend.values, 'Người dùng mới', '#42a5f5');
+            createChart('tokenTrendChart', tokenTrend.labels, tokenTrend.values, 'Lượt nhận diện', '#ff5722');
             createChart('rechargeTrendChart', rechargeTrend.labels, rechargeTrend.values, 'Yêu cầu mới', '#ffca28');
             createChart('revenueTrendChart', revenueTrend.labels, revenueTrend.values, 'Doanh thu', '#00c853', true);
             createChart('ratingTrendChart', ratingTrend.labels, ratingTrend.values, 'Đánh giá', '#f44336');
@@ -2066,33 +2194,21 @@
                 ['#00c853', '#f44336']
             );
         });
-
-
-
-
         //Lịch sử nhận diện
-
-
-
         // Dữ liệu lịch sử nhận diện (giả lập từ PHP)
         const classifications = @json($classifications);
-
         // Hiển thị lịch sử nhận diện của người dùng
         function showClassificationHistory(userId, userName) {
             const popup = document.getElementById('classificationPopup');
             const overlay = document.getElementById('classificationOverlay');
             const userNameElement = document.getElementById('classificationUserName');
             const historyTable = document.getElementById('classificationHistoryTable');
-
             // Hiển thị tên người dùng
             userNameElement.textContent = userName;
-
             // Lọc lịch sử nhận diện của người dùng
             const userClassifications = classifications.filter(item => item.user_id == userId);
-
             // Xóa nội dung cũ
             historyTable.innerHTML = '';
-
             // Nếu không có lịch sử
             if (userClassifications.length === 0) {
                 historyTable.innerHTML = '<tr><td colspan="5">Không có lịch sử nhận diện.</td></tr>';
@@ -2101,7 +2217,6 @@
                 userClassifications.forEach(item => {
                     const infoText = item.llm_response || 'Không có thông tin';
                     const isLongInfo = infoText.length > 100; // Giới hạn độ dài để hiển thị "Xem thêm"
-
                     const row = document.createElement('tr');
                     row.innerHTML = `
                 <td>${item.id}</td>
@@ -2116,17 +2231,14 @@
                     historyTable.appendChild(row);
                 });
             }
-
             // Hiển thị popup
             popup.style.display = 'block';
             overlay.style.display = 'block';
         }
-
         // Hàm toggleInfo để mở rộng/thu gọn nội dung
         function toggleInfo(id) {
             const infoCell = document.getElementById(`info-${id}`);
             const toggleLink = infoCell.nextElementSibling;
-
             if (infoCell.classList.contains('expanded')) {
                 infoCell.classList.remove('expanded');
                 toggleLink.textContent = 'Xem thêm';
@@ -2135,7 +2247,6 @@
                 toggleLink.textContent = 'Ẩn bớt';
             }
         }
-
         // Ẩn popup lịch sử nhận diện
         function hideClassificationHistory() {
             const popup = document.getElementById('classificationPopup');
@@ -2143,7 +2254,6 @@
             popup.style.display = 'none';
             overlay.style.display = 'none';
         }
-
         // Ẩn popup lịch sử nhận diện
         function hideClassificationHistory() {
             const popup = document.getElementById('classificationPopup');
@@ -2151,33 +2261,23 @@
             popup.style.display = 'none';
             overlay.style.display = 'none';
         }
-
-
-
         //lịch sử đăng nhập
-
-
         // Dữ liệu lịch sử đăng nhập (giả lập từ PHP)
         const loginHistories = @json($users->mapWithKeys(function ($user) {
             return [$user->id => $user->loginHistories];
         })->toArray());
-
         // Hiển thị lịch sử đăng nhập của người dùng
         function showLoginHistory(userId, userName) {
             const popup = document.getElementById('loginHistoryPopup');
             const overlay = document.getElementById('loginHistoryOverlay');
             const userNameElement = document.getElementById('loginHistoryUserName');
             const historyTable = document.getElementById('loginHistoryTable');
-
             // Hiển thị tên người dùng
             userNameElement.textContent = userName;
-
             // Lấy lịch sử đăng nhập của người dùng
             const userLoginHistories = loginHistories[userId] || [];
-
             // Xóa nội dung cũ
             historyTable.innerHTML = '';
-
             // Nếu không có lịch sử
             if (userLoginHistories.length === 0) {
                 historyTable.innerHTML = '<tr><td colspan="3">Không có lịch sử đăng nhập.</td></tr>';
@@ -2193,12 +2293,10 @@
                     historyTable.appendChild(row);
                 });
             }
-
             // Hiển thị popup
             popup.style.display = 'block';
             overlay.style.display = 'block';
         }
-
         // Ẩn popup lịch sử đăng nhập
         function hideLoginHistory() {
             const popup = document.getElementById('loginHistoryPopup');
@@ -2206,20 +2304,15 @@
             popup.style.display = 'none';
             overlay.style.display = 'none';
         }
-
-
-
         //Bật tắt capcha
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('captchaForm');
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
-
                 // Hiển thị loading
                 const btn = this.querySelector('button[type="submit"]');
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
                 btn.disabled = true;
-
                 fetch(this.action, {
                     method: 'POST',
                     body: new FormData(this),
@@ -2252,11 +2345,9 @@
             document.getElementById('contactEmail').textContent = email;
             document.getElementById('contactMessage').textContent = message;
             document.getElementById('contactStatus').textContent = status;
-
             // Hiển thị popup
             popup.style.display = 'block';
             overlay.style.display = 'block';
-
             // Nếu chưa đọc, gửi yêu cầu cập nhật trạng thái
             if (!isRead) {
                 fetch(`/admin/contact/${id}/mark-read`, {
@@ -2287,7 +2378,6 @@
                     .catch(error => console.error('Lỗi khi cập nhật trạng thái:', error));
             }
         }
-
         // Ẩn Popup Chi tiết Liên hệ
         function hideContactPopup() {
             const popup = document.getElementById('contactPopup');
@@ -2300,12 +2390,10 @@
             const contactTabLink = document.querySelector('.sidebar a[data-tab="contacts"]');
             const notificationDot = contactTabLink.querySelector('.notification-dot');
             const unreadCount = @json($contacts->where('is_read', false)->count()); // Số liên hệ chưa đọc ban đầu
-
             // Xóa dấu chấm cũ nếu có
             if (notificationDot) {
                 notificationDot.remove();
             }
-
             // Thêm dấu chấm nếu còn liên hệ chưa đọc
             if (unreadCount > 0) {
                 const dot = document.createElement('span');
@@ -2313,7 +2401,6 @@
                 contactTabLink.appendChild(dot);
             }
         }
-
         // Gọi hàm khi trang tải
         document.addEventListener('DOMContentLoaded', updateContactNotification);
         // Hàm cập nhật dấu chấm xanh
@@ -2321,12 +2408,10 @@
             const rechargeTabLink = document.querySelector('.sidebar a[data-tab="recharge"]');
             const notificationDot = rechargeTabLink.querySelector('.notification-dot');
             const rechargeCount = @json($rechargeRequests->count()); // Số lượng ban đầu từ PHP
-
             // Xóa dấu chấm cũ nếu có
             if (notificationDot) {
                 notificationDot.remove();
             }
-
             // Thêm dấu chấm nếu còn yêu cầu
             if (rechargeCount > 0) {
                 const dot = document.createElement('span');
@@ -2334,29 +2419,24 @@
                 rechargeTabLink.appendChild(dot);
             }
         }
-
         // Gọi hàm khi trang tải
         document.addEventListener('DOMContentLoaded', updateRechargeNotification);
         function filterUsers() {
             const search = document.getElementById('userSearch').value.toLowerCase();
             const role = document.getElementById('roleFilter').value;
             const rows = document.querySelectorAll('#users tbody tr');
-
             rows.forEach(row => {
                 const name = row.cells[1].textContent.toLowerCase();
                 const email = row.cells[2].textContent.toLowerCase();
                 const roleValue = row.cells[3].textContent.toLowerCase();
-
                 const matchesSearch = name.includes(search) || email.includes(search);
                 const matchesRole = !role || roleValue === role;
-
                 row.style.display = matchesSearch && matchesRole ? '' : 'none';
             });
         }
         //Quản lý tin tức trang Chủ
         // Biến để lưu giá trị ban đầu của tin tức
         let initialNewsValues = {};
-
         // Edit news row
         function editNewsRow(newsId) {
             const row = document.getElementById(`news-row-${newsId}`);
@@ -2364,7 +2444,6 @@
             const editBtn = row.querySelector('.edit-btn');
             const saveBtn = row.querySelector('.save-btn');
             const cancelBtn = row.querySelector('.cancel-btn');
-
             initialNewsValues[newsId] = {};
             editables.forEach(cell => {
                 const field = cell.dataset.field;
@@ -2372,26 +2451,22 @@
                 initialNewsValues[newsId][field] = input.value;
                 cell.classList.add('editing');
             });
-
             editables.forEach(cell => {
                 const display = cell.querySelector('.display');
                 const input = cell.querySelector('input, textarea');
                 display.style.display = 'none';
                 input.style.display = 'block';
             });
-
             editBtn.style.display = 'none';
             saveBtn.style.display = 'inline-flex';
             cancelBtn.style.display = 'inline-flex';
         }
-
         function cancelNewsEdit(newsId) {
             const row = document.getElementById(`news-row-${newsId}`);
             const editables = row.querySelectorAll('.editable');
             const editBtn = row.querySelector('.edit-btn');
             const saveBtn = row.querySelector('.save-btn');
             const cancelBtn = row.querySelector('.cancel-btn');
-
             editables.forEach(cell => {
                 const display = cell.querySelector('.display');
                 const input = cell.querySelector('input, textarea');
@@ -2406,18 +2481,15 @@
                     toggleLink.textContent = 'Xem thêm';
                 }
             });
-
             editBtn.style.display = 'inline-flex';
             saveBtn.style.display = 'none';
             cancelBtn.style.display = 'none';
             delete initialNewsValues[newsId];
         }
-
         // Toggle nội dung tin tức
         function toggleNewsContent(newsId) {
             const contentCell = document.getElementById(`content-${newsId}`);
             const toggleLink = document.getElementById(`toggle-content-${newsId}`);
-
             if (contentCell.classList.contains('expanded')) {
                 contentCell.classList.remove('expanded');
                 toggleLink.textContent = 'Xem thêm';
@@ -2426,7 +2498,6 @@
                 toggleLink.textContent = 'Ẩn bớt';
             }
         }
-
         // Show/Hide Add News Popup
         function showAddNewsPopup() {
             const popup = document.getElementById('addNewsPopup');
@@ -2434,14 +2505,12 @@
             popup.style.display = 'block';
             overlay.style.display = 'block';
         }
-
         function hideAddNewsPopup() {
             const popup = document.getElementById('addNewsPopup');
             const overlay = document.getElementById('addNewsOverlay');
             popup.style.display = 'none';
             overlay.style.display = 'none';
         }
-
         // Xử lý gửi form trong tab Quản lý tin tức
         document.querySelectorAll('#news .edit-form').forEach(form => {
             form.addEventListener('submit', function (e) {
@@ -2449,46 +2518,32 @@
                 const newsId = this.id.replace('news-form-', '');
                 const editables = document.getElementById(`news-row-${newsId}`).querySelectorAll('.editable');
                 let hasChanges = false;
-
                 const existingHiddenInputs = form.querySelectorAll('input[type="hidden"]:not([name="_token"]):not([name="_method"])');
                 existingHiddenInputs.forEach(input => input.remove());
-
                 editables.forEach(cell => {
                     const field = cell.dataset.field;
                     const input = cell.querySelector('input, textarea');
                     const currentValue = input.value;
                     const initialValue = initialNewsValues[newsId][field];
-
                     const hiddenInput = document.createElement('input');
                     hiddenInput.type = 'hidden';
                     hiddenInput.name = field;
                     hiddenInput.value = currentValue;
                     form.appendChild(hiddenInput);
-
                     if (currentValue !== initialValue) {
                         hasChanges = true;
                     }
                 });
-
                 if (!hasChanges) {
                     alert('Không có thay đổi để lưu!');
                     return;
                 }
-
                 form.submit();
             });
         });
-
-
-
-
-
-
-
         //Mới
         // Dữ liệu lịch sử giao dịch từ PHP
         const transactions = @json($transactionHistory->toArray());
-
         // Hiển thị lịch sử giao dịch với phân trang
         function renderTransactionHistory(page = 1) {
             const tbody = document.getElementById('transactionBody');
@@ -2496,15 +2551,12 @@
             const itemsPerPage = 10;
             const totalItems = transactions.length;
             const totalPages = Math.ceil(totalItems / itemsPerPage);
-
             // Tính toán chỉ số bắt đầu và kết thúc
             const start = (page - 1) * itemsPerPage;
             const end = Math.min(start + itemsPerPage, totalItems);
             const paginatedTransactions = transactions.slice(start, end);
-
             // Xóa nội dung cũ
             tbody.innerHTML = '';
-
             // Thêm các hàng giao dịch
             paginatedTransactions.forEach(transaction => {
                 const row = document.createElement('tr');
@@ -2518,7 +2570,6 @@
         `;
                 tbody.appendChild(row);
             });
-
             // Tạo phân trang
             pagination.innerHTML = '';
             if (totalPages > 1) {
@@ -2532,7 +2583,6 @@
                     if (page > 1) renderTransactionHistory(page - 1);
                 });
                 pagination.appendChild(prevLink);
-
                 // Các trang số
                 for (let i = 1; i <= totalPages; i++) {
                     const pageLink = document.createElement('a');
@@ -2545,7 +2595,6 @@
                     });
                     pagination.appendChild(pageLink);
                 }
-
                 // Nút "Sau"
                 const nextLink = document.createElement('a');
                 nextLink.textContent = 'Sau';
@@ -2558,23 +2607,19 @@
                 pagination.appendChild(nextLink);
             }
         }
-
         // Gọi hàm khi trang tải
         document.addEventListener('DOMContentLoaded', function () {
             if (transactions.length > 0) {
                 renderTransactionHistory(1); // Hiển thị trang đầu tiên
             }
-
             // Các hàm khác như vẽ biểu đồ vẫn giữ nguyên
             const userTrend = @json($userTrend);
             const rechargeTrend = @json($rechargeTrend);
             const revenueTrend = @json($revenueTrend);
             const ratingTrend = @json($ratingTrend);
-
             function createChart(canvasId, labels, values, label, color, isCurrency = false) {
                 const ctx = document.getElementById(canvasId);
                 if (!ctx) return;
-
                 new Chart(ctx.getContext('2d'), {
                     type: 'line',
                     data: {
@@ -2612,12 +2657,107 @@
                     }
                 });
             }
-
             createChart('userTrendChart', userTrend.labels, userTrend.values, 'Người dùng mới', '#42a5f5');
             createChart('rechargeTrendChart', rechargeTrend.labels, rechargeTrend.values, 'Yêu cầu mới', '#ffca28');
             createChart('revenueTrendChart', revenueTrend.labels, revenueTrend.values, 'Doanh thu', '#00c853', true);
             createChart('ratingTrendChart', ratingTrend.labels, ratingTrend.values, 'Đánh giá', '#f44336');
         });
+        //Thông tin hệ thống
+        // Xử lý tab con trong "Thông tin hệ thống"
+        function openSubTab(tabName) {
+            document.querySelectorAll('#system-info .tab-content').forEach(tab => tab.style.display = 'none');
+            document.querySelectorAll('#system-info .tab-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).style.display = 'block';
+            document.querySelector(`#system-info .tab-button[onclick="openSubTab('${tabName}')"]`).classList.add('active');
+        }
+        @if($isSystemInfoEnabled)
+            const fastApiRamChart = new Chart(document.getElementById('fastApiRamChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'RAM (MB)', data: [], borderColor: 'blue', fill: false }] },
+                options: { scales: { y: { beginAtZero: true } } }
+            });
+            const fastApiCpuChart = new Chart(document.getElementById('fastApiCpuChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'CPU (%)', data: [], borderColor: 'red', fill: false }] },
+                options: { scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+            const fastApiGpuChart = new Chart(document.getElementById('fastApiGpuChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'GPU (%)', data: [], borderColor: 'green', fill: false }] },
+                options: { scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+            const laravelRamChart = new Chart(document.getElementById('laravelRamChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'RAM (MB)', data: [], borderColor: 'blue', fill: false }] },
+                options: { scales: { y: { beginAtZero: true } } }
+            });
+            const laravelCpuChart = new Chart(document.getElementById('laravelCpuChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'CPU (%)', data: [], borderColor: 'red', fill: false }] },
+                options: { scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+            const laravelGpuChart = new Chart(document.getElementById('laravelGpuChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'GPU (%)', data: [], borderColor: 'green', fill: false }] },
+                options: { scales: { y: { beginAtZero: true, max: 100 } } }
+            });
+            function updateSystemCharts() {
+                fetch('/admin/system/fastapi-stats')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) return;
+                        console.log('FastAPI Data:', data);
+                        const now = new Date().toLocaleTimeString();
+                        fastApiRamChart.data.labels.push(now);
+                        fastApiRamChart.data.datasets[0].data.push(data.ram_used_mb || 0);
+                        fastApiCpuChart.data.labels.push(now);
+                        fastApiCpuChart.data.datasets[0].data.push(data.cpu_usage_percent || 0);
+                        fastApiGpuChart.data.labels.push(now);
+                        fastApiGpuChart.data.datasets[0].data.push(data.gpu_usage_percent || 0);
+                        if (fastApiRamChart.data.labels.length > 20) {
+                            fastApiRamChart.data.labels.shift();
+                            fastApiRamChart.data.datasets[0].data.shift();
+                            fastApiCpuChart.data.labels.shift();
+                            fastApiCpuChart.data.datasets[0].data.shift();
+                            fastApiGpuChart.data.labels.shift();
+                            fastApiGpuChart.data.datasets[0].data.shift();
+                        }
+                        fastApiRamChart.update();
+                        fastApiCpuChart.update();
+                        fastApiGpuChart.update();
+                    })
+                    .catch(error => console.error('Lỗi FastAPI:', error));
+                fetch('/admin/system/laravel-stats')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) return;
+                        console.log('Laravel Data:', data);
+                        const now = new Date().toLocaleTimeString();
+                        laravelRamChart.data.labels.push(now);
+                        laravelRamChart.data.datasets[0].data.push(data.ram_used || 0);
+                        laravelCpuChart.data.labels.push(now);
+                        laravelCpuChart.data.datasets[0].data.push(data.cpu_usage || 0);
+                        laravelGpuChart.data.labels.push(now);
+                        laravelGpuChart.data.datasets[0].data.push(data.gpu_usage || 0);
+                        if (laravelRamChart.data.labels.length > 20) {
+                            laravelRamChart.data.labels.shift();
+                            laravelRamChart.data.datasets[0].data.shift();
+                            laravelCpuChart.data.labels.shift();
+                            laravelCpuChart.data.datasets[0].data.shift();
+                            laravelGpuChart.data.labels.shift();
+                            laravelGpuChart.data.datasets[0].data.shift();
+                        }
+                        laravelRamChart.update();
+                        laravelCpuChart.update();
+                        laravelGpuChart.update();
+                    })
+                    .catch(error => console.error('Lỗi Laravel:', error));
+            }
+            // Gọi lần đầu khi tải trang
+            updateSystemCharts();
+            // Cập nhật mỗi 5 giây
+            setInterval(updateSystemCharts, 5000);
+        @endif
     </script>
 </body>
 

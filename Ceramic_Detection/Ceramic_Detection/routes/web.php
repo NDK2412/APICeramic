@@ -2,7 +2,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PredictionController;
 use App\Http\Controllers\ImagePredictionController;
-
+use App\Http\Controllers\Cache;
 use App\Http\Controllers\CeramicController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -13,7 +13,7 @@ use App\Http\Controllers\ContactController;
 // use App\Http\Controllers\ImageController;
 // use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\CustomForgotPasswordController;
-
+use App\Http\Controllers\Auth\PasswordChangeController;
 use App\Models\News;
 use App\Models\Setting;
 use App\Http\Controllers\NewsController;
@@ -108,6 +108,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/users/{id}', [AdminController::class, 'destroy'])->name('admin.delete');
     Route::post('/admin/recharge/approve/{id}', [AdminController::class, 'approveRecharge'])->name('admin.recharge.approve');
     Route::post('/admin/recharge/reject', [AdminController::class, 'rejectRecharge'])->name('admin.recharge.reject');
+
 });
 // Route cho admin
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
@@ -228,7 +229,19 @@ Route::get('/news/{id}', function ($id) {
 })->name('news.detail');
 //đổi tên
 Route::post('/change-name', [AuthController::class, 'changeName'])->middleware('auth');
-// Route::post('/admin/settings/captcha', [AdminController::class, 'updateCaptchaSetting'])
+//Đổi mật khẩu
+Route::get('/password/change', [PasswordChangeController::class, 'showChangeForm'])->name('password.change.form');
+Route::post('/password/change', [PasswordChangeController::class, 'change'])->name('password.change');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    
+    Route::get('/admin/system/fastapi-stats', [AdminController::class, 'fastApiStats'])->name('admin.system.fastapi_stats');
+    Route::post('/admin/toggle-optimization', [AdminController::class, 'toggleOptimization'])->name('admin.toggle-optimization');
+});
+Route::get('/admin/system/laravel-stats', [AdminController::class, 'laravelStats'])->name('admin.system.laravel_stats');
+//Sao lưu dữ liệu
+Route::post('/admin/backup', [AdminController::class, 'backup'])->name('admin.backup');
 //      ->name('admin.settings.captcha')
 //      ->middleware('auth'); // Đảm bảo phải đăng nhập
 /*use Illuminate\Support\Facades\Route;

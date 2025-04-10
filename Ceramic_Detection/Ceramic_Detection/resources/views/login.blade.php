@@ -214,6 +214,14 @@
 
         <div class="divider"></div>
 
+        <!-- Hiển thị thông báo thành công -->
+        @if (session('success'))
+            <div class="alert alert-success"
+                style="color: #155724; background: #d4edda; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                {{ session('success') }}
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -239,21 +247,18 @@
             </div>
 
             <!-- Remember Me Checkbox -->
-            <div class="remember-me">
-                <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                <label for="remember">Ghi nhớ tôi</label>
+            <div class="links">
+                <a href="{{ route('password.change.form') }}">Đổi mật khẩu?</a>
             </div>
 
             @if ($recaptchaEnabled)
                 <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
                 @error('g-recaptcha-response')
-                    <div class="alert alert-danger">{{ $message }}</div>
+                    <!-- <div class="alert alert-danger">{{ $message }}</div> -->
                 @enderror
             @endif
 
-            <div class="links">
-                <a href="{{ route('password.request') }}">Đổi mật khẩu?</a>
-            </div>
+
 
             <button type="submit">
                 <i class="fas fa-sign-in-alt"></i> ĐĂNG NHẬP

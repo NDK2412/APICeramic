@@ -9,7 +9,7 @@ from models import model, CLASS_NAMES
 from utils import preprocess_image
 from retrieval import get_ceramic_info
 from config import IMAGE_DIR, API_KEY
-
+from system_controller import SystemController
 # Cấu hình logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -81,3 +81,9 @@ async def predict(file: UploadFile = File(...), api_key: str = Header(...)):
     except Exception as e:
         logger.error(f"Lỗi khi xử lý: {str(e)}")
         return {"error": str(e)}
+
+
+@app.get("/system-stats")
+async def get_system_stats(api_key: str = Header(...)):
+    verify_api_key(api_key)
+    return await SystemController.get_system_stats()

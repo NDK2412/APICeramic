@@ -661,7 +661,7 @@
                 <button class="hamburger" aria-label="Toggle menu">☰</button>
                 <div class="nav-container">
                     <ul class="nav-menu">
-                        <li><a href="#home">Trang chủ</a></li>
+                        <li><a href="/">Trang chủ</a></li>
                         <li><a href="gallery">Thư viện đồ gốm</a></li>
                         <li><a href="#" id="classificationLink">Nhận diện</a></li>
                         <li><a href="#market">Mua bán</a></li>

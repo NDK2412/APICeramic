@@ -2,6 +2,17 @@
 
 return [
 
+    'enabled' => true,
+    'isHtml5ParserEnabled' => true,
+    'isRemoteEnabled' => true, // Bắt buộc để tải ảnh từ URL
+    'tempDir' => storage_path('app/temp'),
+    'fontDir' => storage_path('fonts/'),
+    'fontCache' => storage_path('fonts/'),
+    'chroot' => realpath(base_path()),
+    'dpi' => 96,
+    'defaultMediaType' => 'screen',
+    'defaultPaperSize' => 'a4',
+    'defaultFont' => 'DejaVu Sans',
     /*
     |--------------------------------------------------------------------------
     | Settings
@@ -268,7 +279,7 @@ return [
          * @var bool
          */
         'enable_remote' => false,
-
+        // Bắt buộc để tải ảnh từ URL
         /**
          * List of allowed remote hosts
          *

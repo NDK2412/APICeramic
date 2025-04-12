@@ -13,6 +13,7 @@ class RechargeHistory extends Model
         'amount',
         'tokens_added',
         'approved_at',
+        'proof_image',
     ];
     public $timestamps = false;
     // Quan hệ với bảng users

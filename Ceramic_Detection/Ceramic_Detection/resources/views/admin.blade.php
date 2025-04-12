@@ -895,6 +895,7 @@
                     @endif
                 </a>
             </li>
+            <li><a href="#" data-tab="recharge-packages"><i class="fas fa-box"></i> Quản lý gói nạp tiền</a></li>
             <li><a href="#" data-tab="revenue"><i class="fas fa-chart-line"></i> Doanh thu</a></li>
             <li><a href="#" data-tab="ceramics"><i class="fa-solid fa-layer-group"></i> Quản lý thư viện đồ gốm</a></li>
             <li><a href="#" data-tab="news"><i class="fas fa-newspaper"></i> Quản lý tin tức</a></li>
@@ -1044,18 +1045,18 @@
                         @foreach ($contacts as $contact)
                             <tr
                                 style="background-color: {{ $contact->is_read ? 'var(--card-bg)' : 'rgba(42, 92, 139, 0.1)' }}; 
-                                                                                                                                                                                                                                                                                                                                                                    color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
-                                                                                                                                                                                                                                                                                                                                                                    border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                    color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
+                                                                                                                                                                                                                                                                                                                                                                                                    border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
                                 <td>{{ $contact->name }}</td>
                                 <td>
                                     <span
                                         style="display: inline-block; 
-                                                                                                                                                                                                                                                                                                                                                                            padding: 0.25rem 0.5rem;
-                                                                                                                                                                                                                                                                                                                                                                            border-radius: 12px;
-                                                                                                                                                                                                                                                                                                                                                                            background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
-                                                                                                                                                                                                                                                                                                                                                                            color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
-                                                                                                                                                                                                                                                                                                                                                                            font-size: 0.85rem;
-                                                                                                                                                                                                                                                                                                                                                                            font-weight: 500;">
+                                                                                                                                                                                                                                                                                                                                                                                                            padding: 0.25rem 0.5rem;
+                                                                                                                                                                                                                                                                                                                                                                                                            border-radius: 12px;
+                                                                                                                                                                                                                                                                                                                                                                                                            background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
+                                                                                                                                                                                                                                                                                                                                                                                                            color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
+                                                                                                                                                                                                                                                                                                                                                                                                            font-size: 0.85rem;
+                                                                                                                                                                                                                                                                                                                                                                                                            font-weight: 500;">
                                         {{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}
                                     </span>
                                 </td>
@@ -1067,6 +1068,103 @@
                                         <i class="fas fa-eye"></i> Xem
                                     </button>
                                 </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+        <!-- Tab Quản lý gói nạp tiền -->
+        <div class="container tab-content" id="recharge-packages" style="display: none;">
+            <h1>Quản Lý Gói Nạp Tiền</h1>
+            <!-- Nút thêm gói nạp tiền mới -->
+            <button type="button" class="action-btn save-btn" onclick="showAddPackagePopup()"
+                style="margin-bottom: 20px;">
+                <i class="fas fa-plus"></i> Thêm gói nạp tiền mới
+            </button>
+            <!-- Thông báo thành công (nếu có) -->
+            @if (session('success'))
+                <div class="success-message">
+                    {{ session('success') }}
+                </div>
+            @endif
+            <!-- Bảng danh sách gói nạp tiền -->
+            @if ($packages->isEmpty())
+                <p>Không có gói nạp tiền nào.</p>
+            @else
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Số Tiền (VNĐ)</th>
+                            <th>Số Token</th>
+                            <th>Mô Tả</th>
+                            <th>Trạng Thái</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($packages as $package)
+                            <tr id="package-row-{{ $package->id }}">
+                                <form action="{{ route('recharge-packages.update', $package->id) }}" method="POST"
+                                    class="edit-form" id="package-form-{{ $package->id }}">
+                                    @csrf
+                                    @method('PUT')
+                                    <td>{{ $package->id }}</td>
+                                    <td class="editable" data-field="amount">
+                                        <span class="display">{{ number_format($package->amount) }}</span>
+                                        <input type="number" name="amount" value="{{ $package->amount }}" style="display:none;"
+                                            min="1000">
+                                    </td>
+                                    <td class="editable" data-field="tokens">
+                                        <span class="display">{{ $package->tokens }}</span>
+                                        <input type="number" name="tokens" value="{{ $package->tokens }}" style="display:none;"
+                                            min="1">
+                                    </td>
+                                    <td class="editable" data-field="description">
+                                        <span class="display description-cell"
+                                            id="description-{{ $package->id }}">{{ $package->description ?? 'Không có' }}</span>
+                                        <span class="toggle-description"
+                                            onclick="togglePackageDescription('{{ $package->id }}')"
+                                            id="toggle-{{ $package->id }}">Xem thêm</span>
+                                        <textarea name="description"
+                                            style="display:none;">{{ $package->description }}</textarea>
+                                    </td>
+                                    <td class="editable" data-field="is_active">
+                                        <span
+                                            class="display status {{ $package->is_active ? 'active' : 'inactive' }}">{{ $package->is_active ? 'Hoạt động' : 'Không hoạt động' }}</span>
+                                        <select name="is_active" style="display:none;">
+                                            <option value="1" {{ $package->is_active ? 'selected' : '' }}>Hoạt động</option>
+                                            <option value="0" {{ !$package->is_active ? 'selected' : '' }}>Không hoạt động
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td class="actions">
+                                        <button type="button" class="action-btn edit-btn"
+                                            onclick="editPackageRow({{ $package->id }})"><i class="fas fa-edit"></i>
+                                            Sửa</button>
+                                            <form action="{{ route('recharge-packages.update', $package->id) }}"
+                                            method="POST" style="display:inline;"
+                                            onsubmit="return confirm('Bạn có chắc muốn xóa gói này?');">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="action-btn save-btn" style="display:none;"><i
+                                            class="fas fa-save"></i> Lưu</button>
+                                        </form>
+                                        
+                                        <button type="button" class="action-btn cancel-btn" style="display:none;"
+                                            onclick="cancelPackageEdit({{ $package->id }})"><i class="fas fa-times"></i>
+                                            Hủy</button>
+                                        <form action="{{ route('recharge-packages.destroy', $package->id) }}"
+                                            method="POST" style="display:inline;"
+                                            onsubmit="return confirm('Bạn có chắc muốn xóa gói này?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="action-btn delete-btn"><i class="fas fa-trash"></i>
+                                                Xóa</button>
+                                        </form>
+                                    </td>
+                                </form>
                             </tr>
                         @endforeach
                     </tbody>
@@ -1177,6 +1275,26 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+        <!-- Popup thêm gói nạp tiền mới -->
+        <div class="popup-overlay" id="addPackageOverlay" onclick="hideAddPackagePopup()"></div>
+        <div class="popup" id="addPackagePopup">
+            <h3>Thêm Gói Nạp Tiền Mới</h3>
+            <form id="addPackageForm" method="POST" action="{{ route('recharge-packages.store') }}">
+                @csrf
+                <p><strong>Số Tiền (VNĐ):</strong></p>
+                <input type="number" name="amount" required placeholder="Nhập số tiền" min="1000">
+                <p><strong>Số Token:</strong></p>
+                <input type="number" name="tokens" required placeholder="Nhập số token" min="1">
+                <p><strong>Mô Tả:</strong></p>
+                <textarea name="description" rows="4" placeholder="Nhập mô tả (tùy chọn)"></textarea>
+                <p><strong>Trạng Thái:</strong></p>
+                <select name="is_active">
+                    <option value="1">Hoạt động</option>
+                    <option value="0">Không hoạt động</option>
+                </select>
+                <button type="submit">Thêm</button>
+            </form>
         </div>
         <!-- Popup Lịch Sử Đăng Nhập -->
         <div class="popup-overlay" id="loginHistoryOverlay" onclick="hideLoginHistory()"></div>
@@ -2758,6 +2876,133 @@
             // Cập nhật mỗi 5 giây
             setInterval(updateSystemCharts, 5000);
         @endif
+
+        //Quản lý gói nạp tiền// Biến để lưu giá trị ban đầu của các gói nạp tiền
+        let initialPackageValues = {};
+
+        // Edit package row
+        function editPackageRow(packageId) {
+            const row = document.getElementById(`package-row-${packageId}`);
+            const editables = row.querySelectorAll('.editable');
+            const editBtn = row.querySelector('.edit-btn');
+            const saveBtn = row.querySelector('.save-btn');
+            const cancelBtn = row.querySelector('.cancel-btn');
+
+            // Lưu giá trị ban đầu
+            initialPackageValues[packageId] = {};
+            editables.forEach(cell => {
+                const field = cell.dataset.field;
+                const input = cell.querySelector('input, select, textarea');
+                initialPackageValues[packageId][field] = input.value;
+                cell.classList.add('editing');
+            });
+
+            editables.forEach(cell => {
+                const display = cell.querySelector('.display');
+                const input = cell.querySelector('input, select, textarea');
+                display.style.display = 'none';
+                input.style.display = 'block';
+            });
+
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'inline-flex';
+            cancelBtn.style.display = 'inline-flex';
+        }
+
+        // Cancel edit package row
+        function cancelPackageEdit(packageId) {
+            const row = document.getElementById(`package-row-${packageId}`);
+            const editables = row.querySelectorAll('.editable');
+            const editBtn = row.querySelector('.edit-btn');
+            const saveBtn = row.querySelector('.save-btn');
+            const cancelBtn = row.querySelector('.cancel-btn');
+
+            editables.forEach(cell => {
+                const display = cell.querySelector('.display');
+                const input = cell.querySelector('input, select, textarea');
+                input.style.display = 'none';
+                display.style.display = 'block';
+                input.value = initialPackageValues[packageId][cell.dataset.field];
+                cell.classList.remove('editing');
+
+                const descriptionCell = cell.querySelector('.description-cell');
+                if (descriptionCell) {
+                    descriptionCell.classList.remove('expanded');
+                    const toggleLink = cell.querySelector('.toggle-description');
+                    toggleLink.textContent = 'Xem thêm';
+                }
+            });
+
+            editBtn.style.display = 'inline-flex';
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+            delete initialPackageValues[packageId];
+        }
+
+        // Toggle package description
+        function togglePackageDescription(packageId) {
+            const descriptionCell = document.getElementById(`description-${packageId}`);
+            const toggleLink = document.getElementById(`toggle-${packageId}`);
+            if (descriptionCell.classList.contains('expanded')) {
+                descriptionCell.classList.remove('expanded');
+                toggleLink.textContent = 'Xem thêm';
+            } else {
+                descriptionCell.classList.add('expanded');
+                toggleLink.textContent = 'Ẩn bớt';
+            }
+        }
+
+        // Show/Hide Add Package Popup
+        function showAddPackagePopup() {
+            const popup = document.getElementById('addPackagePopup');
+            const overlay = document.getElementById('addPackageOverlay');
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        function hideAddPackagePopup() {
+            const popup = document.getElementById('addPackagePopup');
+            const overlay = document.getElementById('addPackageOverlay');
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        // Xử lý gửi form trong tab Quản lý gói nạp tiền
+        document.querySelectorAll('#recharge-packages .edit-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const packageId = this.id.replace('package-form-', '');
+                const editables = document.getElementById(`package-row-${packageId}`).querySelectorAll('.editable');
+                let hasChanges = false;
+
+                const existingHiddenInputs = form.querySelectorAll('input[type="hidden"]:not([name="_token"]):not([name="_method"])');
+                existingHiddenInputs.forEach(input => input.remove());
+
+                editables.forEach(cell => {
+                    const field = cell.dataset.field;
+                    const input = cell.querySelector('input, select, textarea');
+                    const currentValue = input.value;
+                    const initialValue = initialPackageValues[packageId][field];
+
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = field;
+                    hiddenInput.value = currentValue;
+                    form.appendChild(hiddenInput);
+
+                    if (currentValue !== initialValue) {
+                        hasChanges = true;
+                    }
+                });
+
+                if (!hasChanges) {
+                    alert('Không có thay đổi để lưu!');
+                    return;
+                }
+
+                form.submit();
+            });
+        });
     </script>
 </body>
 

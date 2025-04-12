@@ -19,6 +19,8 @@ use App\Models\Setting;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\SocialiteController;
+use App\Http\Controllers\RechargePackageController;
+
 
 Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
@@ -242,6 +244,17 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/admin/system/laravel-stats', [AdminController::class, 'laravelStats'])->name('admin.system.laravel_stats');
 //Sao lưu dữ liệu
 Route::post('/admin/backup', [AdminController::class, 'backup'])->name('admin.backup');
+//Quản lý gói nạp tiền
+
+    //Route::get('/', [App\Http\Controllers\AdminController::class, 'index'])->name('index');
+    Route::post('/recharge-packages', [RechargePackageController::class, 'store'])->name('recharge-packages.store');
+    Route::put('/recharge-packages/{id}', [RechargePackageController::class, 'update'])->name('recharge-packages.update');
+    Route::delete('/recharge-packages/{id}', [RechargePackageController::class, 'destroy'])->name('recharge-packages.destroy');
+//Cập nhật hiển thị gói nạp cho trang user
+Route::get('/recharge', [App\Http\Controllers\RechargeController::class, 'index'])->name('recharge.index');
+Route::post('/recharge/submit', [App\Http\Controllers\RechargeController::class, 'submit'])->name('recharge.submit');
+//Hiển thị bình luận của người dùng trên dashboard
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 //      ->name('admin.settings.captcha')
 //      ->middleware('auth'); // Đảm bảo phải đăng nhập
 /*use Illuminate\Support\Facades\Route;

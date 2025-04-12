@@ -63,7 +63,7 @@
 
         .sidebar:hover {
             width: 300px;
-            
+
         }
 
         .sidebar .logo {
@@ -613,9 +613,9 @@
     <div class="container">
         <div class="header">
             <h1>Nạp Tiền</h1>
-            <div class="user-info">
+            <div class="user-info"><h2>
                 Xin chào, {{ Auth::user()->name }}! Bạn hiện có <span id="tokenCount">{{ Auth::user()->tokens }}</span>
-                lượt dự đoán.
+                lượt dự đoán.</h2>
             </div>
         </div>
 
@@ -655,38 +655,24 @@
                     enctype="multipart/form-data">
                     @csrf
                     <div class="recharge-options">
-                        <label for="amount1">
-                            <input type="radio" name="amount" value="50000" id="amount1" required>
-                            <div class="card">
-                                <div class="amount">50,000 VNĐ</div>
-                                <div class="tokens">50 tokens</div>
-                                <div class="description">Phù hợp cho người mới</div>
-                                <i class="fas fa-check-circle icon"></i>
-                            </div>
-                        </label>
-                        <label for="amount2">
-                            <input type="radio" name="amount" value="100000" id="amount2">
-                            <div class="card">
-                                <div class="amount">100,000 VNĐ</div>
-                                <div class="tokens">110 tokens</div>
-                                <div class="description">Tiết kiệm nhất</div>
-                                <i class="fas fa-check-circle icon"></i>
-                            </div>
-                        </label>
-                        <label for="amount3">
-                            <input type="radio" name="amount" value="200000" id="amount3">
-                            <div class="card">
-                                <div class="amount">200,000 VNĐ</div>
-                                <div class="tokens">240 tokens</div>
-                                <div class="description">Dành cho người dùng thường xuyên</div>
-                                <i class="fas fa-check-circle icon"></i>
-                            </div>
-                        </label>
+                        @forelse ($packages as $index => $package)
+                            <label for="amount{{ $index }}">
+                                <input type="radio" name="package_id" value="{{ $package->id }}" id="amount{{ $index }}" {{ $index === 0 ? 'required' : '' }}>
+                                <div class="card">
+                                    <div class="amount">{{ number_format($package->amount) }} VNĐ</div>
+                                    <div class="tokens">{{ $package->tokens }} tokens</div>
+                                    <div class="description">{{ $package->description ?? 'Không có mô tả' }}</div>
+                                    <i class="fas fa-check-circle icon"></i>
+                                </div>
+                            </label>
+                        @empty
+                            <p>Không có gói nạp tiền nào khả dụng.</p>
+                        @endforelse
                     </div>
 
                     <div class="qr-code">
                         <h4>Quét Mã QR Để Chuyển Khoản</h4>
-                        <img src="\images\1743491347043.png" alt="QR Code Agribank">
+                        <img src="/images/1743491347043.png" alt="QR Code Agribank">
                         <p>Ngân hàng: Agribank<br>STK: 7206205146190<br>Vui lòng chụp rõ số tiền khi chuyển khoản!</p>
                     </div>
 
@@ -699,60 +685,61 @@
                     <button type="submit">Xác Nhận Mua Thêm Lượt</button>
                 </form>
             </div>
+        </div>
 
-            <!-- Recharge History Section -->
-            <div class="section recharge-history" id="recharge-history">
-                <h3>Lịch Sử Nạp Tiền</h3>
-                @if ($rechargeHistory->isEmpty())
-                    <p>Bạn chưa có lịch sử nạp tiền.</p>
+        <!-- Recharge History Section -->
+        <div class="section recharge-history" id="recharge-history">
+            <h3>Lịch Sử Nạp Tiền</h3>
+            @if ($rechargeHistory->isEmpty())
+                <p>Bạn chưa có lịch sử nạp tiền.</p>
+            @else
+                <ul>
+                    @foreach ($rechargeHistory as $record)
+                        <li>
+                            <span>
+                                Nạp {{ number_format($record->amount) }} VNĐ → Nhận {{ $record->tokens_added }} tokens
+                                ({{ $record->approved_at }})
+                            </span>
+                            <button class="export-btn" onclick="exportReceipt({{ $record->id }})">Xuất Hóa Đơn</button>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+
+        <!-- Notifications Section -->
+        <div class="section notifications" id="notifications">
+            <h3>Thông Báo Từ Admin</h3>
+            <div class="notification-messages">
+                @if ($messages->isEmpty())
+                    <p>Chưa có thông báo nào từ admin.</p>
                 @else
-                    <ul>
-                        @foreach ($rechargeHistory as $record)
-                            <li>
-                                <span>
-                                    Nạp {{ number_format($record->amount) }} VNĐ → Nhận {{ $record->tokens_added }} tokens
-                                    ({{ $record->approved_at }})
-                                </span>
-                                <button class="export-btn" onclick="exportReceipt({{ $record->id }})">Xuất Hóa Đơn</button>
-                            </li>
-                        @endforeach
-                    </ul>
+                    @foreach ($messages as $message)
+                        @if ($message->admin_id)
+                            <div class="message admin">
+                                <p>{{ $message->message }}</p>
+                                <span>{{ $message->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                        @endif
+                    @endforeach
                 @endif
             </div>
-
-            <!-- Notifications Section -->
-            <div class="section notifications" id="notifications">
-                <h3>Thông Báo Từ Admin</h3>
-                <div class="notification-messages">
-                    @if ($messages->isEmpty())
-                        <p>Chưa có thông báo nào từ admin.</p>
-                    @else
-                        @foreach ($messages as $message)
-                            @if ($message->admin_id)
-                                <div class="message admin">
-                                    <p>{{ $message->message }}</p>
-                                    <span>{{ $message->created_at->format('d/m/Y H:i') }}</span>
-                                </div>
-                            @endif
-                        @endforeach
-                    @endif
-                </div>
-            </div>
-
-            <!-- Popup Xác Nhận Mật Khẩu và CAPTCHA -->
-            <div class="popup-overlay" id="confirmPopupOverlay" onclick="hideConfirmPopup()"></div>
-            <div class="popup" id="confirmPopup">
-                <h3>Xác Nhận Giao Dịch</h3>
-                <form id="confirmForm">
-                    <p><strong>Nhập lại mật khẩu:</strong></p>
-                    <input type="password" id="confirmPassword" name="password" required
-                        placeholder="Nhập mật khẩu của bạn">
-                    <p><strong>Xác nhận CAPTCHA:</strong></p>
-                    <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
-                    <button type="button" onclick="submitRechargeForm()">Xác Nhận</button>
-                </form>
-            </div>
         </div>
+
+        <!-- Popup Xác Nhận Mật Khẩu và CAPTCHA -->
+        <div class="popup-overlay" id="confirmPopupOverlay" onclick="hideConfirmPopup()"></div>
+        <div class="popup" id="confirmPopup">
+            <h3>Xác Nhận Giao Dịch</h3>
+            <form id="confirmForm">
+                <p><strong>Nhập lại mật khẩu:</strong></p>
+                <input type="password" id="confirmPassword" name="password" required
+                    placeholder="Nhập mật khẩu của bạn">
+                <p><strong>Xác nhận CAPTCHA:</strong></p>
+                <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+                <button type="button" onclick="submitRechargeForm()">Xác Nhận</button>
+            </form>
+        </div>
+    </div>
     </div>
 
     <script src="{{ asset('js/dashboard.js') }}"></script>

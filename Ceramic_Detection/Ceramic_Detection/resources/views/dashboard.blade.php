@@ -30,7 +30,8 @@
         }
 
         body {
-            background: var(--light-blue);
+            /* background: var(--light-blue); */
+            background-image: url('/storage/images/bg.jpg');
             color: var(--dark-gray);
             min-height: 100vh;
             display: flex;
@@ -312,6 +313,7 @@
 
         .ceramic-ai .upload-area input[type="file"] {
             width: 100%;
+            height: 125px;
             padding: 10px;
             border: 2px dashed var(--primary-color);
             border-radius: 8px;
@@ -786,10 +788,224 @@
         .result-loaded {
             animation: slideUp 0.5s ease-in-out;
         }
+
+        /* All Users Rating Section */
+        .all-users-rating {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .all-users-rating h4 {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .all-users-rating table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .all-users-rating th,
+        .all-users-rating td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .all-users-rating th {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .all-users-rating tr:hover {
+            background: var(--light-gray);
+        }
+
+        .all-users-rating td .fa-star.fas {
+            color: var(--secondary-color);
+        }
+
+        .all-users-rating p {
+            font-size: 0.95rem;
+            color: var(--dark-gray);
+        }
+
+        /* Rating Filter */
+        .rating-filter {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rating-filter label {
+            font-size: 0.95rem;
+            color: var(--dark-gray);
+        }
+
+        .rating-filter select {
+            padding: 8px;
+            border: 1px solid var(--light-gray);
+            border-radius: 5px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .rating-filter select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        /* All Users Rating Table */
+        .all-users-rating table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .all-users-rating th,
+        .all-users-rating td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .all-users-rating th {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .all-users-rating tr:hover {
+            background: var(--light-gray);
+        }
+
+        .all-users-rating td .fa-star.fas {
+            color: var(--secondary-color);
+        }
+
+        /* Pagination */
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .pagination .page-link {
+            padding: 8px 12px;
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .pagination .page-link:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .pagination .active {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        
+
+
+        /* Rating Filter Container */
+        .rating-filter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: linear-gradient(135deg, var(--white), var(--light-gray));
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .rating-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Label */
+        .rating-filter label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: black;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            padding-left: 25px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .rating-filter label::before {
+            content: '\f005';
+            /* Font Awesome star icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            position: absolute;
+            left: 0;
+            animation: pulseStar 2s infinite ease-in-out;
+        }
+
+        /* Select Dropdown */
+        .rating-filter select {
+            appearance: none;
+            /* Xóa style mặc định của trình duyệt */
+            padding: 10px 40px 10px 15px;
+            font-size: 0.95rem;
+            color: var(--dark-gray);
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%26263238' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .rating-filter select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 8px rgba(38, 70, 82, 0.3);
+        }
+
+        .rating-filter select:hover {
+            background-color: var(--light-gray);
+            border-color: var(--secondary-color);
+        }
+
+        .rating-filter select option {
+            padding: 10px;
+            color: var(--dark-gray);
+            background: var(--white);
+        }
+        h2 a u{
+            color: green;
+        }
     </style>
 </head>
 
 <body>
+
+
     @if (!Auth::check())
         <script>
             window.location.href = "{{ route('login') }}";
@@ -830,14 +1046,14 @@
     <!-- Main content -->
     <div class="container">
         <div class="header">
-
+            
             <h1>Ceramic Recognition Dashboard</h1>
 
-            <div class="user-info">
+            <div class="user-info"><h2>
                 Xin chào, {{ Auth::user()->name }}! Bạn còn <span id="tokenCount">{{ Auth::user()->tokens }}</span> lượt
                 dự đoán.
                 <br>
-                <a href="/recharge">Nạp thêm lượt</a>
+                <a href="/recharge"><u>Nạp thêm lượt</u></a></h2>
             </div>
         </div>
 
@@ -881,7 +1097,7 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>STT</th>
                                 <th>Ảnh</th>
                                 <th>Kết quả</th>
                                 <th>Thời gian</th>
@@ -891,7 +1107,9 @@
                         <tbody>
                             @foreach ($classifications as $classification)
                                 <tr>
-                                    <td>{{ $classification->id }}</td>
+                                    <td>{{ $loop->iteration }}</td>
+
+                                    <!-- <td>{{ $classification->id }}</td> -->
                                     <td>
                                         <img src="{{ url($classification->image_path) }}" alt="Image"
                                             style="max-width: 100px; border-radius: 5px;">
@@ -934,337 +1152,481 @@
                     <textarea id="feedback" placeholder="Nhập phản hồi của bạn..." rows="4"></textarea>
                     <button onclick="submitRating()">Gửi đánh giá</button>
                 </div>
+                <!-- Khu vực hiển thị rating của tất cả người dùng -->
+                <div class="all-users-rating">
+                    <h4>Đánh Giá Từ Người Dùng Khác</h4>
+                    <!-- Bộ lọc theo số sao -->
+                    <div class="rating-filter">
+                        <label for="ratingFilter">Lọc theo số sao: </label>
+                        <select id="ratingFilter" onchange="filterAndPaginateRatings()">
+                            <option value="all">Tất cả</option>
+                            <option value="1">1 Sao</option>
+                            <option value="2">2 Sao</option>
+                            <option value="3">3 Sao</option>
+                            <option value="4">4 Sao</option>
+                            <option value="5">5 Sao</option>
+                        </select>
+                    </div>
+                    <!-- Bảng hiển thị rating -->
+                    <table id="ratingsTable">
+                        <thead>
+                            <tr>
+                                <th>Tên Người Dùng</th>
+                                <th>Đánh Giá</th>
+                                <th>Phản Hồi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ratingsBody">
+                            <!-- Nội dung sẽ được render bằng JavaScript -->
+                        </tbody>
+                    </table>
+                    <!-- Thông báo khi không có dữ liệu -->
+                    <p id="noRatingsMessage" style="display: none;">Chưa có đánh giá nào từ người dùng khác.</p>
+                    <!-- Phân trang -->
+                    <div class="pagination" id="pagination">
+                        <!-- Các nút phân trang sẽ được thêm bằng JavaScript -->
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Popup hiển thị thông tin chi tiết -->
-    <div class="popup-overlay" id="infoPopupOverlay" onclick="hideInfoPopup()"></div>
-    <div class="popup" id="infoPopup">
-        <h3>Thông tin chi tiết</h3>
-        <div id="infoPopupContent">
-            <!-- Nội dung sẽ được thêm bằng JavaScript -->
-        </div>
-        <button onclick="hideInfoPopup()">Đóng</button>
-    </div>
-    <!-- Popup đổi tên -->
-    <div class="popup-overlay" id="changeNamePopupOverlay" onclick="hideChangeNamePopup()"></div>
-    <div class="popup" id="changeNamePopup">
-        <h3>Đổi Tên Người Dùng</h3>
-        <div id="changeNameContent">
-            <p>Tên hiện tại: <strong>{{ Auth::user()->name }}</strong></p>
-            <input type="text" id="newName" placeholder="Nhập tên mới"
-                style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid var(--light-gray);">
-            <p id="changeNameError" style="color: #f44336; display: none;"></p>
-        </div>
-        <button onclick="submitNewName()">Lưu</button>
-    </div>
-    <script>
-        const userId = "{{ Auth::user()->id ?? 'anonymous' }}";
-        let tokens = {{ Auth::user()->tokens ?? 0 }};
-        console.log("User ID:", userId);
-        console.log("Tokens còn lại:", tokens);
+            <!-- Popup hiển thị thông tin chi tiết -->
+            <div class="popup-overlay" id="infoPopupOverlay" onclick="hideInfoPopup()"></div>
+            <div class="popup" id="infoPopup">
+                <h3>Thông tin chi tiết</h3>
+                <div id="infoPopupContent">
+                    <!-- Nội dung sẽ được thêm bằng JavaScript -->
+                </div>
+                <button onclick="hideInfoPopup()">Đóng</button>
+            </div>
+            <!-- Popup đổi tên -->
+            <div class="popup-overlay" id="changeNamePopupOverlay" onclick="hideChangeNamePopup()"></div>
+            <div class="popup" id="changeNamePopup">
+                <h3>Đổi Tên Người Dùng</h3>
+                <div id="changeNameContent">
+                    <p>Tên hiện tại: <strong>{{ Auth::user()->name }}</strong></p>
+                    <input type="text" id="newName" placeholder="Nhập tên mới"
+                        style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid var(--light-gray);">
+                    <p id="changeNameError" style="color: #f44336; display: none;"></p>
+                </div>
+                <button onclick="submitNewName()">Lưu</button>
+            </div>
+            <script>
+                const userId = "{{ Auth::user()->id ?? 'anonymous' }}";
+                let tokens = {{ Auth::user()->tokens ?? 0 }};
+                console.log("User ID:", userId);
+                console.log("Tokens còn lại:", tokens);
 
-        document.getElementById('imageInput').addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            const preview = document.getElementById('previewImage');
-            preview.src = URL.createObjectURL(file);
-            preview.style.display = 'block';
-        });
-
-        async function predictImage() {
-            const fileInput = document.getElementById('imageInput');
-            const resultElement = document.getElementById('result');
-            const chatbotElement = document.getElementById('chatbotResponse');
-            const predictBtn = document.getElementById('predictBtn');
-            const spinner = document.getElementById('predictSpinner');
-            const tokenCountElement = document.getElementById('tokenCount');
-            // Bật animation khi bắt đầu xử lý
-            predictBtn.disabled = true;
-            predictBtn.classList.add('processing'); // Animation pulse cho nút
-            spinner.style.display = 'inline-block';
-            resultElement.textContent = 'Đang phân tích mẫu gốm...';
-            resultElement.classList.add('result-processing'); // Animation nhấp nháy cho Result
-            chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
-            chatbotElement.classList.add('chatbot-processing'); // Animation nhấp nháy cho Chatbot
-            if (!fileInput.files[0]) {
-                resultElement.textContent = 'Vui lòng upload ảnh trước!';
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            formData.append('_token', '{{ csrf_token() }}');
-
-            predictBtn.disabled = true;
-            spinner.style.display = 'inline-block';
-            resultElement.textContent = 'Đang phân tích mẫu gốm...';
-            chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
-
-            try {
-                const response = await fetch('{{ route('predict.image') }}', {
-                    method: 'POST',
-                    body: formData
+                document.getElementById('imageInput').addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    const preview = document.getElementById('previewImage');
+                    preview.src = URL.createObjectURL(file);
+                    preview.style.display = 'block';
                 });
 
-                const data = await response.json();
-                // Xóa animation khi xử lý xong
-                predictBtn.classList.remove('processing');
-                resultElement.classList.remove('result-processing');
-                chatbotElement.classList.remove('chatbot-processing');
-                if (data.error) {
-                    resultElement.textContent = `Lỗi: ${data.error}`;
-                    chatbotElement.innerHTML = `<p>${data.error}</p>`;
-                } else {
-                    tokenCountElement.textContent = data.tokens;
-                    resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
-                    resultElement.classList.add('result-loaded');
-                    const llmResponse = data.llm_response;
-                    const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
-                    let formattedResponse = '';
-                    paragraphs.forEach(paragraph => {
-                        const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
-                        formattedResponse += `<p>${formattedParagraph}</p>`;
-                    });
-                    chatbotElement.innerHTML = formattedResponse;
-                    chatbotElement.classList.add('result-loaded');
-                }
-            } catch (error) {
-                predictBtn.classList.remove('processing');
-                resultElement.classList.remove('result-processing');
-                chatbotElement.classList.remove('chatbot-processing');
-                resultElement.textContent = `Lỗi: ${error.message}`;
-                chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
-            } finally {
-                predictBtn.disabled = false;
-                spinner.style.display = 'none';
-                // Xóa class result-loaded sau khi animation hoàn tất (để có thể tái sử dụng)
-                setTimeout(() => {
-                    resultElement.classList.remove('result-loaded');
-                    chatbotElement.classList.remove('result-loaded');
-                }, 500); // Thời gian khớp với animation slideUp
-            }
-        }
-
-        const stars = document.querySelectorAll('.rating-form .rating-stars .fa-star');
-        let selectedRating = 0;
-
-        stars.forEach(star => {
-            star.addEventListener('click', function () {
-                selectedRating = this.getAttribute('data-value');
-                stars.forEach(s => {
-                    s.classList.remove('active');
-                    s.classList.remove('fas');
-                    s.classList.add('far');
-                    if (s.getAttribute('data-value') <= selectedRating) {
-                        s.classList.add('active');
-                        s.classList.add('fas');
-                        s.classList.remove('far');
+                async function predictImage() {
+                    const fileInput = document.getElementById('imageInput');
+                    const resultElement = document.getElementById('result');
+                    const chatbotElement = document.getElementById('chatbotResponse');
+                    const predictBtn = document.getElementById('predictBtn');
+                    const spinner = document.getElementById('predictSpinner');
+                    const tokenCountElement = document.getElementById('tokenCount');
+                    // Bật animation khi bắt đầu xử lý
+                    predictBtn.disabled = true;
+                    predictBtn.classList.add('processing'); // Animation pulse cho nút
+                    spinner.style.display = 'inline-block';
+                    resultElement.textContent = 'Đang phân tích mẫu gốm...';
+                    resultElement.classList.add('result-processing'); // Animation nhấp nháy cho Result
+                    chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
+                    chatbotElement.classList.add('chatbot-processing'); // Animation nhấp nháy cho Chatbot
+                    if (!fileInput.files[0]) {
+                        resultElement.textContent = 'Vui lòng upload ảnh trước!';
+                        return;
                     }
-                });
-            });
-        });
 
-        async function submitRating() {
-            const feedback = document.getElementById('feedback').value;
-            if (!selectedRating) {
-                alert('Vui lòng chọn số sao!');
-                return;
-            }
+                    const formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    formData.append('_token', '{{ csrf_token() }}');
 
-            try {
-                const response = await fetch('/submit-rating', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        userId: userId,
-                        rating: selectedRating,
-                        feedback: feedback
-                    })
-                });
+                    predictBtn.disabled = true;
+                    spinner.style.display = 'inline-block';
+                    resultElement.textContent = 'Đang phân tích mẫu gốm...';
+                    chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
 
-                const data = await response.json();
-                if (data.success) {
-                    alert('Đánh giá của bạn đã được gửi thành công!');
-                    document.getElementById('feedback').value = '';
-                    stars.forEach(s => {
-                        s.classList.remove('active');
-                        s.classList.remove('fas');
-                        s.classList.add('far');
-                    });
-                    selectedRating = 0;
-                    location.reload();
-                } else {
-                    alert('Có lỗi xảy ra khi gửi đánh giá!');
-                }
-            } catch (error) {
-                alert(`Lỗi: ${error.message}`);
-            }
-        }
+                    try {
+                        const response = await fetch('{{ route('predict.image') }}', {
+                            method: 'POST',
+                            body: formData
+                        });
 
-        async function showInfoPopup(classificationId) {
-            const popup = document.getElementById('infoPopup');
-            const overlay = document.getElementById('infoPopupOverlay');
-            const content = document.getElementById('infoPopupContent');
-
-            try {
-                const response = await fetch(`/classification/${classificationId}/info`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        const data = await response.json();
+                        // Xóa animation khi xử lý xong
+                        predictBtn.classList.remove('processing');
+                        resultElement.classList.remove('result-processing');
+                        chatbotElement.classList.remove('chatbot-processing');
+                        if (data.error) {
+                            resultElement.textContent = `Lỗi: ${data.error}`;
+                            chatbotElement.innerHTML = `<p>${data.error}</p>`;
+                        } else {
+                            tokenCountElement.textContent = data.tokens;
+                            resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
+                            resultElement.classList.add('result-loaded');
+                            const llmResponse = data.llm_response;
+                            const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
+                            let formattedResponse = '';
+                            paragraphs.forEach(paragraph => {
+                                const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
+                                formattedResponse += `<p>${formattedParagraph}</p>`;
+                            });
+                            chatbotElement.innerHTML = formattedResponse;
+                            chatbotElement.classList.add('result-loaded');
+                        }
+                    } catch (error) {
+                        predictBtn.classList.remove('processing');
+                        resultElement.classList.remove('result-processing');
+                        chatbotElement.classList.remove('chatbot-processing');
+                        resultElement.textContent = `Lỗi: ${error.message}`;
+                        chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
+                    } finally {
+                        predictBtn.disabled = false;
+                        spinner.style.display = 'none';
+                        // Xóa class result-loaded sau khi animation hoàn tất (để có thể tái sử dụng)
+                        setTimeout(() => {
+                            resultElement.classList.remove('result-loaded');
+                            chatbotElement.classList.remove('result-loaded');
+                        }, 500); // Thời gian khớp với animation slideUp
                     }
-                });
-                const data = await response.json();
-
-                if (data.llm_response) {
-                    const paragraphs = data.llm_response.split('\n').filter(p => p.trim() !== '');
-                    let formattedResponse = '';
-                    paragraphs.forEach(paragraph => {
-                        const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
-                        formattedResponse += `<p>${formattedParagraph}</p>`;
-                    });
-                    content.innerHTML = formattedResponse;
-                } else {
-                    content.innerHTML = '<p>Không có thông tin chi tiết.</p>';
                 }
-            } catch (error) {
-                content.innerHTML = '<p>Lỗi khi tải thông tin chi tiết.</p>';
-                console.error('Error fetching classification info:', error);
-            }
 
-            popup.style.display = 'block';
-            overlay.style.display = 'block';
-        }
+                const stars = document.querySelectorAll('.rating-form .rating-stars .fa-star');
+                let selectedRating = 0;
 
-        function hideInfoPopup() {
-            const popup = document.getElementById('infoPopup');
-            const overlay = document.getElementById('infoPopupOverlay');
-            popup.style.display = 'none';
-            overlay.style.display = 'none';
-        }
+                stars.forEach(star => {
+                    star.addEventListener('click', function () {
+                        selectedRating = this.getAttribute('data-value');
+                        stars.forEach(s => {
+                            s.classList.remove('active');
+                            s.classList.remove('fas');
+                            s.classList.add('far');
+                            if (s.getAttribute('data-value') <= selectedRating) {
+                                s.classList.add('active');
+                                s.classList.add('fas');
+                                s.classList.remove('far');
+                            }
+                        });
+                    });
+                });
 
-        document.querySelectorAll('.sidebar a').forEach(link => {
-            link.addEventListener('click', function (e) {
-                if (!this.href.includes('/recharge')) {
-                    e.preventDefault();
-                    document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-                    this.classList.add('active');
+                async function submitRating() {
+                    const feedback = document.getElementById('feedback').value;
+                    if (!selectedRating) {
+                        alert('Vui lòng chọn số sao!');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/submit-rating', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                userId: userId,
+                                rating: selectedRating,
+                                feedback: feedback
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            alert('Đánh giá của bạn đã được gửi thành công!');
+                            document.getElementById('feedback').value = '';
+                            stars.forEach(s => {
+                                s.classList.remove('active');
+                                s.classList.remove('fas');
+                                s.classList.add('far');
+                            });
+                            selectedRating = 0;
+                            location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra khi gửi đánh giá!');
+                        }
+                    } catch (error) {
+                        alert(`Lỗi: ${error.message}`);
+                    }
+                }
+
+                async function showInfoPopup(classificationId) {
+                    const popup = document.getElementById('infoPopup');
+                    const overlay = document.getElementById('infoPopupOverlay');
+                    const content = document.getElementById('infoPopupContent');
+
+                    try {
+                        const response = await fetch(`/classification/${classificationId}/info`, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        });
+                        const data = await response.json();
+
+                        if (data.llm_response) {
+                            const paragraphs = data.llm_response.split('\n').filter(p => p.trim() !== '');
+                            let formattedResponse = '';
+                            paragraphs.forEach(paragraph => {
+                                const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
+                                formattedResponse += `<p>${formattedParagraph}</p>`;
+                            });
+                            content.innerHTML = formattedResponse;
+                        } else {
+                            content.innerHTML = '<p>Không có thông tin chi tiết.</p>';
+                        }
+                    } catch (error) {
+                        content.innerHTML = '<p>Lỗi khi tải thông tin chi tiết.</p>';
+                        console.error('Error fetching classification info:', error);
+                    }
+
+                    popup.style.display = 'block';
+                    overlay.style.display = 'block';
+                }
+
+                function hideInfoPopup() {
+                    const popup = document.getElementById('infoPopup');
+                    const overlay = document.getElementById('infoPopupOverlay');
+                    popup.style.display = 'none';
+                    overlay.style.display = 'none';
+                }
+
+                document.querySelectorAll('.sidebar a').forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        if (!this.href.includes('/recharge')) {
+                            e.preventDefault();
+                            document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+                            this.classList.add('active');
+                            document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
+                            const section = document.getElementById(this.dataset.section);
+                            if (section) section.style.display = 'block';
+                        }
+                    });
+                });
+
+                document.addEventListener('DOMContentLoaded', () => {
                     document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
-                    const section = document.getElementById(this.dataset.section);
-                    if (section) section.style.display = 'block';
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
-            document.getElementById('ceramic-ai').style.display = 'block';
-        });
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.target.classList.add('dragover');
-        }
-
-        function handleDragLeave(e) {
-            e.target.classList.remove('dragover');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            e.target.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                document.getElementById('imageInput').files = e.dataTransfer.files;
-                const preview = document.getElementById('previewImage');
-                preview.src = URL.createObjectURL(file);
-                preview.style.display = 'block';
-            } else {
-                alert('Vui lòng kéo thả file ảnh!');
-            }
-        }
-        function filterHistory() {
-            const query = document.getElementById('historySearch').value.toLowerCase();
-            const rows = document.querySelectorAll('#history table tbody tr');
-            rows.forEach(row => {
-                const result = row.cells[2].textContent.toLowerCase();
-                row.style.display = result.includes(query) ? '' : 'none';
-            });
-        }
-        //Đổi theme
-        function toggleTheme() {
-            document.body.classList.toggle('dark-theme');
-            localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-        }
-        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
-        // Hiển thị popup đổi tên
-        function showChangeNamePopup() {
-            const popup = document.getElementById('changeNamePopup');
-            const overlay = document.getElementById('changeNamePopupOverlay');
-            popup.style.display = 'block';
-            overlay.style.display = 'block';
-            document.getElementById('newName').value = ''; // Xóa nội dung input khi mở
-            document.getElementById('changeNameError').style.display = 'none'; // Ẩn thông báo lỗi
-        }
-
-        // Ẩn popup đổi tên
-        function hideChangeNamePopup() {
-            const popup = document.getElementById('changeNamePopup');
-            const overlay = document.getElementById('changeNamePopupOverlay');
-            popup.style.display = 'none';
-            overlay.style.display = 'none';
-        }
-
-        // Gửi yêu cầu đổi tên
-        async function submitNewName() {
-            const newName = document.getElementById('newName').value.trim();
-            const errorElement = document.getElementById('changeNameError');
-
-            if (!newName) {
-                errorElement.textContent = 'Vui lòng nhập tên mới!';
-                errorElement.style.display = 'block';
-                return;
-            }
-
-            if (newName.length < 3) {
-                errorElement.textContent = 'Tên phải có ít nhất 3 ký tự!';
-                errorElement.style.display = 'block';
-                return;
-            }
-
-            try {
-                const response = await fetch('/change-name', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        userId: userId,
-                        name: newName
-                    })
+                    document.getElementById('ceramic-ai').style.display = 'block';
                 });
-
-                const data = await response.json();
-                if (data.success) {
-                    alert('Tên của bạn đã được cập nhật thành công!');
-                    document.querySelector('.user-name span').textContent = newName; // Cập nhật tên trong sidebar
-                    document.querySelector('.user-info').innerHTML = `Xin chào, ${newName}! Bạn còn <span id="tokenCount">${tokens}</span> lượt dự đoán.<br><a href="/recharge">Nạp thêm lượt</a>`; // Cập nhật tên trong header
-                    hideChangeNamePopup();
-                } else {
-                    errorElement.textContent = data.error || 'Có lỗi xảy ra khi đổi tên!';
-                    errorElement.style.display = 'block';
+                function handleDragOver(e) {
+                    e.preventDefault();
+                    e.target.classList.add('dragover');
                 }
-            } catch (error) {
-                errorElement.textContent = `Lỗi: ${error.message}`;
-                errorElement.style.display = 'block';
-            }
-        }
 
-        // Các hàm khác giữ nguyên...
-    </script>
+                function handleDragLeave(e) {
+                    e.target.classList.remove('dragover');
+                }
+
+                function handleDrop(e) {
+                    e.preventDefault();
+                    e.target.classList.remove('dragover');
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        document.getElementById('imageInput').files = e.dataTransfer.files;
+                        const preview = document.getElementById('previewImage');
+                        preview.src = URL.createObjectURL(file);
+                        preview.style.display = 'block';
+                    } else {
+                        alert('Vui lòng kéo thả file ảnh!');
+                    }
+                }
+                function filterHistory() {
+                    const query = document.getElementById('historySearch').value.toLowerCase();
+                    const rows = document.querySelectorAll('#history table tbody tr');
+                    rows.forEach(row => {
+                        const result = row.cells[2].textContent.toLowerCase();
+                        row.style.display = result.includes(query) ? '' : 'none';
+                    });
+                }
+                //Đổi theme
+                function toggleTheme() {
+                    document.body.classList.toggle('dark-theme');
+                    localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+                }
+                if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+                // Hiển thị popup đổi tên
+                function showChangeNamePopup() {
+                    const popup = document.getElementById('changeNamePopup');
+                    const overlay = document.getElementById('changeNamePopupOverlay');
+                    popup.style.display = 'block';
+                    overlay.style.display = 'block';
+                    document.getElementById('newName').value = ''; // Xóa nội dung input khi mở
+                    document.getElementById('changeNameError').style.display = 'none'; // Ẩn thông báo lỗi
+                }
+
+                // Ẩn popup đổi tên
+                function hideChangeNamePopup() {
+                    const popup = document.getElementById('changeNamePopup');
+                    const overlay = document.getElementById('changeNamePopupOverlay');
+                    popup.style.display = 'none';
+                    overlay.style.display = 'none';
+                }
+
+                // Gửi yêu cầu đổi tên
+                async function submitNewName() {
+                    const newName = document.getElementById('newName').value.trim();
+                    const errorElement = document.getElementById('changeNameError');
+
+                    if (!newName) {
+                        errorElement.textContent = 'Vui lòng nhập tên mới!';
+                        errorElement.style.display = 'block';
+                        return;
+                    }
+
+                    if (newName.length < 3) {
+                        errorElement.textContent = 'Tên phải có ít nhất 3 ký tự!';
+                        errorElement.style.display = 'block';
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/change-name', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                userId: userId,
+                                name: newName
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            alert('Tên của bạn đã được cập nhật thành công!');
+                            document.querySelector('.user-name span').textContent = newName; // Cập nhật tên trong sidebar
+                            document.querySelector('.user-info').innerHTML = `Xin chào, ${newName}! Bạn còn <span id="tokenCount">${tokens}</span> lượt dự đoán.<br><a href="/recharge">Nạp thêm lượt</a>`; // Cập nhật tên trong header
+                            hideChangeNamePopup();
+                        } else {
+                            errorElement.textContent = data.error || 'Có lỗi xảy ra khi đổi tên!';
+                            errorElement.style.display = 'block';
+                        }
+                    } catch (error) {
+                        errorElement.textContent = `Lỗi: ${error.message}`;
+                        errorElement.style.display = 'block';
+                    }
+                }
+                // Dữ liệu rating từ server
+                const allUserRatings = @json($allUserRatings);
+                const ITEMS_PER_PAGE = 10; // Giới hạn 10 người dùng mỗi trang
+                let currentPage = 1;
+                let filteredRatings = allUserRatings; // Danh sách ratings sau khi lọc
+
+                // Hàm render bảng ratings
+                function renderRatings(page = 1) {
+                    const tbody = document.getElementById('ratingsBody');
+                    const noRatingsMessage = document.getElementById('noRatingsMessage');
+                    const start = (page - 1) * ITEMS_PER_PAGE;
+                    const end = start + ITEMS_PER_PAGE;
+                    const paginatedRatings = filteredRatings.slice(start, end);
+
+                    // Xóa nội dung bảng
+                    tbody.innerHTML = '';
+
+                    // Kiểm tra nếu không có dữ liệu
+                    if (filteredRatings.length === 0) {
+                        noRatingsMessage.style.display = 'block';
+                        document.getElementById('ratingsTable').style.display = 'none';
+                        document.getElementById('pagination').style.display = 'none';
+                        return;
+                    }
+
+                    // Hiển thị bảng và ẩn thông báo
+                    noRatingsMessage.style.display = 'none';
+                    document.getElementById('ratingsTable').style.display = 'table';
+                    document.getElementById('pagination').style.display = 'flex';
+
+                    // Render các dòng trong bảng
+                    paginatedRatings.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                <td>${user.name}</td>
+                <td>
+                    ${Array.from({ length: 5 }, (_, i) =>
+                            `<i class="fa-star ${i < user.rating ? 'fas' : 'far'}"></i>`
+                        ).join('')}
+                </td>
+                <td>${user.feedback || 'Không có phản hồi.'}</td>
+            `;
+                        tbody.appendChild(row);
+                    });
+
+                    // Render phân trang
+                    renderPagination();
+                }
+
+                // Hàm render phân trang
+                function renderPagination() {
+                    const pagination = document.getElementById('pagination');
+                    const totalPages = Math.ceil(filteredRatings.length / ITEMS_PER_PAGE);
+
+                    // Xóa nội dung phân trang cũ
+                    pagination.innerHTML = '';
+
+                    // Thêm nút Previous
+                    const prevLink = document.createElement('span');
+                    prevLink.className = 'page-link';
+                    prevLink.textContent = '«';
+                    prevLink.onclick = () => {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            renderRatings(currentPage);
+                        }
+                    };
+                    pagination.appendChild(prevLink);
+
+                    // Thêm các nút số trang
+                    for (let i = 1; i <= totalPages; i++) {
+                        const pageLink = document.createElement('span');
+                        pageLink.className = `page-link ${i === currentPage ? 'active' : ''}`;
+                        pageLink.textContent = i;
+                        pageLink.onclick = () => {
+                            currentPage = i;
+                            renderRatings(currentPage);
+                        };
+                        pagination.appendChild(pageLink);
+                    }
+
+                    // Thêm nút Next
+                    const nextLink = document.createElement('span');
+                    nextLink.className = 'page-link';
+                    nextLink.textContent = '»';
+                    nextLink.onclick = () => {
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            renderRatings(currentPage);
+                        }
+                    };
+                    pagination.appendChild(nextLink);
+                }
+
+                // Hàm lọc theo số sao
+                function filterAndPaginateRatings() {
+                    const filterValue = document.getElementById('ratingFilter').value;
+                    currentPage = 1; // Reset về trang 1 khi lọc
+
+                    if (filterValue === 'all') {
+                        filteredRatings = allUserRatings;
+                    } else {
+                        filteredRatings = allUserRatings.filter(user => user.rating === parseInt(filterValue));
+                    }
+
+                    renderRatings(currentPage);
+                }
+
+                // Khởi tạo khi tải trang
+                document.addEventListener('DOMContentLoaded', () => {
+                    renderRatings(currentPage);
+                });
+                // Các hàm khác giữ nguyên...
+            </script>
 </body>
 
 </html>

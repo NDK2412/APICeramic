@@ -15,7 +15,10 @@ logger = logging.getLogger(__name__)
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # Khởi tạo mô hình nhúng văn bản
-embedder = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')  # Mô hình đa ngôn ngữ nhẹ
+embedder = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')  # Mô hình đa ngôn ngữ nhẹ
+#paraphrase-multilingual-MiniLM-L12-v2 nhẹ
+#paraphrase-multilingual-mpnet-base-v2 nặng nhưng mạnh hơn
+
 
 # Hàm tìm kiếm thông tin từ Google và scrape nội dung
 def search_google(query, num_results=10):
@@ -39,7 +42,7 @@ def search_google(query, num_results=10):
                 page_content = " ".join([p.get_text() for p in paragraphs])
 
                 if page_content.strip():
-                    contents.append(f"Nội dung từ {url}: {page_content[:2000]}")  # Giới hạn 2000 ký tự mỗi trang
+                    contents.append(f"Nội dung từ {url}: {page_content[:10000]}")  # Giới hạn 2000 ký tự mỗi trang
                     logger.info(f"Đã scrape nội dung từ: {url}")
                 else:
                     logger.warning(f"Không tìm thấy nội dung hữu ích từ: {url}")

@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Message;
+use App\Models\RechargePackage;
+use Illuminate\Support\Facades\Log;
 
 class RechargeController extends Controller
 {
@@ -21,15 +23,17 @@ class RechargeController extends Controller
 
     public function index()
     {
-        $rechargeHistory = RechargeHistory::where('user_id', Auth::id())->get();
+        $packages = RechargePackage::where('is_active', true)->get();
+        $rechargeHistory = RechargeHistory::where('user_id', Auth::id())
+            ->orderBy('approved_at', 'desc')
+            ->get();
         $requests = RechargeRequest::where('user_id', Auth::id())->get();
         $messages = Message::where('user_id', Auth::id())->orderBy('created_at')->get();
 
-        // Tính toán các thống kê
-        $pendingRequestsCount = $requests->where('status', 'pending')->count(); // Số yêu cầu đang chờ duyệt
-        $approvedRequestsCount = $requests->where('status', 'approved')->count(); // Số yêu cầu đã duyệt
-        $totalAmount = $rechargeHistory->sum('amount'); // Tổng số tiền đã nạp
-        $totalTokens = $rechargeHistory->sum('tokens_added'); // Tổng số token đã nạp
+        $pendingRequestsCount = $requests->where('status', 'pending')->count();
+        $approvedRequestsCount = $requests->where('status', 'approved')->count();
+        $totalAmount = $rechargeHistory->sum('amount');
+        $totalTokens = $rechargeHistory->sum('tokens_added');
 
         return view('recharge', compact(
             'requests',
@@ -38,65 +42,86 @@ class RechargeController extends Controller
             'pendingRequestsCount',
             'approvedRequestsCount',
             'totalAmount',
-            'totalTokens'
+            'totalTokens',
+            'packages'
         ));
     }
 
-    // Các phương thức khác giữ nguyên
     public function submit(Request $request)
     {
-        $request->validate([
-            'amount' => 'required|integer|in:50000,100000,200000',
-            'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        try {
+            $package = RechargePackage::findOrFail($request->package_id);
+            $amount = $package->amount;
+            $tokens = $package->tokens;
 
-        $amount = $request->amount;
-        $tokens = $this->calculateTokens($amount);
+            $request->validate([
+                'package_id' => 'required|exists:recharge_packages,id',
+                'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
 
-        $fileName = $request->file('proof_image')->hashName();
-        $request->file('proof_image')->move(public_path('storage/proof_images'), $fileName);
-        $proofPath = 'proof_images/' . $fileName;
+            // Kiểm tra file hợp lệ
+            $file = $request->file('proof_image');
+            if (!$file->isValid()) {
+                Log::error('File ảnh không hợp lệ: ' . $file->getClientOriginalName());
+                return redirect()->back()->with('error', 'File ảnh không hợp lệ, vui lòng thử lại!');
+            }
 
-        RechargeRequest::create([
-            'user_id' => Auth::id(),
-            'amount' => $amount,
-            'requested_tokens' => $tokens,
-            'proof_image' => $proofPath,
-        ]);
+            // Tạo tên file duy nhất
+            $fileName = 'proof_' . time() . '_' . $file->hashName();
+            $proofPath = 'proof_images/' . $fileName;
 
-        return redirect()->route('recharge.index')->with('success', 'Yêu cầu nạp tiền đã được gửi, chờ admin xác nhận!');
-    }
+            // Lưu trực tiếp vào proof_images
+            $fileContent = file_get_contents($file->getRealPath());
+            Storage::disk('public')->put($proofPath, $fileContent);
+            Log::info('Ảnh chứng minh được lưu tại: ' . $proofPath);
 
-    private function calculateTokens($amount)
-    {
-        switch ($amount) {
-            case 50000:
-                return 50;
-            case 100000:
-                return 110;
-            case 200000:
-                return 240;
-            default:
-                return 0;
+            // Kiểm tra file đã lưu thành công
+            if (!Storage::disk('public')->exists($proofPath)) {
+                Log::error('Lỗi khi lưu file ảnh: ' . $proofPath);
+                return redirect()->back()->with('error', 'Lỗi khi lưu ảnh chứng minh, vui lòng thử lại!');
+            }
+
+            RechargeRequest::create([
+                'user_id' => Auth::id(),
+                'amount' => $amount,
+                'requested_tokens' => $tokens,
+                'proof_image' => $proofPath,
+            ]);
+
+            return redirect()->route('recharge.index')->with('success', 'Yêu cầu nạp tiền đã được gửi, chờ admin xác nhận!');
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi xử lý upload ảnh: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Lỗi khi gửi yêu cầu nạp tiền: ' . $e->getMessage());
         }
     }
 
     public function exportReceipt($id)
     {
-        $record = RechargeHistory::findOrFail($id);
-        $request = RechargeRequest::where('user_id', $record->user_id)
-            ->where('amount', $record->amount)
-            ->where('requested_tokens', $record->tokens_added)
-            ->first();
+        try {
+            $record = RechargeHistory::findOrFail($id);
+            $proofImagePath = $record->proof_image ? public_path('storage/' . $record->proof_image) : null;
+            // Log để debug
+            Log::info('exportReceipt: proof_image từ database: ' . $record->proof_image);
+            Log::info('exportReceipt: proofImagePath: ' . $proofImagePath);
 
-        $proofImagePath = $request ? public_path('storage/' . $request->proof_image) : null;
+            // Tạm bỏ kiểm tra exists để test hiển thị ảnh
+            /*
+            if ($proofImagePath && !Storage::disk('public')->exists($record->proof_image)) {
+                Log::warning('Ảnh chứng minh không tồn tại tại: ' . $record->proof_image);
+                $proofImagePath = null;
+            }
+            */
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('receipt', [
-            'record' => $record,
-            'proof_image' => $proofImagePath,
-        ]);
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('receipt', [
+                'record' => $record,
+                'proof_image' => $proofImagePath,
+            ]);
 
-        return $pdf->download('HoaDon_NapTien_' . $id . '.pdf');
+            return $pdf->download('HoaDon_NapTien_' . $id . '.pdf');
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi xuất PDF: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Lỗi khi xuất hóa đơn: ' . $e->getMessage());
+        }
     }
 
     public function verify(Request $request)

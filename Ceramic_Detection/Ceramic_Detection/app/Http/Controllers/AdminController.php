@@ -6,15 +6,18 @@ use Spatie\DbDumper\Databases\MySql;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Message;
+use App\Models\RechargePackage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Recharge;
 use App\Models\RechargeRequest;
 use App\Models\RechargeHistory;
 use App\Models\TermsAndConditions;
+use App\Http\Controllers\RecognitionHistory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\Ceramic;
+use Illuminate\Support\Facades\Storage; // Thêm import này ở đầu file
 use App\Models\News;
 use App\Models\TokenUsage;
 use App\Models\Setting;
@@ -68,28 +71,28 @@ class AdminController extends Controller
         $fastapistats = $isSystemInfoEnabled ? Cache::get('fastapi_stats', []) : [];
         // Kiểm tra ngưỡng và tạo cảnh báo
         $alerts = [];
-        if ($isSystemInfoEnabled) {
-            $ramUsagePercent = $laravelStats['ram_total'] > 0 ? ($laravelStats['ram_used'] / $laravelStats['ram_total']) * 100 : 0;
-            $gpuUsagePercent = $laravelStats['gpu_total'] > 0 ? ($laravelStats['gpu_used'] / $laravelStats['gpu_total']) * 100 : 0;
-            // if ($laravelStats['cpu_usage'] > 90) {
-            //     $alerts[] = 'CPU (Laravel) vượt ngưỡng 90%: ' . $laravelStats['cpu_usage'] . '%';
-            // }
-            // if ($ramUsagePercent > 90) {
-            //     $alerts[] = 'RAM (Laravel) vượt ngưỡng 90%: ' . round($ramUsagePercent, 2) . '%';
-            // }
-            // if ($laravelStats['gpu_usage'] > 90 || $gpuUsagePercent > 90) {
-            //     $alerts[] = 'GPU (Laravel) vượt ngưỡng 90%: ' . $laravelStats['gpu_usage'] . '% (Utilization) hoặc ' . round($gpuUsagePercent, 2) . '% (Memory)';
-            // }
-            // if ($fastapistats['cpu_usage_percent'] > 90) {
-            //     $alerts[] = 'CPU (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['cpu_usage_percent'] . '%';
-            // }
-            // if ($fastapistats['ram_usage_percent'] > 90) {
-            //     $alerts[] = 'RAM (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['ram_usage_percent'] . '%';
-            // }
-            // if ($fastapistats['gpu_usage_percent'] > 90) {
-            //     $alerts[] = 'GPU (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['gpu_usage_percent'] . '%';
-            // }
-        }
+        // if ($isSystemInfoEnabled) {
+        //     $ramUsagePercent = $laravelStats['ram_total'] > 0 ? ($laravelStats['ram_used'] / $laravelStats['ram_total']) * 100 : 0;
+        //     $gpuUsagePercent = $laravelStats['gpu_total'] > 0 ? ($laravelStats['gpu_used'] / $laravelStats['gpu_total']) * 100 : 0;
+        // if ($laravelStats['cpu_usage'] > 90) {
+        //     $alerts[] = 'CPU (Laravel) vượt ngưỡng 90%: ' . $laravelStats['cpu_usage'] . '%';
+        // }
+        // if ($ramUsagePercent > 90) {
+        //     $alerts[] = 'RAM (Laravel) vượt ngưỡng 90%: ' . round($ramUsagePercent, 2) . '%';
+        // }
+        // if ($laravelStats['gpu_usage'] > 90 || $gpuUsagePercent > 90) {
+        //     $alerts[] = 'GPU (Laravel) vượt ngưỡng 90%: ' . $laravelStats['gpu_usage'] . '% (Utilization) hoặc ' . round($gpuUsagePercent, 2) . '% (Memory)';
+        // }
+        // if ($fastapistats['cpu_usage_percent'] > 90) {
+        //     $alerts[] = 'CPU (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['cpu_usage_percent'] . '%';
+        // }
+        // if ($fastapistats['ram_usage_percent'] > 90) {
+        //     $alerts[] = 'RAM (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['ram_usage_percent'] . '%';
+        // }
+        // if ($fastapistats['gpu_usage_percent'] > 90) {
+        //     $alerts[] = 'GPU (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['gpu_usage_percent'] . '%';
+        // }
+        //}
         // Lấy giao diện hiện tại từ database
         $currentTheme = Setting::where('key', 'theme')->first()->value ?? 'index';
         $users = User::with('loginHistories')->get();//lưu lịch sử đăng nhập
@@ -168,7 +171,8 @@ class AdminController extends Controller
         $totalTokenUsed = User::sum('tokens_used'); // Lấy tổng từ cột tokens_used trong bảng users
         // Xu hướng sử dụng token (trend data) trong 7 ngày
         $tokenTrend = $this->getTrendData(User::class, 'created_at', [], 'tokens_used');
-        return view('admin', compact('users', 'rechargeRequests', 'totalTokenUsed', 'tokenTrend','fastapistats', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers', 'transactionHistory', 'ceramics', 'currentTimezone', 'classifications', 'terms', 'recaptchaEnabled', 'revenueByUser', 'currentTheme', 'contacts', 'userTrend', 'rechargeTrend', 'revenueTrend', 'ratingTrend', 'chatUsers', 'news', 'approvedRequests', 'rejectedRequests', 'activeUsers', 'inactiveUsers', 'laravelStats', 'isSystemInfoEnabled', 'alerts'));
+        $packages = RechargePackage::all();
+        return view('admin', compact('users', 'rechargeRequests', 'packages', 'totalTokenUsed', 'tokenTrend', 'fastapistats', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers', 'transactionHistory', 'ceramics', 'currentTimezone', 'classifications', 'terms', 'recaptchaEnabled', 'revenueByUser', 'currentTheme', 'contacts', 'userTrend', 'rechargeTrend', 'revenueTrend', 'ratingTrend', 'chatUsers', 'news', 'approvedRequests', 'rejectedRequests', 'activeUsers', 'inactiveUsers', 'laravelStats', 'isSystemInfoEnabled', 'alerts'));
     }
     public function sendChatMessage(Request $request)
     {
@@ -221,22 +225,29 @@ class AdminController extends Controller
         $user->delete();
         return redirect()->back()->with('success', 'Người dùng đã được xóa thành công.');
     }
+
+
     public function approveRecharge($id)
     {
         $request = RechargeRequest::findOrFail($id);
         if ($request->status !== 'pending') {
             return redirect()->route('admin.index')->with('error', 'Yêu cầu này đã được xử lý!');
         }
+    
         $user = User::findOrFail($request->user_id);
         $user->tokens += $request->requested_tokens;
         $user->save();
+    
         RechargeHistory::create([
             'user_id' => $request->user_id,
             'amount' => $request->amount,
             'tokens_added' => $request->requested_tokens,
             'approved_at' => now(),
+            'proof_image' => $request->proof_image,
         ]);
+    
         $request->update(['status' => 'approved']);
+    
         return redirect()->route('admin.index')->with('success', 'Yêu cầu nạp tiền đã được xác nhận!');
     }
     // Lưu món đồ gốm mới
@@ -294,7 +305,7 @@ class AdminController extends Controller
     //Lịch sử giao dịch
     public function getRecognitionHistory(Request $request)
     {
-        $query = RecognitionHistory::with('user')
+        $query = Classification::with('user')
             ->orderBy('created_at', 'desc');
         if ($request->has('user_id') && $request->user_id) {
             $query->where('user_id', $request->user_id);

@@ -10,6 +10,10 @@ use App\Models\Setting;
 
 class AuthController extends Controller
 {
+    public function index()
+    {
+        return view('index'); // Đảm bảo file index.blade.php tồn tại trong thư mục resources/views
+    }
     // Hiển thị form đăng nhập
     public function showLoginForm()
     {

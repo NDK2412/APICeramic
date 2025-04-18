@@ -1,5 +1,7 @@
 import tensorflow as tf
 import logging
+import os
+import tensorflow.keras as k3
 
 # Cấu hình logging
 logging.basicConfig(level=logging.INFO)
@@ -39,6 +41,12 @@ CLASS_NAMES = [
 
 # Load mô hình TensorFlow
 logger.info("Đang tải mô hình TensorFlow...")
-model = tf.keras.models.load_model('D:\\PY_Code\\Ceramic_Detection\\xception_66class_model.h5')
+# model_path = os.path.join(os.path.dirname(__file__), 'xception_66class_model.h5')
+# model = tf.keras.models.load_model(model_path)
+# model = k3.models.load_model(model_path)
+model = tf.keras.models.load_model(os.path.join('/app', 'xception_66class_model.h5'))
+# model_path = os.path.join(os.path.dirname(__file__), 'xception_66class_model.h5')
+# model = tf.keras.models.load_model(model_path)
+# model = tf.keras.models.load_model('D:\\PY_Code\\Ceramic_Detection\\xception_66class_model.h5')
 logger.info("Mô hình TensorFlow đã được tải thành công.")
 logger.info(f"Nhận diện được {len(CLASS_NAMES)} lớp: {CLASS_NAMES}")

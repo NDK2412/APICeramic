@@ -31,7 +31,7 @@ Route::get('/ceramics/{id}', [CeramicController::class, 'show'])->name('ceramics
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
-//Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/dashboard', function () {
     return view('ceramic.index');
 })->middleware('auth')->name('dashboard');
@@ -255,6 +255,12 @@ Route::get('/recharge', [App\Http\Controllers\RechargeController::class, 'index'
 Route::post('/recharge/submit', [App\Http\Controllers\RechargeController::class, 'submit'])->name('recharge.submit');
 //Hiển thị bình luận của người dùng trên dashboard
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+//Cài đặt llm
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::post('/admin/llm-settings', [AdminController::class, 'updateLLMSettings'])->name('admin.updateLLMSettings');
+    // ... other routes from your original AdminController ...
+});
 //      ->name('admin.settings.captcha')
 //      ->middleware('auth'); // Đảm bảo phải đăng nhập
 /*use Illuminate\Support\Facades\Route;
@@ -284,3 +290,25 @@ Route::post('/upload', function (Request $request) {
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::put('/admin/users/{id}', [AdminController::class, 'update'])->name('admin.update');
 Route::delete('/admin/users/{id}', [AdminController::class, 'delete'])->name('admin.delete');
+
+
+
+
+
+
+
+
+
+
+
+
+
+//===============================================================================================================================================
+// Route cho Android với tiền tố /adr
+
+// Route::post('/adr/login', [AuthController::class, 'apiLogin'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+// Route::post('/adr/predict', [PredictionController::class, 'predict'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+// Route::get('/adr/test', function () {
+//     return response()->json(['message' => 'Test API']);
+// })->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+

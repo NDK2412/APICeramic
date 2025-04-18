@@ -52,4 +52,5 @@ class PasswordChangeController extends Controller
 
         return redirect()->route('login')->with('success', 'Mật khẩu đã được thay đổi thành công! Vui lòng đăng nhập lại.');
     }
+    
 }

@@ -22,7 +22,6 @@ class Kernel extends ConsoleKernel
         $isEnabled = Setting::where('key', 'system_info_optimization')->first()?->value === 'enabled';
         \Illuminate\Support\Facades\Log::info('Scheduler running, isEnabled: ' . ($isEnabled ? 'true' : 'false'));
         if ($isEnabled) {
-            FetchLaravelStats::dispatch();
             FetchFastApiStats::dispatch();
             \Illuminate\Support\Facades\Log::info('Jobs dispatched');
         } else {
@@ -30,5 +29,7 @@ class Kernel extends ConsoleKernel
         }
     }
 
-    protected $commands = [];
+    protected $commands = [
+        \App\Console\Commands\InstallApi::class,
+    ];
 }

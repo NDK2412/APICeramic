@@ -9,8 +9,22 @@ class RechargePackageController extends Controller
 {
     public function index()
     {
-        $packages = RechargePackage::all();
-        return view('admin', compact('packages')); // View admin hiện tại
+      //  $packages = RechargePackage::all();
+        try {
+            $packages = RechargePackage::where('is_active', 1)->get();
+            return response()->json([
+                'success' => true,
+                'packages' => $packages
+            ]);
+        } catch (\Exception $e) {
+            \Log::error("Lỗi lấy danh sách gói nạp: {$e->getMessage()}");
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi server'
+            ], 500);
+        }
+        
+        //return view('admin', compact('packages')); // View admin hiện tại
     }
 
     public function store(Request $request)

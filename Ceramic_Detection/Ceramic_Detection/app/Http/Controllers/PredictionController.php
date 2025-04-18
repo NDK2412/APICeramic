@@ -31,7 +31,8 @@ class PredictionController extends Controller
         try {
             $apiKey = env('FASTAPI_KEY');
             Log::info('Sending request to FastAPI', [
-                'url' => 'http://localhost:60074/predict',
+                // 'url' => 'http://localhost:60074/predict',
+                'url' => 'http://localhost:55001/predict',
                 'api_key' => $apiKey,
                 'file_name' => $formData->getClientOriginalName(),
                 'file_path' => $formData->path(),
@@ -42,8 +43,8 @@ class PredictionController extends Controller
                 'api-key' => $apiKey // Thay 'api_key' thành 'api-key'
             ])
                 ->attach('file', file_get_contents($formData->path()), $formData->getClientOriginalName())
-                ->post('http://localhost:60074/predict');
-
+                // ->post('http://localhost:60074/predict');
+                ->post('http://localhost:55001/predict');
             Log::info('API Response', [
                 'status' => $response->status(),
                 'headers' => $response->headers(),
@@ -103,4 +104,5 @@ class PredictionController extends Controller
             return response()->json(['error' => 'Lỗi khi kết nối với server: ' . $e->getMessage()], 500);
         }
     }
+    
 }

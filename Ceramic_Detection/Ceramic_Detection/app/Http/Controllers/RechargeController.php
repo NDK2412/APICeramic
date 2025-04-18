@@ -94,6 +94,81 @@ class RechargeController extends Controller
             return redirect()->back()->with('error', 'Lỗi khi gửi yêu cầu nạp tiền: ' . $e->getMessage());
         }
     }
+    public function submitAdr(Request $request)
+    {
+        try {
+            // Lấy token từ header Authorization
+            $token = $request->bearerToken();
+            if (!$token) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Thiếu token xác thực'
+                ], 401);
+            }
+
+            // Tìm user dựa trên api_token
+            $user = \App\Models\User::where('api_token', $token)->first();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Token không hợp lệ'
+                ], 401);
+            }
+
+            // Validate dữ liệu
+            $validated = $request->validate([
+                'package_id' => 'required|exists:recharge_packages,id',
+                'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
+
+            // Lấy gói nạp
+            $package = \App\Models\RechargePackage::findOrFail($validated['package_id']);
+            $amount = $package->amount;
+            $tokens = $package->tokens;
+
+            // Kiểm tra và lưu ảnh
+            $file = $request->file('proof_image');
+            if (!$file->isValid()) {
+                \Log::error('File ảnh không hợp lệ: ' . $file->getClientOriginalName());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File ảnh không hợp lệ'
+                ], 422);
+            }
+
+            $fileName = 'proof_' . time() . '_' . $file->hashName();
+            $proofPath = 'proof_images/' . $fileName;
+            \Illuminate\Support\Facades\Storage::disk('public')->put($proofPath, file_get_contents($file->getRealPath()));
+
+            if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($proofPath)) {
+                \Log::error('Lỗi lưu ảnh: ' . $proofPath);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lỗi lưu ảnh chứng minh'
+                ], 500);
+            }
+
+            // Lưu yêu cầu nạp
+            \App\Models\RechargeRequest::create([
+                'user_id' => $user->id,
+                'amount' => $amount,
+                'requested_tokens' => $tokens,
+                'status' => 'pending',
+                'proof_image' => $proofPath,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Yêu cầu nạp đã được gửi, chờ xác nhận!'
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Lỗi nạp: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi server: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function exportReceipt($id)
     {
@@ -159,5 +234,85 @@ class RechargeController extends Controller
             'success' => true,
             'message' => 'Xác nhận thành công!'
         ]);
+    }
+    //Phần Dành cho android
+    //<=======================================================================================================================
+    public function getPackages(Request $request)
+    {
+        try {
+
+            $packages = RechargePackage::where('is_active', true)->get();
+            return response()->json([
+                'success' => true,
+                'packages' => $packages->map(function ($package) {
+                    return [
+                        'id' => $package->id,
+                        'amount' => $package->amount,
+                        'tokens' => $package->tokens,
+                        'description' => $package->description,
+                    ];
+                })
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy danh sách gói nạp: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi khi lấy danh sách gói nạp: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getHistory(Request $request)
+    {
+        try {
+            $apiToken = $request->bearerToken();
+            if (!$apiToken) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui lòng cung cấp api_token.'
+                ], 401);
+            }
+
+            $user = \App\Models\User::where('api_token', $apiToken)->first();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'api_token không hợp lệ.'
+                ], 401);
+            }
+
+            $history = \App\Models\RechargeHistory::where('user_id', $user->id)
+                ->orderBy('approved_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'history' => $history->map(function ($record) {
+                    // Kiểm tra approved_at trước khi format
+                    $approvedAt = null;
+                    if ($record->approved_at) {
+                        try {
+                            $date = new \DateTime($record->approved_at);
+                            $approvedAt = $date->format('d/m/Y H:i');
+                        } catch (\Exception $e) {
+                            \Log::warning('Invalid approved_at format: ' . $record->approved_at);
+                        }
+                    }
+                    return [
+                        'id' => $record->id,
+                        'amount' => $record->amount,
+                        'tokens_added' => $record->tokens_added,
+                        'approved_at' => $approvedAt,
+                    ];
+                })->toArray(),
+                'message' => $history->isEmpty() ? 'Chưa có lịch sử nạp' : 'Lấy lịch sử nạp thành công'
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Lỗi khi lấy lịch sử nạp: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi server: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

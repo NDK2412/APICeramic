@@ -913,7 +913,7 @@
             color: var(--white);
         }
 
-        
+
 
 
         /* Rating Filter Container */
@@ -997,8 +997,109 @@
             color: var(--dark-gray);
             background: var(--white);
         }
-        h2 a u{
+
+        h2 a u {
             color: green;
+        }
+
+        /* Upload mode selector */
+        .upload-mode-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active,
+        .mode-btn:hover {
+            background: var(--gradient);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        /* Upload mode */
+        .upload-mode {
+            display: none;
+        }
+
+        .upload-mode.active {
+            display: block;
+        }
+
+        .upload-area input[type="file"] {
+            width: 100%;
+            height: 125px;
+            padding: 10px;
+            border: 2px dashed var(--primary-color);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .upload-area input[type="file"]:hover {
+            border-color: var(--secondary-color);
+            background: rgba(118, 218, 236, 0.1);
+        }
+
+        /* Camera mode */
+        .camera-mode {
+            position: relative;
+            text-align: center;
+        }
+
+        #cameraStream {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            background: var(--light-gray);
+        }
+
+        .capture-btn {
+            padding: 10px 20px;
+            background: var(--gradient);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .capture-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Animation cho camera */
+        @keyframes cameraFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .camera-mode.active {
+            animation: cameraFadeIn 0.5s ease;
         }
     </style>
 </head>
@@ -1015,27 +1116,29 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
-            <i class="fas fa-cogs"></i>
+            <i class="fas fa-microchip fa-spin-hover"></i> <!-- Icon công nghệ AI -->
         </div>
         <div class="user-name">
-            <i class="fas fa-user"></i>
+            <i class="fas fa-user-circle"></i>
             <span>{{ Auth::user()->name }}</span>
         </div>
-
         <ul>
             <li><a href="#" class="active" data-section="ceramic-ai"><i
-                        class="fas fa-brain"></i><span>CeramicAI</span></a></li>
-            <li><a href="#" data-section="history"><i class="fas fa-history"></i><span>Lịch sử</span></a></li>
-            <li><a href="#" data-section="rating"><i class="fas fa-star"></i><span>Rating</span></a></li>
-            <li><a href="/recharge"><i class="fas fa-wallet"></i><span>Recharge</span></a></li>
-            <li><a href="#" onclick="toggleTheme()"><i class="fas fa-adjust"></i><span>Đổi Theme</span></a></li>
-            <li><a href="#" onclick="showChangeNamePopup()"><i class="fas fa-user-edit"></i><span>Đổi tên</span></a>
-            </li>
+                        class="fas fa-vial"></i><span>CeramicAI</span></a></li> <!-- Icon gốm sứ -->
+            <li><a href="#" data-section="history"><i class="fas fa-clock-rotate-left"></i><span>Lịch sử</span></a></li>
+            <!-- Icon lịch sử -->
+            <li><a href="#" data-section="rating"><i class="fas fa-star-half-alt"></i><span>Rating</span></a></li>
+            <!-- Icon đánh giá -->
+            <li><a href="/recharge"><i class="fas fa-coins"></i><span>Recharge</span></a></li> <!-- Icon tiền -->
+            <li><a href="#" onclick="toggleTheme()"><i class="fas fa-moon"></i><span>Đổi Theme</span></a></li>
+            <!-- Icon theme -->
+            <li><a href="#" onclick="showChangeNamePopup()"><i class="fas fa-pen-to-square"></i><span>Đổi tên</span></a>
+            </li> <!-- Icon chỉnh sửa -->
             <li>
                 <form method="POST" action="{{ route('logout') }}" class="logout-form">
                     @csrf
                     <button type="submit">
-                        <i class="fas fa-sign-out-alt"></i>
+                        <i class="fas fa-right-from-bracket"></i>
                         <span>Đăng xuất</span>
                     </button>
                 </form>
@@ -1044,46 +1147,62 @@
     </div>
 
     <!-- Main content -->
+    <!-- Main content -->
     <div class="container">
         <div class="header">
-            
             <h1>Ceramic Recognition Dashboard</h1>
-
-            <div class="user-info"><h2>
-                Xin chào, {{ Auth::user()->name }}! Bạn còn <span id="tokenCount">{{ Auth::user()->tokens }}</span> lượt
-                dự đoán.
-                <br>
-                <a href="/recharge"><u>Nạp thêm lượt</u></a></h2>
+            <div class="user-info">
+                <h2>
+                    Xin chào, {{ Auth::user()->name }}! Bạn còn <span id="tokenCount">{{ Auth::user()->tokens }}</span>
+                    lượt dự đoán.
+                    <br>
+                    <a href="/recharge"><u>Nạp thêm lượt</u></a>
+                </h2>
             </div>
         </div>
 
         <div class="content-wrapper">
             <div class="section ceramic-ai" id="ceramic-ai">
-                <h3>CeramicAI</h3>
-                <h4>Upload Image</h4>
+                <h3><i class="fas fa-vial me-2"></i> CeramicAI</h3>
+                <h4>Chọn Ảnh</h4>
                 <div class="upload-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)"
                     ondragleave="handleDragLeave(event)">
-                    <input type="file" id="imageInput" accept="image/*">
-                    <button onclick="predictImage()" id="predictBtn">
+                    <div class="upload-mode-selector">
+                        <button class="mode-btn active" onclick="selectMode('upload')"><i
+                                class="fas fa-upload me-1"></i> Tải ảnh</button>
+                        <button class="mode-btn" onclick="selectMode('camera')"><i class="fas fa-camera me-1"></i> Chụp
+                            ảnh</button>
+                    </div>
+                    <!-- Upload file -->
+                    <div id="uploadMode" class="upload-mode active">
+                        <input type="file" id="imageInput" accept="image/*">
+                    </div>
+                    <!-- Camera -->
+                    <div id="cameraMode" class="upload-mode camera-mode">
+                        <video id="cameraStream" autoplay playsinline></video>
+                        <canvas id="cameraCanvas" style="display: none;"></canvas>
+                        <button class="capture-btn" onclick="capturePhoto()"><i class="fas fa-camera-retro me-1"></i>
+                            Chụp</button>
+                    </div>
+                    <button onclick="predictImage()" id="predictBtn" class="predict-btn">
                         <span id="predictSpinner" class="loading" style="display: none;"></span>
-                        Dự đoán
+                        <i class="fas fa-brain me-1"></i> Dự đoán
                     </button>
                 </div>
                 <h4>Preview</h4>
                 <div class="preview-area">
-
                     <div class="image-container">
                         <img id="previewImage" src="" alt="Image preview">
                     </div>
                 </div>
                 <h4>Result</h4>
                 <div class="result-area">
-                    <p id="result"><i class="fa-solid fa-brain"> </i> Vui lòng upload ảnh để xem kết quả.</p>
+                    <p id="result"><i class="fas fa-brain me-1"></i> Vui lòng upload ảnh để xem kết quả.</p>
                 </div>
                 <h4>Information</h4>
                 <div class="chatbot-area">
                     <div class="chatbot-content" id="chatbotResponse">
-                        <p>Thông tin chi tiết sẽ hiển thị tại đây.</p>
+                        <p><i class="#"></i> Thông tin chi tiết sẽ hiển thị tại đây.</p>
                     </div>
                 </div>
             </div>
@@ -1626,6 +1745,183 @@
                     renderRatings(currentPage);
                 });
                 // Các hàm khác giữ nguyên...
+                // Quản lý chế độ upload/camera
+                let currentMode = 'upload';
+                let stream = null;
+
+                function selectMode(mode) {
+                    currentMode = mode;
+                    const uploadMode = document.getElementById('uploadMode');
+                    const cameraMode = document.getElementById('cameraMode');
+                    const modeButtons = document.querySelectorAll('.mode-btn');
+
+                    // Cập nhật giao diện
+                    modeButtons.forEach(btn => btn.classList.remove('active'));
+                    document.querySelector(`.mode-btn[onclick="selectMode('${mode}')"]`).classList.add('active');
+
+                    if (mode === 'upload') {
+                        uploadMode.classList.add('active');
+                        cameraMode.classList.remove('active');
+                        stopCamera();
+                    } else {
+                        uploadMode.classList.remove('active');
+                        cameraMode.classList.add('active');
+                        startCamera();
+                    }
+                }
+
+                // Khởi động camera
+                async function startCamera() {
+                    const video = document.getElementById('cameraStream');
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({
+                            video: { facingMode: 'environment' } // Ưu tiên camera sau trên mobile
+                        });
+                        video.srcObject = stream;
+                    } catch (error) {
+                        console.error('Lỗi khi truy cập camera:', error);
+                        alert('Không thể truy cập camera. Vui lòng kiểm tra quyền hoặc thử lại.');
+                        selectMode('upload');
+                    }
+                }
+
+                // Dừng camera
+                function stopCamera() {
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                        stream = null;
+                        document.getElementById('cameraStream').srcObject = null;
+                    }
+                }
+
+                // Chụp ảnh từ camera
+                function capturePhoto() {
+                    const video = document.getElementById('cameraStream');
+                    const canvas = document.getElementById('cameraCanvas');
+                    const preview = document.getElementById('previewImage');
+
+                    // Thiết lập canvas
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+
+                    // Chuyển canvas thành blob để gửi
+                    canvas.toBlob(blob => {
+                        const file = new File([blob], 'captured_photo.jpg', { type: 'image/jpeg' });
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        document.getElementById('imageInput').files = dataTransfer.files;
+
+                        // Cập nhật preview
+                        preview.src = URL.createObjectURL(file);
+                        preview.style.display = 'block';
+
+                        // Tắt camera sau khi chụp
+                        stopCamera();
+                        selectMode('upload');
+                    }, 'image/jpeg', 0.95);
+                }
+
+                // Sửa hàm predictImage để hỗ trợ cả hai chế độ
+                async function predictImage() {
+                    const fileInput = document.getElementById('imageInput');
+                    const resultElement = document.getElementById('result');
+                    const chatbotElement = document.getElementById('chatbotResponse');
+                    const predictBtn = document.getElementById('predictBtn');
+                    const spinner = document.getElementById('predictSpinner');
+                    const tokenCountElement = document.getElementById('tokenCount');
+
+                    // Kiểm tra file
+                    if (!fileInput.files[0]) {
+                        resultElement.textContent = 'Vui lòng chọn hoặc chụp ảnh trước!';
+                        predictBtn.classList.remove('processing');
+                        spinner.style.display = 'none';
+                        return;
+                    }
+
+                    // Bật animation khi bắt đầu xử lý
+                    predictBtn.disabled = true;
+                    predictBtn.classList.add('processing');
+                    spinner.style.display = 'inline-block';
+                    resultElement.textContent = 'Đang phân tích mẫu gốm...';
+                    resultElement.classList.add('result-processing');
+                    chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
+                    chatbotElement.classList.add('chatbot-processing');
+
+                    const formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    try {
+                        const response = await fetch('{{ route('predict.image') }}', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+                        predictBtn.classList.remove('processing');
+                        resultElement.classList.remove('result-processing');
+                        chatbotElement.classList.remove('chatbot-processing');
+
+                        if (data.error) {
+                            resultElement.textContent = `Lỗi: ${data.error}`;
+                            chatbotElement.innerHTML = `<p>${data.error}</p>`;
+                        } else {
+                            tokenCountElement.textContent = data.tokens;
+                            resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
+                            resultElement.classList.add('result-loaded');
+                            const llmResponse = data.llm_response;
+                            const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
+                            let formattedResponse = '';
+                            paragraphs.forEach(paragraph => {
+                                const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
+                                formattedResponse += `<p>${formattedParagraph}</p>`;
+                            });
+                            chatbotElement.innerHTML = formattedResponse;
+                            chatbotElement.classList.add('result-loaded');
+                        }
+                    } catch (error) {
+                        resultElement.textContent = `Lỗi: ${error.message}`;
+                        chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
+                    } finally {
+                        predictBtn.disabled = false;
+                        spinner.style.display = 'none';
+                        setTimeout(() => {
+                            resultElement.classList.remove('result-loaded');
+                            chatbotElement.classList.remove('result-loaded');
+                        }, 500);
+                    }
+                }
+
+                // Cập nhật drag-and-drop để chỉ hoạt động ở chế độ upload
+                function handleDragOver(e) {
+                    if (currentMode === 'upload') {
+                        e.preventDefault();
+                        e.target.closest('.upload-area').classList.add('dragover');
+                    }
+                }
+
+                function handleDragLeave(e) {
+                    if (currentMode === 'upload') {
+                        e.target.closest('.upload-area').classList.remove('dragover');
+                    }
+                }
+
+                function handleDrop(e) {
+                    if (currentMode === 'upload') {
+                        e.preventDefault();
+                        e.target.closest('.upload-area').classList.remove('dragover');
+                        const file = e.dataTransfer.files[0];
+                        if (file && file.type.startsWith('image/')) {
+                            document.getElementById('imageInput').files = e.dataTransfer.files;
+                            const preview = document.getElementById('previewImage');
+                            preview.src = URL.createObjectURL(file);
+                            preview.style.display = 'block';
+                        } else {
+                            alert('Vui lòng kéo thả file ảnh!');
+                        }
+                    }
+                }
             </script>
 </body>
 

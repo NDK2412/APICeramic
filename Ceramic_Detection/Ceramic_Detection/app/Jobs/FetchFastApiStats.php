@@ -21,7 +21,8 @@ class FetchFastApiStats implements ShouldQueue
         try {
             $response = Http::withHeaders(['api-key' => env('FASTAPI_KEY')])
                 ->timeout(5)
-                ->get('http://localhost:60074/system-stats');
+                // ->get('http://localhost:60074/system-stats');
+                ->get('http://localhost:55001/system-stats');
 
             if ($response->successful()) {
                 $stats = $response->json();

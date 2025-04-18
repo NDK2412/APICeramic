@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
     <link rel="stylesheet" href="{{ asset('css/HistoryDetection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/Terms.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('css/llm.css') }}"> -->
     <style>
         :root {
             --primary-color: rgb(0, 0, 0);
@@ -870,6 +871,41 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
+
+        /* LLM Settings */
+        #llm_api_key {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 15px;
+            border: 1px solid #d1d5db;
+            /* Màu xám nhạt */
+            border-radius: 8px;
+            /* Góc bo tròn */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            /* Bóng mờ */
+            font-size: 16px;
+            color: #374151;
+            /* Màu xám đậm */
+            background-color: #ffffff;
+            /* Màu nền trắng */
+            transition: border-color 0.3s, box-shadow 0.3s;
+            /* Hiệu ứng chuyển đổi mượt */
+        }
+
+        #llm_api_key:focus {
+            border-color: #6366f1;
+            /* Màu xanh Indigo */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            /* Hiệu ứng focus */
+            outline: none;
+            /* Bỏ viền mặc định */
+        }
+
+        #llm_api_key::placeholder {
+            color: #9ca3af;
+            /* Màu placeholder xám nhạt */
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -878,6 +914,14 @@
         <h2>Quản Lý</h2>
         <ul>
             <li><a href="#" data-tab="overview" class="active"><i class="fas fa-tachometer-alt"></i> Tổng quan</a></li>
+            <li>
+                <a href="#" data-tab="recharge">
+                    <i class="fas fa-money-bill"></i> Yêu cầu nạp tiền
+                    @if ($rechargeRequests->isNotEmpty())
+                        <span class="notification-dot"></span>
+                    @endif
+                </a>
+            </li>
             <li><a href="#" data-tab="users"><i class="fas fa-users"></i> Quản lý người dùng</a></li>
             <li>
                 <a href="#" data-tab="contacts">
@@ -887,14 +931,7 @@
                     @endif
                 </a>
             </li>
-            <li>
-                <a href="#" data-tab="recharge">
-                    <i class="fas fa-money-bill"></i> Yêu cầu nạp tiền
-                    @if ($rechargeRequests->isNotEmpty())
-                        <span class="notification-dot"></span>
-                    @endif
-                </a>
-            </li>
+
             <li><a href="#" data-tab="recharge-packages"><i class="fas fa-box"></i> Quản lý gói nạp tiền</a></li>
             <li><a href="#" data-tab="revenue"><i class="fas fa-chart-line"></i> Doanh thu</a></li>
             <li><a href="#" data-tab="ceramics"><i class="fa-solid fa-layer-group"></i> Quản lý thư viện đồ gốm</a></li>
@@ -902,10 +939,6 @@
             <li><a href="#" data-tab="classifications"><i class="fas fa-history"></i> Lịch Sử Nhận Diện</a></li>
             <li class="system-info-menu">
                 <a href="#" data-tab="system-info"><i class="fas fa-server"></i> Thông tin hệ thống</a>
-                <ul class="submenu" style="display: none;">
-                    <li><a href="#" data-tab="system-info" data-subtab="fastapi">FastAPI</a></li>
-                    <li><a href="#" data-tab="system-info" data-subtab="laravel">Laravel</a></li>
-                </ul>
             </li>
             <li><a href="#" data-tab="terms"><i class="fas fa-file-alt"></i> Chính sách và điều khoản</a></li>
             <li><a href="#" data-tab="settings"><i class="fas fa-cog"></i> Cài Đặt</a></li>
@@ -1045,18 +1078,18 @@
                         @foreach ($contacts as $contact)
                             <tr
                                 style="background-color: {{ $contact->is_read ? 'var(--card-bg)' : 'rgba(42, 92, 139, 0.1)' }}; 
-                                                                                                                                                                                                                                                                                                                                                                                                    color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
-                                                                                                                                                                                                                                                                                                                                                                                                    border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                            color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
+                                                                                                                                                                                                                                                                                                                                                                                                            border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
                                 <td>{{ $contact->name }}</td>
                                 <td>
                                     <span
                                         style="display: inline-block; 
-                                                                                                                                                                                                                                                                                                                                                                                                            padding: 0.25rem 0.5rem;
-                                                                                                                                                                                                                                                                                                                                                                                                            border-radius: 12px;
-                                                                                                                                                                                                                                                                                                                                                                                                            background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
-                                                                                                                                                                                                                                                                                                                                                                                                            color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
-                                                                                                                                                                                                                                                                                                                                                                                                            font-size: 0.85rem;
-                                                                                                                                                                                                                                                                                                                                                                                                            font-weight: 500;">
+                                                                                                                                                                                                                                                                                                                                                                                                                    padding: 0.25rem 0.5rem;
+                                                                                                                                                                                                                                                                                                                                                                                                                    border-radius: 12px;
+                                                                                                                                                                                                                                                                                                                                                                                                                    background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
+                                                                                                                                                                                                                                                                                                                                                                                                                    color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
+                                                                                                                                                                                                                                                                                                                                                                                                                    font-size: 0.85rem;
+                                                                                                                                                                                                                                                                                                                                                                                                                    font-weight: 500;">
                                         {{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}
                                     </span>
                                 </td>
@@ -1143,21 +1176,19 @@
                                         <button type="button" class="action-btn edit-btn"
                                             onclick="editPackageRow({{ $package->id }})"><i class="fas fa-edit"></i>
                                             Sửa</button>
-                                            <form action="{{ route('recharge-packages.update', $package->id) }}"
-                                            method="POST" style="display:inline;"
-                                            onsubmit="return confirm('Bạn có chắc muốn xóa gói này?');">
+                                        <form action="{{ route('recharge-packages.update', $package->id) }}" method="POST"
+                                            style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa gói này?');">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="action-btn save-btn" style="display:none;"><i
-                                            class="fas fa-save"></i> Lưu</button>
+                                                    class="fas fa-save"></i> Lưu</button>
                                         </form>
-                                        
+
                                         <button type="button" class="action-btn cancel-btn" style="display:none;"
                                             onclick="cancelPackageEdit({{ $package->id }})"><i class="fas fa-times"></i>
                                             Hủy</button>
-                                        <form action="{{ route('recharge-packages.destroy', $package->id) }}"
-                                            method="POST" style="display:inline;"
-                                            onsubmit="return confirm('Bạn có chắc muốn xóa gói này?');">
+                                        <form action="{{ route('recharge-packages.destroy', $package->id) }}" method="POST"
+                                            style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa gói này?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="action-btn delete-btn"><i class="fas fa-trash"></i>
@@ -1476,6 +1507,7 @@
         <!-- Tab Yêu Cầu Settings -->
         <div class="container tab-content" id="settings" style="display: none;">
             <h1>Cài Đặt</h1>
+            @include('llm_settings')
             <h3>Sao Lưu Dữ Liệu</h3>
             @if (session('backup_success'))
                 <div class="success-message">
@@ -1731,8 +1763,7 @@
                 </form>
             </div>
             <div class="tab-container">
-                <button class="tab-button active" onclick="openSubTab('fastapi')">FastAPI</button>
-                <button class="tab-button" onclick="openSubTab('laravel')">Laravel</button>
+
                 <!-- Tab FastAPI -->
                 <div id="fastapi" class="tab-content active">
                     <h3>Tài nguyên FastAPI</h3>
@@ -1755,27 +1786,6 @@
                         <canvas id="fastApiRamChart" width="300" height="150"></canvas>
                         <canvas id="fastApiCpuChart" width="300" height="150"></canvas>
                         <canvas id="fastApiGpuChart" width="300" height="150"></canvas>
-                    @else
-                        <p>Thông tin hệ thống đã bị tắt để tối ưu hiệu suất.</p>
-                    @endif
-                </div>
-                <!-- Tab Laravel -->
-                <div id="laravel" class="tab-content" style="display: none;">
-                    <h3>Tài nguyên Laravel</h3>
-                    @if($isSystemInfoEnabled)
-                        <div>
-                            <h2>Tổng quan Laravel</h2>
-                            <ul>
-                                <li>Phiên bản PHP: {{ $laravelStats['php_version'] ?? 'N/A' }}</li>
-                                <li>Phiên bản Laravel: {{ $laravelStats['laravel_version'] ?? 'N/A' }}</li>
-                                <li>Phiên bản MySQL: {{ $laravelStats['mysql_version'] ?? 'N/A' }}</li>
-                                <li>Uptime Server: {{ $laravelStats['server_uptime'] ?? 'N/A' }}</li>
-                                <li>Dung lượng ổ cứng còn trống: {{ $laravelStats['disk_space'] ?? 0 }}%</li>
-                            </ul>
-                        </div>
-                        <canvas id="laravelRamChart" width="300" height="150"></canvas>
-                        <canvas id="laravelCpuChart" width="300" height="150"></canvas>
-                        <canvas id="laravelGpuChart" width="300" height="150"></canvas>
                     @else
                         <p>Thông tin hệ thống đã bị tắt để tối ưu hiệu suất.</p>
                     @endif
@@ -1879,6 +1889,7 @@
             <input type="text" name="origin" placeholder="Nhập nguồn gốc (tùy chọn)">
             <button type="submit">Thêm</button>
         </form>
+
     </div>
     <script>
         // Tab switching

@@ -109,6 +109,43 @@ class CeramicController extends Controller
         }
         return response()->json(['llm_response' => $classification->llm_response]);
     }
+    public function getHistory(Request $request)
+{
+    try {
+        $user = auth('api')->user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Người dùng chưa đăng nhập.'
+            ], 401);
+        }
+
+        $classifications = \App\Models\Classification::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'redirect_url' => 'your-app://redirect-to-somewhere', // Chuyển hướng URL
+            'history' => $classifications->map(function ($classification) {
+                return [
+                    'id' => $classification->id,
+                    'image_path' => $classification->image_path,
+                    'result' => $classification->result,
+                    'created_at' => $classification->created_at->format('Y-m-d H:i:s'),
+                    'llm_response' => $classification->llm_response
+                ];
+            })->toArray()
+        ], 200);
+    } catch (\Exception $e) {
+        \Log::error('Error fetching classification history: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Lỗi khi lấy lịch sử: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
 }
 
 

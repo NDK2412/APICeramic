@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Đăng Nhập</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @if (isset($recaptchaEnabled) && $recaptchaEnabled)
@@ -252,13 +253,11 @@
             </div>
 
             @if ($recaptchaEnabled)
-                <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+                <div class="g-recaptcha" data-sitekey="6LfKbgorAAAAANtv57r8iydInhajQevs23gVHSRQ"></div>
                 @error('g-recaptcha-response')
                     <!-- <div class="alert alert-danger">{{ $message }}</div> -->
                 @enderror
             @endif
-
-
 
             <button type="submit">
                 <i class="fas fa-sign-in-alt"></i> ĐĂNG NHẬP

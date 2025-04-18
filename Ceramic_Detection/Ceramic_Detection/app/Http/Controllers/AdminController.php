@@ -63,7 +63,6 @@ class AdminController extends Controller
         $optimizationSetting = Setting::where('key', 'system_info_optimization')->first();
         $isSystemInfoEnabled = $optimizationSetting && $optimizationSetting->value === 'enabled';
         if ($isSystemInfoEnabled) {
-            FetchLaravelStats::dispatch();
             FetchFastApiStats::dispatch();
             \Illuminate\Support\Facades\Log::info('Jobs dispatched from index');
         }
@@ -172,7 +171,10 @@ class AdminController extends Controller
         // Xu hướng sử dụng token (trend data) trong 7 ngày
         $tokenTrend = $this->getTrendData(User::class, 'created_at', [], 'tokens_used');
         $packages = RechargePackage::all();
-        return view('admin', compact('users', 'rechargeRequests', 'packages', 'totalTokenUsed', 'tokenTrend', 'fastapistats', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers', 'transactionHistory', 'ceramics', 'currentTimezone', 'classifications', 'terms', 'recaptchaEnabled', 'revenueByUser', 'currentTheme', 'contacts', 'userTrend', 'rechargeTrend', 'revenueTrend', 'ratingTrend', 'chatUsers', 'news', 'approvedRequests', 'rejectedRequests', 'activeUsers', 'inactiveUsers', 'laravelStats', 'isSystemInfoEnabled', 'alerts'));
+        $llmModel = Setting::where('key', 'llm_model')->first();
+        $llmApiKey = Setting::where('key', 'llm_api_key')->first();
+        $availableModels = ['Gemini', 'OpenAI'];
+        return view('admin', compact('users', 'llmModel', 'llmApiKey', 'availableModels', 'rechargeRequests', 'packages', 'totalTokenUsed', 'tokenTrend', 'fastapistats', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers', 'transactionHistory', 'ceramics', 'currentTimezone', 'classifications', 'terms', 'recaptchaEnabled', 'revenueByUser', 'currentTheme', 'contacts', 'userTrend', 'rechargeTrend', 'revenueTrend', 'ratingTrend', 'chatUsers', 'news', 'approvedRequests', 'rejectedRequests', 'activeUsers', 'inactiveUsers', 'laravelStats', 'isSystemInfoEnabled', 'alerts'));
     }
     public function sendChatMessage(Request $request)
     {
@@ -233,21 +235,21 @@ class AdminController extends Controller
         if ($request->status !== 'pending') {
             return redirect()->route('admin.index')->with('error', 'Yêu cầu này đã được xử lý!');
         }
-    
+
         $user = User::findOrFail($request->user_id);
         $user->tokens += $request->requested_tokens;
         $user->save();
-    
+
         RechargeHistory::create([
             'user_id' => $request->user_id,
             'amount' => $request->amount,
             'tokens_added' => $request->requested_tokens,
             'approved_at' => now(),
-            'proof_image' => $request->proof_image,
+            // 'proof_image' => $request->proof_image,
         ]);
-    
+
         $request->update(['status' => 'approved']);
-    
+
         return redirect()->route('admin.index')->with('success', 'Yêu cầu nạp tiền đã được xác nhận!');
     }
     // Lưu món đồ gốm mới
@@ -436,16 +438,7 @@ class AdminController extends Controller
         return ['labels' => $labels, 'values' => $values];
     }
     // Hàm hỗ trợ lấy thông tin hệ thống
-    public function laravelStats()
-    {
-        $optimizationSetting = Setting::where('key', 'system_info_optimization')->first();
-        if (!$optimizationSetting || $optimizationSetting->value !== 'enabled') {
-            return response()->json(['message' => 'Thông tin hệ thống bị tắt']);
-        }
-        // Dispatch job mỗi lần gọi API
-        FetchLaravelStats::dispatch();
-        return response()->json(Cache::get('laravel_stats', []));
-    }
+
     public function fastApiStats()
     {
         $optimizationSetting = Setting::where('key', 'system_info_optimization')->first();
@@ -549,6 +542,52 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             \Log::error('Backup failed: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
             return redirect()->back()->with('error', 'Sao lưu dữ liệu thất bại: ' . $e->getMessage());
+        }
+    }
+
+    public function updateLLMSettings(Request $request)
+    {
+        $request->validate([
+            'llm_model' => 'required|string|in:Gemini,OpenAI',
+            'llm_api_key' => 'required|string|max:500',
+        ]);
+
+        try {
+            // Lưu vào cơ sở dữ liệu
+            Setting::updateOrCreate(
+                ['key' => 'llm_model'],
+                ['value' => $request->llm_model]
+            );
+
+            Setting::updateOrCreate(
+                ['key' => 'llm_api_key'],
+                ['value' => $request->llm_api_key]
+            );
+
+            // Gửi yêu cầu đến FastAPI
+            $apiKey = env('FASTAPI_KEY');
+            $response = Http::withHeaders([
+                'api-key' => $apiKey
+            ])->post('http://localhost:55001/update-llm', [
+                        'model' => $request->llm_model,
+                        'api_key' => $request->llm_api_key
+                    ]);
+
+            if ($response->status() !== 200) {
+                \Log::error('FastAPI LLM update failed', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                return redirect()->back()->with('llm_error', 'Cập nhật mô hình thất bại: ' . $response->body());
+            }
+
+            return redirect()->back()->with('llm_success', 'Cài đặt mô hình hệ thống đã được cập nhật thành công!');
+        } catch (\Exception $e) {
+            \Log::error('LLM settings update error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->with('llm_error', 'Lỗi khi cập nhật cài đặt: ' . $e->getMessage());
         }
     }
 }

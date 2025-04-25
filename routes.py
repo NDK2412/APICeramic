@@ -1,11 +1,16 @@
 # routes.py
 from fastapi import FastAPI, UploadFile, File, Request, HTTPException, Header
+<<<<<<< HEAD
 from fastapi.responses import HTMLResponse, JSONResponse
+=======
+from fastapi.responses import HTMLResponse
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import os
 import logging
 import numpy as np
+<<<<<<< HEAD
 from models import current_model, current_class_names, switch_model, current_model_type, load_model, load_state
 from utils import preprocess_image
 from retrieval import get_ceramic_info
@@ -19,11 +24,19 @@ from fastapi.middleware import Middleware
 state_lock = Lock()
 # Khóa toàn cục
 model_lock = asyncio.Lock()
+=======
+from models import model, CLASS_NAMES
+from utils import preprocess_image
+from retrieval import get_ceramic_info
+from config import IMAGE_DIR, GOOGLE_API_KEY
+from system_controller import SystemController
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 
 # Cấu hình logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
 # Khởi tạo FastAPI với cấu hình docs tiếng Việt
 app = FastAPI(
     title="API Phân loại Gốm Sứ",
@@ -73,6 +86,10 @@ app = FastAPI(
 
 
 # Middleware xác thực API key
+=======
+# Khởi tạo FastAPI
+app = FastAPI(title="API Phân loại Gốm Sứ")
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 
 # Cấu hình file tĩnh
 app.mount("/static", StaticFiles(directory="."), name="static")
@@ -83,6 +100,7 @@ llm_config = {
     "api_key": GOOGLE_API_KEY  # Lấy từ config.py
 }
 
+<<<<<<< HEAD
 
 # Model cho dữ liệu cập nhật LLM
 class LLMConfig(BaseModel):
@@ -118,20 +136,35 @@ class ModelSwitchRequest(BaseModel):
          tags=["Hệ thống"],
          summary="Trang chủ ứng dụng",
          description="Hiển thị giao diện web tương tác với API")
+=======
+# Model cho dữ liệu cập nhật LLM
+class LLMConfig(BaseModel):
+    model: str
+    api_key: str
+
+# Trang chính
+@app.get("/", response_class=HTMLResponse)
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 async def read_root():
     with open("index.html", "r", encoding="utf-8") as f:
         return f.read()
 
+<<<<<<< HEAD
 
 # Lấy danh sách ảnh
 @app.get("/images",
          tags=["Phân loại"],
          summary="Lấy danh sách ảnh mẫu",
          description="Trả về danh sách các ảnh gốm sứ mẫu trong thư mục IMAGE_DIR")
+=======
+# Lấy danh sách ảnh
+@app.get("/images")
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 async def get_images():
     image_files = [f for f in os.listdir(IMAGE_DIR) if f.endswith(('.jpg', '.jpeg', '.png'))]
     return {"images": image_files}
 
+<<<<<<< HEAD
 
 # Router chat độc lập
 @app.post("/chat",
@@ -144,6 +177,10 @@ async def get_images():
           - Body chứa message cần hỏi
           """,
           response_description="Phản hồi từ LLM với thông tin được yêu cầu")
+=======
+# Router chat độc lập
+@app.post("/chat")
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 async def chat(request: Request, api_key: str = Header(...)):
     try:
         # Xác thực API key
@@ -165,6 +202,7 @@ async def chat(request: Request, api_key: str = Header(...)):
         logger.error(f"Lỗi khi xử lý chat: {str(e)}")
         return {"response": f"Lỗi: {str(e)}"}
 
+<<<<<<< HEAD
 
 # Dự đoán và lấy thông tin
 @app.post("/predict",
@@ -177,6 +215,10 @@ async def chat(request: Request, api_key: str = Header(...)):
           - Header chứa API key hợp lệ
           """,
           response_description="Kết quả phân loại và thông tin mở rộng")
+=======
+# Dự đoán và lấy thông tin
+@app.post("/predict")
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 async def predict(file: UploadFile = File(...), api_key: str = Header(...)):
     try:
         # Xác thực API key
@@ -187,9 +229,15 @@ async def predict(file: UploadFile = File(...), api_key: str = Header(...)):
         image_bytes = await file.read()
         logger.info(f"Đang xử lý ảnh: {file.filename}")
         processed_image = preprocess_image(image_bytes)
+<<<<<<< HEAD
         predictions = current_model.predict(processed_image)
         predicted_class_idx = np.argmax(predictions[0])
         predicted_class = current_class_names[predicted_class_idx]
+=======
+        predictions = model.predict(processed_image)
+        predicted_class_idx = np.argmax(predictions[0])
+        predicted_class = CLASS_NAMES[predicted_class_idx]
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 
         llm_response = get_ceramic_info(predicted_class, llm_config["provider"], llm_config["api_key"])
 
@@ -201,6 +249,7 @@ async def predict(file: UploadFile = File(...), api_key: str = Header(...)):
         return result
     except Exception as e:
         logger.error(f"Lỗi khi xử lý: {str(e)}")
+<<<<<<< HEAD
         return {
             "error": f"Lỗi: Không thể xử lý ảnh. Vui lòng kiểm tra API key của {llm_config['provider']} hoặc thử lại."}
 
@@ -324,6 +373,12 @@ async def switch_model_endpoint(request: ModelSwitchRequest, api_key: str = Head
           - Cung cấp API key mới
           """,
           response_description="Trạng thái cập nhật")
+=======
+        return {"error": f"Lỗi: Không thể xử lý ảnh. Vui lòng kiểm tra API key của {llm_config['provider']} hoặc thử lại."}
+
+# Cập nhật cấu hình LLM
+@app.post("/update-llm")
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 async def update_llm(config: LLMConfig, api_key: str = Header(...)):
     try:
         # Xác thực API key
@@ -333,8 +388,12 @@ async def update_llm(config: LLMConfig, api_key: str = Header(...)):
 
         # Kiểm tra provider hợp lệ
         if config.model.lower() not in ["gemini", "openai"]:
+<<<<<<< HEAD
             raise HTTPException(status_code=400,
                                 detail="Nhà cung cấp LLM không hợp lệ. Phải là 'gemini' hoặc 'openai'.")
+=======
+            raise HTTPException(status_code=400, detail="Nhà cung cấp LLM không hợp lệ. Phải là 'gemini' hoặc 'openai'.")
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 
         # Kiểm tra API key trước khi lưu
         if not config.api_key:
@@ -350,6 +409,7 @@ async def update_llm(config: LLMConfig, api_key: str = Header(...)):
         logger.error(f"Lỗi khi cập nhật LLM: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Lỗi khi cập nhật LLM: {str(e)}")
 
+<<<<<<< HEAD
 
 # Lấy thông tin hệ thống
 @app.get("/system-stats",
@@ -357,5 +417,9 @@ async def update_llm(config: LLMConfig, api_key: str = Header(...)):
          summary="Thống kê hệ thống",
          description="Lấy các thông số về hiệu năng và trạng thái hệ thống",
          response_description="Các chỉ số hệ thống")
+=======
+# Lấy thông tin hệ thống
+@app.get("/system-stats")
+>>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 async def get_system_stats():
     return await SystemController.get_system_stats()

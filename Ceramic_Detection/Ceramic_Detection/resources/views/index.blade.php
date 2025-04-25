@@ -2,653 +2,792 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Ceramic Classification</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <!-- Thêm Font Awesome để sử dụng icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="css/public.css">
-    <style>
-        :root {
-            --primary-color: #b3cde0;
-            /* Xanh lam nhạt */
-            --secondary-color: #6497b1;
-            /* Xanh lam trung */
-            --accent-color: #e6f0fa;
-            /* Xanh lam rất nhạt */
-            --light-color: #f5faff;
-            /* Nền nhạt */
-            --dark-color: #03396c;
-            /* Xanh lam đậm */
-            --text-light: #ffffff;
-            /* Trắng cho chữ */
-        }
+    <!DOCTYPE html>
+    <html lang="en">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background-color: var(--light-color);
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            flex: 1;
-        }
-
-        header {
-            background-color: var(--primary-color);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            width: 100%;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            color: var(--dark-color);
-            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-            font-weight: 600;
-            text-decoration: none;
-            flex-shrink: 0;
-        }
-
-        .logo img {
-            height: clamp(50px, 5vw, 50px);
-            margin-right: 10px;
-        }
-
-        .nav-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-menu {
-            list-style: none;
-            display: flex;
-            gap: clamp(1rem, 2vw, 1.5rem);
-        }
-
-        .nav-menu li a {
-            color: var(--dark-color);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: clamp(0.9rem, 1.5vw, 1rem);
-            transition: color 0.3s ease;
-        }
-
-        .nav-menu li a:hover {
-            color: var(--secondary-color);
-        }
-
-        .login-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .login-section button {
-            padding: clamp(0.5rem, 1vw, 0.6rem) clamp(1rem, 2vw, 1.2rem);
-            border: none;
-            border-radius: 20px;
-            font-weight: 500;
-            font-size: clamp(0.8rem, 1.2vw, 1rem);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        #loginButton {
-            background-color: var(--secondary-color);
-            color: var(--text-light);
-            margin-bottom: 10px;
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-
-            0%,
-            100% {
-                transform: translateY(0);
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    <head>
+        <title>{{ $metadata->title ?? 'Trang chủ' }}</title>
+        <meta name="description" content="{{ $metadata->description ?? '' }}">
+        @php
+            $latestApk = App\Models\Apk::latest()->first();
+            $metadata = App\Models\Metadata::where('page', 'index')->first();
+        @endphp
+        <title>{{ $metadata->title ?? 'Trang chủ' }}</title>
+        <meta name="description" content="{{ $metadata->description ?? '' }}">
+        <meta name="keywords" content="{{ $metadata->keywords ?? '' }}">
+        @if ($metadata->favicon)
+            <link rel="icon" type="image/x-icon" href="{{ asset('storage/images/' . $metadata->favicon) }}">
+        @endif
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="{{ asset('css/public.css') }}">
+        <style>
+            :root {
+                --primary-color: #b3cde0;
+                --secondary-color: #6497b1;
+                --accent-color: #e6f0fa;
+                --light-color: #f5faff;
+                --dark-color: #03396c;
+                --text-light: #ffffff;
             }
 
-            50% {
-                transform: translateY(-12px);
-                box-shadow: 0 15px 20px rgba(0, 0, 0, 0.2);
-            }
-        }
-
-        #logoutButton {
-            background-color: var(--dark-color);
-            color: var(--text-light);
-        }
-
-        .login-section button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Hamburger Menu */
-        .hamburger {
-            display: none;
-            font-size: 2rem;
-            background: none;
-            border: none;
-            color: var(--dark-color);
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        /* Banner Styles */
-        .banner {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            overflow: hidden;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .banner-slides {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.5s ease-in-out;
-        }
-
-        .banner-slide {
-            min-width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* News Section */
-        .news-section {
-            padding: 2rem 0;
-        }
-
-        .news-section h1 {
-            font-size: 2.5rem;
-            color: var(--dark-color);
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .news-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .news-item {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-
-        .news-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .news-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .news-content {
-            padding: 1.5rem;
-        }
-
-        .news-content h2 {
-            font-size: 1.5rem;
-            color: var(--dark-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .news-content p {
-            font-size: 1rem;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-
-        .news-content a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .news-content a:hover {
-            color: var(--dark-color);
-        }
-
-        /* About Section */
-        .about-section {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            text-align: center;
-            animation: fadeIn 1s ease-out;
-        }
-
-        .feature-point {
-            margin: 2rem 0;
-            text-align: left;
-            padding: 1rem;
-            background-color: var(--accent-color);
-            border-radius: 8px;
-        }
-
-        .feature-point h3 {
-            color: var(--dark-color);
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .feature-point h3 i {
-            color: var(--secondary-color);
-        }
-
-        .feature-point p {
-            color: #555;
-            line-height: 1.7;
-        }
-
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-        }
-
-        .benefit-card {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
-        }
-
-        .benefit-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .benefit-card i {
-            font-size: 2rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-        }
-
-        .benefit-card h4 {
-            color: var(--dark-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .applications-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-
-        .application-tag {
-            background-color: var(--primary-color);
-            color: var(--dark-color);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
             }
 
-            to {
-                opacity: 1;
-            }
-        }
-
-        footer {
-            text-align: center;
-            padding: 1.5rem;
-            background-color: var(--primary-color);
-            color: var(--dark-color);
-            margin-top: auto;
-            width: 100%;
-            font-size: clamp(0.8rem, 1.5vw, 1rem);
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-content p {
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-            color: var(--dark-color);
-        }
-
-        .modal-content button {
-            padding: 0.6rem 1.5rem;
-            background-color: var(--primary-color);
-            color: var(--dark-color);
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .modal-content button:hover {
-            background-color: var(--secondary-color);
-            color: var(--text-light);
-        }
-
-        /* Contact Sidebar Styles */
-        .contact-sidebar {
-            position: fixed;
-            top: 0;
-            right: -450px;
-            width: 450px;
-            height: 100%;
-            background-color: var(--primary-color);
-            color: var(--dark-color);
-            padding: 2rem;
-            z-index: 1500;
-            transition: right 0.3s ease-in-out;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .contact-sidebar.active {
-            overflow: scroll;
-            right: 0;
-        }
-
-        .contact-sidebar h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .contact-sidebar ul {
-            list-style: none;
-        }
-
-        .contact-sidebar li {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-
-        .contact-sidebar i {
-            margin-right: 10px;
-            font-size: 1.2rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        .contact-sidebar a {
-            color: var(--dark-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .contact-sidebar a:hover {
-            color: var(--secondary-color);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hamburger {
-                display: block;
-            }
-
-            .nav-container {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                background-color: var(--primary-color);
-                padding: 1rem;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            }
-
-            .nav-container.active {
+            body {
+                background-color: var(--light-color);
+                color: #333;
+                min-height: 100vh;
                 display: flex;
-            }
-
-            .nav-menu {
                 flex-direction: column;
-                width: 100%;
-                gap: 1rem;
-                text-align: center;
+                overflow-x: hidden;
             }
 
-            .nav-menu li {
+            .container {
                 width: 100%;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 2rem;
+                flex: 1;
             }
 
-            .login-section {
-                width: 100%;
-                justify-content: center;
-                flex-direction: column;
-                gap: 0.8rem;
-            }
-
-            .login-section button {
+            header {
+                background-color: var(--primary-color);
+                padding: 1rem 2rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                position: sticky;
+                top: 0;
+                z-index: 1000;
                 width: 100%;
             }
 
             .header-content {
+                display: flex;
                 justify-content: space-between;
-            }
-
-            .contact-sidebar {
-                width: 250px;
-            }
-
-            .about-section,
-            .news-section {
-                padding: 1.5rem;
-            }
-
-            .about-section h2,
-            .news-section h1 {
-                font-size: 1.5rem;
-            }
-
-            .about-section p,
-            .news-content p {
-                font-size: 1rem;
-            }
-
-            .banner {
-                height: 250px;
-            }
-
-            .news-item img {
-                height: 150px;
-            }
-
-            .news-content h2 {
-                font-size: 1.3rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 1rem;
+                align-items: center;
+                width: 100%;
+                max-width: 1200px;
+                margin: 0 auto;
             }
 
             .logo {
-                font-size: 1.2rem;
+                display: flex;
+                align-items: center;
+                color: var(--dark-color);
+                font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+                font-weight: 600;
+                text-decoration: none;
+                flex-shrink: 0;
             }
 
             .logo img {
-                width: 100%;
-                height: auto;
+                height: clamp(50px, 5vw, 50px);
+                margin-right: 10px;
             }
 
-            .modal-content {
-                padding: 1.5rem;
+            .nav-container {
+                display: flex;
+                align-items: center;
             }
 
-            .modal-content p {
-                font-size: 1rem;
+            .nav-menu {
+                list-style: none;
+                display: flex;
+                gap: clamp(1rem, 2vw, 1.5rem);
             }
 
-            .contact-sidebar {
-                width: 200px;
-                padding: 1.5rem;
+            .nav-menu li a,
+            .nav-menu li button {
+                color: var(--dark-color);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: clamp(0.9rem, 1.5vw, 1rem);
+                transition: color 0.3s ease;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 0;
             }
 
-            .contact-sidebar h3 {
-                font-size: 1.2rem;
+            .nav-menu li a:hover,
+            .nav-menu li button:hover {
+                color: var(--secondary-color);
             }
 
-            .contact-sidebar li {
-                font-size: 0.9rem;
+            .login-section {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .login-section button {
+                padding: clamp(0.5rem, 1vw, 0.6rem) clamp(1rem, 2vw, 1.2rem);
+                border: none;
+                border-radius: 20px;
+                font-weight: 500;
+                font-size: clamp(0.8rem, 1.2vw, 1rem);
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            #loginButton {
+                background-color: var(--secondary-color);
+                color: var(--text-light);
+                margin-bottom: 10px;
+                animation: bounce 1s infinite;
+            }
+
+            @keyframes bounce {
+
+                0%,
+                100% {
+                    transform: translateY(0);
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                }
+
+                50% {
+                    transform: translateY(-12px);
+                    box-shadow: 0 15px 20px rgba(0, 0, 0, 0.2);
+                }
+            }
+
+            #logoutButton {
+                background-color: var(--dark-color);
+                color: var(--text-light);
+            }
+
+            .login-section button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            }
+
+            .hamburger {
+                display: none;
+                font-size: 2rem;
+                background: none;
+                border: none;
+                color: var(--dark-color);
+                cursor: pointer;
+                padding: 0.5rem;
             }
 
             .banner {
-                height: 200px;
+                position: relative;
+                width: 100%;
+                border-radius: 10px;
+                margin-bottom: 2rem;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .banner-slides {
+                display: flex;
+                width: 100%;
+                height: 100%;
+                transition: transform 0.5s ease-in-out;
+            }
+
+            .banner-slide {
+                min-width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .news-section {
+                padding: 2rem 0;
+            }
+
+            .news-section h1 {
+                font-size: 2.5rem;
+                color: var(--dark-color);
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+
+            .news-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+
+            .news-item {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                transition: transform 0.3s ease;
+            }
+
+            .news-item:hover {
+                transform: translateY(-5px);
             }
 
             .news-item img {
-                height: 120px;
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+            }
+
+            .news-content {
+                padding: 1.5rem;
             }
 
             .news-content h2 {
-                font-size: 1.2rem;
+                font-size: 1.5rem;
+                color: var(--dark-color);
+                margin-bottom: 0.5rem;
             }
 
             .news-content p {
-                font-size: 0.85rem;
+                font-size: 1rem;
+                color: #666;
+                line-height: 1.6;
+                margin-bottom: 1rem;
             }
-        }
 
-        /* Phần Form Liên hệ */
-        .contact-form {
-            margin-top: 1.5rem;
-        }
+            .news-content a {
+                color: var(--secondary-color);
+                text-decoration: none;
+                font-weight: 500;
+                transition: color 0.3s ease;
+            }
 
-        .contact-form h4 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            color: var(--secondary-color);
-        }
+            .news-content a:hover {
+                color: var(--dark-color);
+            }
 
-        .contact-form input,
-        .contact-form textarea {
-            width: 100%;
-            padding: 0.6rem;
-            margin-bottom: 0.8rem;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--text-light);
-            color: var(--text-dark);
-            font-size: 0.9rem;
-        }
+            .about-section {
+                background-color: white;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                margin-bottom: 2rem;
+                text-align: center;
+                animation: fadeIn 1s ease-out;
+            }
 
-        .contact-form textarea {
-            height: 100px;
-            resize: none;
-        }
+            .feature-point {
+                margin: 2rem 0;
+                text-align: left;
+                padding: 1rem;
+                background-color: var(--accent-color);
+                border-radius: 8px;
+            }
 
-        .contact-form button {
-            background-color: rgb(5, 53, 66);
-            color: var(--text-light);
-            padding: 0.6rem 1.2rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            width: 100%;
-        }
+            .feature-point h3 {
+                color: var(--dark-color);
+                margin-bottom: 0.8rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
 
-        .contact-form button:hover {
-            background-color: var(--secondary-color);
-            color: var(--text-dark);
-        }
-    </style>
-</head>
+            .feature-point h3 i {
+                color: var(--secondary-color);
+            }
+
+            .feature-point p {
+                color: #555;
+                line-height: 1.7;
+            }
+
+            .benefits-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+                margin: 1.5rem 0;
+            }
+
+            .benefit-card {
+                background-color: white;
+                padding: 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+                transition: transform 0.3s ease;
+            }
+
+            .benefit-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .benefit-card i {
+                font-size: 2rem;
+                color: var(--secondary-color);
+                margin-bottom: 1rem;
+            }
+
+            .benefit-card h4 {
+                color: var(--dark-color);
+                margin-bottom: 0.5rem;
+            }
+
+            .applications-list {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+                margin: 1.5rem 0;
+            }
+
+            .application-tag {
+                background-color: var(--primary-color);
+                color: var(--dark-color);
+                padding: 0.5rem 1rem;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            footer {
+                text-align: center;
+                padding: 1.5rem;
+                background-color: var(--primary-color);
+                color: var(--dark-color);
+                margin-top: auto;
+                width: 100%;
+                font-size: clamp(0.8rem, 1.5vw, 1rem);
+            }
+
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 2000;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .modal-content {
+                background-color: white;
+                padding: 2rem;
+                border-radius: 10px;
+                text-align: center;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                animation: slideIn 0.3s ease-out;
+                position: relative;
+            }
+
+            .modal-content .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 1.2rem;
+                color: var(--dark-color);
+                cursor: pointer;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateY(-50px);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            .modal-content h3 {
+                color: var(--dark-color);
+                margin-bottom: 1rem;
+            }
+
+            .modal-content p {
+                margin-bottom: 1rem;
+                font-size: 1rem;
+                color: #555;
+            }
+
+            .modal-content a {
+                display: inline-block;
+                padding: 0.6rem 1.5rem;
+                background-color: var(--secondary-color);
+                color: var(--text-light);
+                border-radius: 20px;
+                text-decoration: none;
+                font-weight: 500;
+                transition: background-color 0.3s ease;
+            }
+
+            .modal-content a:hover {
+                background-color: var(--dark-color);
+            }
+
+            .contact-sidebar {
+                position: fixed;
+                top: 0;
+                right: -450px;
+                width: 450px;
+                height: 100%;
+                background-color: var(--primary-color);
+                color: var(--dark-color);
+                padding: 2rem;
+                z-index: 1500;
+                transition: right 0.3s ease-in-out  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            }
+
+            .contact-sidebar.active {
+                overflow: scroll;
+                right: 0;
+            }
+
+            .contact-sidebar h3 {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+                text-align: center;
+            }
+
+            .contact-sidebar ul {
+                list-style: none;
+            }
+
+            .contact-sidebar li {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+                font-size: 1rem;
+            }
+
+            .contact-sidebar i {
+                margin-right: 10px;
+                font-size: 1.2rem;
+                width: 20px;
+                text-align: center;
+            }
+
+            .contact-sidebar a {
+                color: var(--dark-color);
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+            .contact-sidebar a:hover {
+                color: var(--secondary-color);
+            }
+
+            @media (max-width: 768px) {
+                .hamburger {
+                    display: block;
+                }
+
+                .nav-container {
+                    display: none;
+                    flex-direction: column;
+                    width: 100%;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background-color: var(--primary-color);
+                    padding: 1rem;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                }
+
+                .nav-container.active {
+                    display: flex;
+                }
+
+                .nav-menu {
+                    flex-direction: column;
+                    width: 100%;
+                    gap: 1rem;
+                    text-align: center;
+                }
+
+                .nav-menu li {
+                    width: 100%;
+                }
+
+                .login-section {
+                    width: 100%;
+                    justify-content: center;
+                    flex-direction: column;
+                    gap: 0.8rem;
+                }
+
+                .login-section button {
+                    width: 100%;
+                }
+
+                .header-content {
+                    justify-content: space-between;
+                }
+
+                .contact-sidebar {
+                    width: 250px;
+                }
+
+                .about-section,
+                .news-section {
+                    padding: 1.5rem;
+                }
+
+                .about-section h2,
+                .news-section h1 {
+                    font-size: 1.5rem;
+                }
+
+                .about-section p,
+                .news-content p {
+                    font-size: 1rem;
+                }
+
+                .banner {
+                    height: 250px;
+                }
+
+                .news-item img {
+                    height: 150px;
+                }
+
+                .news-content h2 {
+                    font-size: 1.3rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .container {
+                    padding: 1rem;
+                }
+
+                .logo {
+                    font-size: 1.2rem;
+                }
+
+                .logo img {
+                    width: 100%;
+                    height: auto;
+                }
+
+                .modal-content {
+                    padding: 1.5rem;
+                }
+
+                .modal-content p {
+                    font-size: 1rem;
+                }
+
+                .contact-sidebar {
+                    width: 200px;
+                    padding: 1.5rem;
+                }
+
+                .contact-sidebar h3 {
+                    font-size: 1.2rem;
+                }
+
+                .contact-sidebar li {
+                    font-size: 0.9rem;
+                }
+
+                .banner {
+                    height: 400px;
+                }
+
+                .news-item img {
+                    height: 120px;
+                }
+
+                .news-content h2 {
+                    font-size: 1.2rem;
+                }
+
+                .news-content p {
+                    font-size: 0.85rem;
+                }
+            }
+
+            .contact-form {
+                margin-top: 1.5rem;
+            }
+
+            .contact-form h4 {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+                color: var(--secondary-color);
+            }
+
+            .contact-form input,
+            .contact-form textarea {
+                width: 100%;
+                padding: 0.6rem;
+                margin-bottom: 0.8rem;
+                border: none;
+                border-radius: 5px;
+                background-color: var(--text-light);
+                color: var(--text-dark);
+                font-size: 0.9rem;
+            }
+
+            .contact-form textarea {
+                height: 100px;
+                resize: none;
+            }
+
+            .contact-form button {
+                background-color: rgb(5, 53, 66);
+                color: var(--text-light);
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background 0.3s ease;
+                width: 100%;
+            }
+
+            .contact-form button:hover {
+                background-color: var(--secondary-color);
+                color: var(--text-dark);
+            }
+
+            .apk-update-section {
+                background-color: white;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                margin-bottom: 2rem;
+                text-align: center;
+                animation: fadeIn 1s ease-out;
+            }
+
+            .apk-update-section h2 {
+                font-size: 2rem;
+                color: var(--dark-color);
+                margin-bottom: 1.5rem;
+            }
+
+            .apk-info {
+                margin-bottom: 2rem;
+                text-align: left;
+                padding: 1rem;
+                background-color: var(--accent-color);
+                border-radius: 8px;
+            }
+
+            .apk-info h3 {
+                color: var(--dark-color);
+                margin-bottom: 0.5rem;
+            }
+
+            .apk-info p {
+                color: #555;
+                margin-bottom: 0.5rem;
+            }
+
+            .apk-info a {
+                color: var(--secondary-color);
+                text-decoration: none;
+                font-weight: 500;
+                transition: color 0.3s ease;
+            }
+
+            .apk-info a:hover {
+                color: var(--dark-color);
+            }
+
+            .apk-upload-form {
+                text-align: left;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .apk-upload-form h3 {
+                color: var(--dark-color);
+                margin-bottom: 1rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .form-group label {
+                display: block;
+                color: var(--dark-color);
+                margin-bottom: 0.5rem;
+                font-weight: 500;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="file"] {
+                width: 100%;
+                padding: 0.6rem;
+                border: none;
+                border-radius: 5px;
+                background-color: var(--text-light);
+                color: var(--dark-color);
+                font-size: 0.9rem;
+            }
+
+            .apk-upload-form button {
+                background-color: var(--secondary-color);
+                color: var(--text-light);
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background 0.3s ease;
+                width: 100%;
+            }
+
+            .apk-upload-form button:hover {
+                background-color: var(--dark-color);
+            }
+
+            .alert {
+                padding: 1rem;
+                border-radius: 5px;
+                margin-bottom: 1rem;
+            }
+
+            .alert-success {
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .alert-error {
+                background-color: #f8d7da;
+                color: #721c24;
+            }
+
+            @media (max-width: 768px) {
+                .apk-update-section {
+                    padding: 1.5rem;
+                }
+
+                .apk-update-section h2 {
+                    font-size: 1.5rem;
+                }
+
+                .apk-info,
+                .apk-upload-form {
+                    padding: 0.5rem;
+                }
+            }
+        </style>
+    </head>
 
 <body>
     <div class="container">
@@ -656,7 +795,7 @@
             <div class="header-content">
                 <a href="#" class="logo">
                     <img src="{{ asset('storage/ceramics/logo2.webp') }}" alt="Logo">
-                    Ceramic Classification
+                    Phân loại gốm sứ
                 </a>
                 <button class="hamburger" aria-label="Toggle menu">☰</button>
                 <div class="nav-container">
@@ -665,6 +804,7 @@
                         <li><a href="gallery">Thư viện đồ gốm</a></li>
                         <li><a href="#" id="classificationLink">Nhận diện</a></li>
                         <li><a href="#market">Mua bán</a></li>
+                        <li><a id="appDownloadButton">Tải ứng dụng</a></li>
                         <li><a href="#" id="contactLink">Liên hệ</a></li>
                     </ul>
                 </div>
@@ -678,13 +818,12 @@
 
         <!-- Banner Section -->
         <div class="banner">
-            <div class="banner-slides" id="bannerSlides">
-                <img src="https://www.metizsoft.com/wp-content/uploads/2025/02/Laravel-12-Latest-Features-and-Updates.webp"
-                    alt="Banner 1" class="banner-slide">
-                <img src="https://s3-ap-southeast-1.amazonaws.com/vmixvn/wp-media-folder-vmix-viet-nam/wp-content/uploads/2024/08/ai_trong_thi_t_k_logo.jpg"
-                    alt="Banner 2" class="banner-slide">
-                <img src="https://thietkelogo.edu.vn/uploads/.thumbs/images/tuyen-dung/1-php-developer-1417084819.jpg"
-                    alt="Banner 3" class="banner-slide">
+            <div>
+                <img width="100%" height="auto" src="{{ asset('storage/video.gif') }}" title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen style="pointer-events: none;">
+                </img>
             </div>
         </div>
 
@@ -708,47 +847,33 @@
                 @endif
             </div>
         </section>
-        <!-- <section class="news-section">
-            <h1>Tin tức về gốm sứ</h1>
-            <div class="news-list">
-                <article class="news-item">
-                    <img src="https://file3.qdnd.vn/data/images/0/2024/10/08/upload_2049/gom1.jpg" alt="News 1">
-                    <div class="news-content">
-                        <h2>Triển lãm gốm sứ 2023</h2>
-                        <p>Triển lãm gốm sứ quốc tế diễn ra tại Hà Nội, thu hút hàng trăm nghệ nhân và nhà sưu tập...</p>
-                        <a href="#news1">Đọc thêm</a>
-                    </div>
-                </article>
-                <article class="news-item">
-                    <img src="https://www.gomnghethuat.com/wp-content/uploads/5-Buoc-Lam-Do-Gom-Quy-Trinh-Chi-Tiet-Lam-Do-Gom-Ban-Can-Biet.jpg" alt="News 2">
-                    <div class="news-content">
-                        <h2>Kỹ thuật làm gốm cổ truyền</h2>
-                        <p>Tìm hiểu về các phương pháp làm gốm truyền thống đang được bảo tồn tại Việt Nam...</p>
-                        <a href="#news2">Đọc thêm</a>
-                    </div>
-                </article>
-                <article class="news-item">
-                    <img src="https://chus.vn/images/Blog/G%E1%BB%91m%20trong%20%C4%91%E1%BB%9Di%20s%E1%BB%91ng/go%CC%82%CC%81m%20xu%CC%9Ba%207.jpg?1713503045290" alt="News 3">
-                    <div class="news-content">
-                        <h2>Xu hướng gốm sứ hiện đại</h2>
-                        <p>Gốm sứ không chỉ là nghệ thuật mà còn là xu hướng trang trí nội thất mới...</p>
-                        <a href="#news3">Đọc thêm</a>
-                    </div>
-                </article>
+
+        <!-- APK Update Section -->
+        <section class="apk-update-section">
+            <h1>Ứng dụng Ceramic AI</h1>
+            <div class="apk-info">
+                <h3>Phiên bản mới nhất</h3>
+                @if ($latestApk)
+                    <p><strong>Phiên bản:</strong> {{ $latestApk->version }}</p>
+                    <p><strong>Ngày cập nhật:</strong> {{ $latestApk->updated_at->format('d/m/Y') }}</p>
+                    <a href="{{ Storage::url($latestApk->file_path) }}" class="action-btn save-btn" download>
+                        <i class="fas fa-download"></i> Tải xuống APK
+                    </a>
+                @else
+                    <p>Chưa có APK nào khả dụng.</p>
+                @endif
             </div>
-        </section> -->
+        </section>
 
-        <!-- About Section - Updated Version -->
+        <!-- About Section -->
         <section class="about-section">
-            <h2>Giới thiệu tổng quan về Ceramic AI</h2>
-
+            <h1>Giới thiệu tổng quan về Ceramic AI</h1>
             <div class="feature-point">
                 <h3><i class="fas fa-question-circle"></i> Ceramic AI là gì?</h3>
                 <p>Ceramic AI là hệ thống trí tuệ nhân tạo tiên tiến chuyên về nhận dạng và phân loại đồ gốm sứ.
-                    Công nghệ của chúng tôi kết hợp học máy và cơ sở dữ liệu phong phú để xác định chính xác niên đại,
-                    xuất xứ và loại hình gốm sứ chỉ từ hình ảnh đầu vào.</p>
+                    Công nghệ của chúng tôi kết hợp học máy và cơ sở dữ liệu phong phú để xác định chính xác niên
+                    đại, xuất xứ và loại hình gốm sứ chỉ từ hình ảnh đầu vào.</p>
             </div>
-
             <div class="feature-point">
                 <h3><i class="fas fa-star"></i> Lợi ích nổi bật</h3>
                 <div class="benefits-grid">
@@ -769,7 +894,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="feature-point">
                 <h3><i class="fas fa-cubes"></i> Ứng dụng đa dạng</h3>
                 <p>Ceramic AI phục vụ nhiều đối tượng và mục đích khác nhau:</p>
@@ -782,7 +906,6 @@
                     <span class="application-tag">Bảo tồn</span>
                 </div>
             </div>
-
             <div class="feature-point">
                 <h3><i class="fas fa-book-open"></i> Hướng dẫn sử dụng</h3>
                 <p>1. Tải lên hình ảnh đồ gốm cần phân tích<br>
@@ -794,11 +917,28 @@
         </section>
     </div>
 
-    <!-- Modal -->
+    <!-- Login Modal -->
     <div class="modal" id="loginPrompt">
         <div class="modal-content">
             <p>Vui lòng đăng nhập để sử dụng tính năng này</p>
             <button onclick="redirectToLogin()">Đăng Nhập</button>
+        </div>
+    </div>
+
+    <!-- APK Download Modal -->
+    <div class="modal" id="apkDownloadModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeApkModal">&times;</span>
+            <h3>Tải ứng dụng Ceramic AI</h3>
+            @if ($latestApk)
+                <p><strong>Phiên bản:</strong> {{ $latestApk->version }}</p>
+                <p><strong>Ngày cập nhật:</strong> {{ $latestApk->updated_at->format('d/m/Y') }}</p>
+                <a href="{{ Storage::url($latestApk->file_path) }}" download>
+                    Tải xuống APK
+                </a>
+            @else
+                <p>Chưa có APK nào khả dụng.</p>
+            @endif
         </div>
     </div>
 
@@ -846,27 +986,34 @@
         const contactLink = document.querySelector('#contactLink');
         const loginPrompt = document.querySelector('#loginPrompt');
         const contactSidebar = document.querySelector('#contactSidebar');
-        const bannerSlides = document.querySelector('#bannerSlides');
-        const slides = document.querySelectorAll('.banner-slide');
-        let currentSlide = 0;
+        const appDownloadButton = document.querySelector('#appDownloadButton');
+        const apkDownloadModal = document.querySelector('#apkDownloadModal');
+        const closeApkModal = document.querySelector('#closeApkModal');
 
         hamburger.addEventListener('click', () => {
             navContainer.classList.toggle('active');
         });
 
-        // Banner slideshow
-        function showNextSlide() {
-            currentSlide = (currentSlide + 1) % slides.length;
-            bannerSlides.style.transform = `translateX(-${currentSlide * 100}%)`;
-        }
+        // Show APK download modal
+        appDownloadButton.addEventListener('click', () => {
+            apkDownloadModal.style.display = 'flex';
+        });
 
-        // Tự động chạy banner mỗi 3 giây
-        setInterval(showNextSlide, 3000);
+        // Close APK modal
+        closeApkModal.addEventListener('click', () => {
+            apkDownloadModal.style.display = 'none';
+        });
 
-        // Biến kiểm tra trạng thái đăng nhập
+        // Close APK modal when clicking outside
+        apkDownloadModal.addEventListener('click', (e) => {
+            if (e.target === apkDownloadModal) {
+                apkDownloadModal.style.display = 'none';
+            }
+        });
+
+        // Check login status
         let isAuthenticated = false;
 
-        // Hàm kiểm tra trạng thái đăng nhập
         async function checkLoginStatus() {
             try {
                 let response = await fetch("http://localhost:8000/api/check-auth", {
@@ -888,17 +1035,14 @@
             }
         }
 
-        // Chuyển hướng đến trang đăng nhập
         function redirectToLogin() {
             window.location.href = "http://localhost:8000/login";
         }
 
-        // Chuyển hướng đến trang hướng dẫn
         function redirectToGuide() {
             window.location.href = "http://localhost:8000/guide";
         }
 
-        // Đăng xuất người dùng
         async function logout() {
             try {
                 document.getElementById('logoutButton').innerHTML = '<span class="loading"></span> Processing...';
@@ -913,7 +1057,6 @@
             }
         }
 
-        // Hiển thị modal khi nhấp "Nhận diện" nếu chưa đăng nhập
         classificationLink.addEventListener('click', (e) => {
             if (!isAuthenticated) {
                 e.preventDefault();
@@ -921,20 +1064,17 @@
             }
         });
 
-        // Đóng modal khi nhấp ra ngoài
         loginPrompt.addEventListener('click', (e) => {
             if (e.target === loginPrompt) {
                 loginPrompt.style.display = 'none';
             }
         });
 
-        // Hiển thị sidebar khi nhấp "Liên hệ"
         contactLink.addEventListener('click', (e) => {
             e.preventDefault();
             contactSidebar.classList.add('active');
         });
 
-        // Đóng sidebar khi nhấp ra ngoài
         document.addEventListener('click', (e) => {
             if (contactSidebar.classList.contains('active') &&
                 !contactSidebar.contains(e.target) &&
@@ -943,13 +1083,12 @@
                 contactSidebar.classList.remove('active');
             }
         });
-        //Form liên hệ
-        // Thêm vào cuối phần <script>
+
         const contactForm = document.getElementById('contactForm');
 
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(contactForm);
+            const formData = new FormFormData(contactForm);
 
             try {
                 const response = await fetch("{{ route('contact.submit') }}", {
@@ -973,7 +1112,7 @@
                 alert('Không thể gửi liên hệ. Vui lòng thử lại sau.');
             }
         });
-        // Kiểm tra trạng thái đăng nhập khi trang tải
+
         window.onload = checkLoginStatus;
     </script>
 </body>

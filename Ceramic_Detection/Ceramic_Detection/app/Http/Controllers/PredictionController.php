@@ -44,7 +44,7 @@ class PredictionController extends Controller
             ])
                 ->attach('file', file_get_contents($formData->path()), $formData->getClientOriginalName())
                 // ->post('http://localhost:60074/predict');
-                ->post('http://localhost:55001/predict');
+            ->post('http://localhost:55001/predict');
             Log::info('API Response', [
                 'status' => $response->status(),
                 'headers' => $response->headers(),
@@ -104,5 +104,11 @@ class PredictionController extends Controller
             return response()->json(['error' => 'Lỗi khi kết nối với server: ' . $e->getMessage()], 500);
         }
     }
-    
+    public function getInfo($id)
+    {
+        $classifications = Classification::findOrFail($id);
+        $llm_response = $classifications->llm_response; // Giả sử cột llm_response chứa thông tin chi tiết
+
+        return view('classification_info', compact('llm_response'));
+    }
 }

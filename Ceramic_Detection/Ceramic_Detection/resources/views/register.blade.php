@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký</title> <!-- Sửa "Register" thành "Đăng ký" để đồng bộ với nội dung tiếng Việt -->
+    <title>Đăng ký</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <!-- Thêm Font Awesome để sử dụng icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -73,7 +72,6 @@
             font-weight: 500;
         }
 
-        /* Style cho input với icon */
         .input-group {
             position: relative;
         }
@@ -103,7 +101,6 @@
             font-size: 16px;
         }
 
-        /* Style cho nút Đăng ký với icon */
         button {
             width: 100%;
             padding: 12px;
@@ -165,7 +162,6 @@
             text-decoration: underline;
         }
 
-        /* Style cho checkbox */
         .terms-checkbox {
             display: flex;
             align-items: center;
@@ -183,8 +179,6 @@
             font-size: 14px;
         }
 
-        /* Style cho popup */
-        /* Style cho popup overlay */
         .popup-overlay {
             display: none;
             position: fixed;
@@ -198,12 +192,10 @@
             transition: opacity 0.3s ease-in-out;
         }
 
-        /* Hiển thị overlay với hiệu ứng */
         .popup-overlay.show {
             opacity: 1;
         }
 
-        /* Style cho popup */
         .popup {
             display: none;
             position: fixed;
@@ -223,13 +215,11 @@
             transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
 
-        /* Hiển thị popup với hiệu ứng */
         .popup.show {
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
         }
 
-        /* Tiêu đề của popup */
         .popup h3 {
             color: #1a1a1a;
             margin-bottom: 20px;
@@ -240,13 +230,11 @@
             gap: 10px;
         }
 
-        /* Icon cho tiêu đề */
         .popup h3 i {
             color: #1877f2;
             font-size: 1.6rem;
         }
 
-        /* Nội dung chính sách */
         .popup .terms-content {
             color: #333;
             line-height: 1.7;
@@ -258,7 +246,6 @@
             box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
         }
 
-        /* Style cho nội dung được format */
         .popup .terms-content h4 {
             color: #1877f2;
             font-size: 1.1rem;
@@ -294,7 +281,6 @@
             font-style: italic;
         }
 
-        /* Nút đóng */
         .popup button {
             background: #1877f2;
             width: auto;
@@ -322,7 +308,6 @@
             font-size: 1.1rem;
         }
 
-        /* Responsive cho màn hình nhỏ */
         @media (max-width: 768px) {
             .popup {
                 width: 90%;
@@ -366,7 +351,7 @@
         <form method="POST" action="{{ route('register') }}">
             @csrf
             <div class="input-group">
-                <label for="name">Tên:</label> <!-- Sửa "Name" thành "Tên" -->
+                <label for="name">Tên:</label>
                 <input type="text" id="name" name="name" value="{{ old('name') }}" required>
                 <i class="fas fa-user"></i>
             </div>
@@ -376,18 +361,36 @@
                 <i class="fas fa-envelope"></i>
             </div>
             <div class="input-group">
-                <label for="password">Mật khẩu:</label> <!-- Sửa "Password" thành "Mật khẩu" -->
+                <label for="phone">Số điện thoại:</label>
+                <input type="text" id="phone" name="phone" value="{{ old('phone') }}">
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="input-group">
+                <label for="address">Địa chỉ:</label>
+                <input type="text" id="address" name="address" value="{{ old('address') }}">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="input-group">
+                <label for="id_number">Số CMND/CCCD:</label>
+                <input type="text" id="id_number" name="id_number" value="{{ old('id_number') }}">
+                <i class="fas fa-id-card"></i>
+            </div>
+            <div class="input-group">
+                <label for="passport">Hộ chiếu:</label>
+                <input type="text" id="passport" name="passport" value="{{ old('passport') }}">
+                <i class="fas fa-passport"></i>
+            </div>
+            <div class="input-group">
+                <label for="password">Mật khẩu:</label>
                 <input type="password" id="password" name="password" required>
                 <i class="fas fa-lock"></i>
             </div>
             <div class="input-group">
                 <label for="password_confirmation">Xác nhận mật khẩu:</label>
-                <!-- Sửa "Confirm Password" thành "Xác nhận mật khẩu" -->
                 <input type="password" id="password_confirmation" name="password_confirmation" required>
                 <i class="fas fa-lock"></i>
             </div>
 
-            <!-- Thêm checkbox đồng ý chính sách -->
             <div class="terms-checkbox">
                 <input type="checkbox" id="terms" name="terms" required>
                 <label for="terms">Tôi đồng ý với <a href="#" id="termsLink">Chính sách và điều khoản</a></label>
@@ -401,7 +404,6 @@
         <p class="links">Bạn đã có tài khoản? <a href="{{ route('login') }}">Đăng nhập</a></p>
     </div>
 
-    <!-- Popup hiển thị chính sách và điều khoản -->
     <div class="popup-overlay" id="termsOverlay"></div>
     <div class="popup" id="termsPopup">
         <h3><i class="fas fa-file-alt"></i> Chính sách và điều khoản</h3>
@@ -424,7 +426,6 @@
                 const response = await fetch("{{ route('terms.show') }}");
                 const data = await response.json();
 
-                // Format nội dung văn bản với các thẻ HTML
                 const formattedContent = formatTermsContent(data.content);
                 termsContent.innerHTML = formattedContent;
             } catch (error) {
@@ -432,7 +433,6 @@
                 console.error('Lỗi:', error);
             }
 
-            // Hiển thị với hiệu ứng
             popup.style.display = 'block';
             overlay.style.display = 'block';
             setTimeout(() => {
@@ -445,55 +445,44 @@
             const popup = document.getElementById('termsPopup');
             const overlay = document.getElementById('termsOverlay');
 
-            // Ẩn với hiệu ứng
             popup.classList.remove('show');
             overlay.classList.remove('show');
             setTimeout(() => {
                 popup.style.display = 'none';
                 overlay.style.display = 'none';
-            }, 300); // Thời gian khớp với transition (0.3s)
+            }, 300);
         }
 
-        // Đóng popup khi nhấn vào overlay
         document.getElementById('termsOverlay').addEventListener('click', hideTermsPopup);
 
-        // Hàm format nội dung văn bản
         function formatTermsContent(content) {
             if (!content) return '';
 
-            // Xử lý tiêu đề
             content = content.replace(/^(#{1,6})\s+(.+)$/gm, function (match, hashes, title) {
                 const level = hashes.length;
                 return `<h${level + 3}>${title}</h${level + 3}>`;
             });
 
-            // Xử lý đoạn văn
             content = content.replace(/\n\n(.+?)(?=\n\n|\n*$)/gs, '<p>$1</p>');
 
-            // Xử lý danh sách không thứ tự
             content = content.replace(/(?:^|\n)((?:\s*[-*+]\s+.+\n?)+)/g, function (match, list) {
                 const items = list.trim().split(/\n\s*[-*+]\s+/).filter(Boolean);
                 return '<ul>' + items.map(item => `<li>${item.trim()}</li>`).join('') + '</ul>';
             });
 
-            // Xử lý danh sách có thứ tự
             content = content.replace(/(?:^|\n)((?:\s*\d+\.\s+.+\n?)+)/g, function (match, list) {
                 const items = list.trim().split(/\n\s*\d+\.\s+/).filter(Boolean);
                 return '<ol>' + items.map(item => `<li>${item.trim()}</li>`).join('') + '</ol>';
             });
 
-            // Xử lý văn bản in đậm
             content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             content = content.replace(/__(.*?)__/g, '<strong>$1</strong>');
 
-            // Xử lý văn bản in nghiêng
             content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
             content = content.replace(/_(.*?)_/g, '<em>$1</em>');
 
-            // Xử lý trích dẫn
             content = content.replace(/^\s*>\s*(.+)$/gm, '<blockquote>$1</blockquote>');
 
-            // Thay thế dấu xuống dòng còn lại
             content = content.replace(/\n/g, '<br>');
 
             return content;

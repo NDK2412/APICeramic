@@ -1,0 +1,445 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Ceramic Detection API",
+        "description": "API documentation for the Ceramic Detection application",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/upload-apk": {
+            "post": {
+                "tags": [
+                    "APK"
+                ],
+                "summary": "Upload APK file",
+                "operationId": "28d6af14f0599f3f749cd163063cd222",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "version",
+                                    "apk_file"
+                                ],
+                                "properties": {
+                                    "version": {
+                                        "description": "Version of the APK",
+                                        "type": "string"
+                                    },
+                                    "apk_file": {
+                                        "description": "APK file to upload",
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tải lên APK thành công",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tải lên APK thành công!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Tải lên APK thất bại",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tải lên APK thất bại."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gallery": {
+            "get": {
+                "tags": [
+                    "Ceramic"
+                ],
+                "summary": "Get ceramic gallery",
+                "description": "Retrieve a paginated list of ceramics with optional category and origin filters",
+                "operationId": "fba6ddb948ce140fa47cf85cca945142",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "description": "Filter by ceramic category",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "origin",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "description": "Filter by ceramic origin",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "ceramics": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "categories": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "origins": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ceramic/{id}": {
+            "get": {
+                "tags": [
+                    "Ceramic"
+                ],
+                "summary": "Get ceramic details",
+                "description": "Retrieve details of a specific ceramic by ID",
+                "operationId": "885e61b05531f9f35cbec7709b85a777",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "description": "Ceramic ID",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "ceramic": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Ceramic not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/ceramic/classify": {
+            "post": {
+                "tags": [
+                    "Ceramic"
+                ],
+                "summary": "Classify ceramic image",
+                "description": "Upload an image and classify it, saving the result to classification history",
+                "operationId": "2840a1dacd5fca2d8ecddc96f522899c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "image": {
+                                        "description": "Ceramic image file (JPEG, PNG, JPG, GIF, max 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "result": {
+                                        "description": "Classification result",
+                                        "type": "string"
+                                    },
+                                    "llm_response": {
+                                        "description": "LLM response for the classification",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "result": {
+                                            "type": "string"
+                                        },
+                                        "classification_id": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/dashboard": {
+            "get": {
+                "tags": [
+                    "Ceramic"
+                ],
+                "summary": "Get user dashboard",
+                "description": "Retrieve classification history for the authenticated user",
+                "operationId": "2beff246d8d78e60a41b9f75d4619355",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "classifications": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/classification/{id}": {
+            "get": {
+                "tags": [
+                    "Ceramic"
+                ],
+                "summary": "Get classification info",
+                "description": "Retrieve LLM response for a specific classification",
+                "operationId": "710d9184dc27300a66367a53e9f8eb0c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "description": "Classification ID",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "llm_response": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Classification not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/classification/history": {
+            "get": {
+                "tags": [
+                    "Ceramic"
+                ],
+                "summary": "Get classification history",
+                "description": "Retrieve the classification history for the authenticated user",
+                "operationId": "d0d8190479b2c16a69b193f6fcdc2a15",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "redirect_url": {
+                                            "type": "string"
+                                        },
+                                        "history": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "image_path": {
+                                                        "type": "string"
+                                                    },
+                                                    "result": {
+                                                        "type": "string"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "llm_response": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "APK",
+            "description": "APK"
+        },
+        {
+            "name": "Ceramic",
+            "description": "Ceramic"
+        }
+    ]
+}

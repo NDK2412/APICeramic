@@ -23,6 +23,7 @@ class RechargeController extends Controller
 
     public function index()
     {
+        $rechargeRequests = RechargeRequest::all();
         $packages = RechargePackage::where('is_active', true)->get();
         $rechargeHistory = RechargeHistory::where('user_id', Auth::id())
             ->orderBy('approved_at', 'desc')
@@ -43,7 +44,8 @@ class RechargeController extends Controller
             'approvedRequestsCount',
             'totalAmount',
             'totalTokens',
-            'packages'
+            'packages',
+            'rechargeRequests'
         ));
     }
 

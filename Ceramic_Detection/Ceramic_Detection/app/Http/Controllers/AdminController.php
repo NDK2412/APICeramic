@@ -6,6 +6,9 @@ use Spatie\DbDumper\Databases\MySql;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Message;
+use App\Models\Apk;
+use App\Models\Metadata;
+use Illuminate\Support\Facades\Log;
 use App\Models\RechargePackage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +30,7 @@ use App\Jobs\FetchLaravelStats;
 use App\Jobs\FetchFastApiStats;
 class AdminController extends Controller
 {
+
     public function __construct()
     {
         // Đăng ký middleware trong constructor
@@ -59,9 +63,11 @@ class AdminController extends Controller
     public function index()
     {
         $users = User::all();
+        $metadata = Metadata::all();
         //Liên quan bật tăt thôngt tin hệ thống
         $optimizationSetting = Setting::where('key', 'system_info_optimization')->first();
         $isSystemInfoEnabled = $optimizationSetting && $optimizationSetting->value === 'enabled';
+        \Log::info('isSystemInfoEnabled: ' . ($isSystemInfoEnabled ? 'true' : 'false')); // Debug log
         if ($isSystemInfoEnabled) {
             FetchFastApiStats::dispatch();
             \Illuminate\Support\Facades\Log::info('Jobs dispatched from index');
@@ -70,28 +76,28 @@ class AdminController extends Controller
         $fastapistats = $isSystemInfoEnabled ? Cache::get('fastapi_stats', []) : [];
         // Kiểm tra ngưỡng và tạo cảnh báo
         $alerts = [];
-        // if ($isSystemInfoEnabled) {
-        //     $ramUsagePercent = $laravelStats['ram_total'] > 0 ? ($laravelStats['ram_used'] / $laravelStats['ram_total']) * 100 : 0;
-        //     $gpuUsagePercent = $laravelStats['gpu_total'] > 0 ? ($laravelStats['gpu_used'] / $laravelStats['gpu_total']) * 100 : 0;
-        // if ($laravelStats['cpu_usage'] > 90) {
-        //     $alerts[] = 'CPU (Laravel) vượt ngưỡng 90%: ' . $laravelStats['cpu_usage'] . '%';
-        // }
-        // if ($ramUsagePercent > 90) {
-        //     $alerts[] = 'RAM (Laravel) vượt ngưỡng 90%: ' . round($ramUsagePercent, 2) . '%';
-        // }
-        // if ($laravelStats['gpu_usage'] > 90 || $gpuUsagePercent > 90) {
-        //     $alerts[] = 'GPU (Laravel) vượt ngưỡng 90%: ' . $laravelStats['gpu_usage'] . '% (Utilization) hoặc ' . round($gpuUsagePercent, 2) . '% (Memory)';
-        // }
-        // if ($fastapistats['cpu_usage_percent'] > 90) {
-        //     $alerts[] = 'CPU (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['cpu_usage_percent'] . '%';
-        // }
-        // if ($fastapistats['ram_usage_percent'] > 90) {
-        //     $alerts[] = 'RAM (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['ram_usage_percent'] . '%';
-        // }
-        // if ($fastapistats['gpu_usage_percent'] > 90) {
-        //     $alerts[] = 'GPU (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['gpu_usage_percent'] . '%';
-        // }
-        //}
+        if ($isSystemInfoEnabled) {
+            // $ramUsagePercent = $laravelStats['ram_total'] > 0 ? ($laravelStats['ram_used'] / $laravelStats['ram_total']) * 100 : 0;
+            // $gpuUsagePercent = $laravelStats['gpu_total'] > 0 ? ($laravelStats['gpu_used'] / $laravelStats['gpu_total']) * 100 : 0;
+            // if ($laravelStats['cpu_usage'] > 90) {
+            //     $alerts[] = 'CPU (Laravel) vượt ngưỡng 90%: ' . $laravelStats['cpu_usage'] . '%';
+            // }
+            // if ($ramUsagePercent > 90) {
+            //     $alerts[] = 'RAM (Laravel) vượt ngưỡng 90%: ' . round($ramUsagePercent, 2) . '%';
+            // }
+            // if ($laravelStats['gpu_usage'] > 90 || $gpuUsagePercent > 90) {
+            //     $alerts[] = 'GPU (Laravel) vượt ngưỡng 90%: ' . $laravelStats['gpu_usage'] . '% (Utilization) hoặc ' . round($gpuUsagePercent, 2) . '% (Memory)';
+            // }
+            // if ($fastapistats['cpu_usage_percent'] > 90) {
+            //     $alerts[] = 'CPU (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['cpu_usage_percent'] . '%';
+            // }
+            // if ($fastapistats['ram_usage_percent'] > 90) {
+            //     $alerts[] = 'RAM (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['ram_usage_percent'] . '%';
+            // }
+            // if ($fastapistats['gpu_usage_percent'] > 90) {
+            //     $alerts[] = 'GPU (FastAPI) vượt ngưỡng 90%: ' . $fastapistats['gpu_usage_percent'] . '%';
+            // }
+        }
         // Lấy giao diện hiện tại từ database
         $currentTheme = Setting::where('key', 'theme')->first()->value ?? 'index';
         $users = User::with('loginHistories')->get();//lưu lịch sử đăng nhập
@@ -174,7 +180,16 @@ class AdminController extends Controller
         $llmModel = Setting::where('key', 'llm_model')->first();
         $llmApiKey = Setting::where('key', 'llm_api_key')->first();
         $availableModels = ['Gemini', 'OpenAI'];
-        return view('admin', compact('users', 'llmModel', 'llmApiKey', 'availableModels', 'rechargeRequests', 'packages', 'totalTokenUsed', 'tokenTrend', 'fastapistats', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers', 'transactionHistory', 'ceramics', 'currentTimezone', 'classifications', 'terms', 'recaptchaEnabled', 'revenueByUser', 'currentTheme', 'contacts', 'userTrend', 'rechargeTrend', 'revenueTrend', 'ratingTrend', 'chatUsers', 'news', 'approvedRequests', 'rejectedRequests', 'activeUsers', 'inactiveUsers', 'laravelStats', 'isSystemInfoEnabled', 'alerts'));
+        // Thêm cài đặt model nhận diện
+        try {
+            $latestApk = Apk::latest()->first();
+        } catch (\Exception $e) {
+            Log::error('Error fetching latest APK: ' . $e->getMessage());
+            $latestApk = null;
+        }
+        $recognitionModel = Setting::where('key', 'recognition_model')->first();
+        $availableRecognitionModels = ['default', 'xception']; // Danh sách model khả dụng
+        return view('admin', compact('users', 'optimizationSetting', 'latestApk','metadata', 'isSystemInfoEnabled', 'llmModel', 'llmApiKey', 'availableModels', 'rechargeRequests', 'packages', 'totalTokenUsed', 'tokenTrend', 'fastapistats', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers', 'transactionHistory', 'ceramics', 'currentTimezone', 'classifications', 'terms', 'recaptchaEnabled', 'revenueByUser', 'currentTheme', 'contacts', 'userTrend', 'rechargeTrend', 'revenueTrend', 'ratingTrend', 'chatUsers', 'news', 'approvedRequests', 'rejectedRequests', 'activeUsers', 'inactiveUsers', 'laravelStats', 'isSystemInfoEnabled', 'alerts', 'recognitionModel', 'availableRecognitionModels'));
     }
     public function sendChatMessage(Request $request)
     {
@@ -255,6 +270,7 @@ class AdminController extends Controller
     // Lưu món đồ gốm mới
     public function storeCeramic(Request $request)
     {
+        // Validate dữ liệu đầu vào
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -262,9 +278,19 @@ class AdminController extends Controller
             'category' => 'nullable|string|max:255',
             'origin' => 'nullable|string|max:255',
         ]);
+
+        // Thêm tiền tố 'ceramics/' nếu có giá trị trong 'image'
+        if (!empty($validated['image'])) {
+            $validated['image'] = 'ceramics/' . ltrim($validated['image'], '/'); // Loại bỏ dấu '/' nếu có
+        }
+
+        // Lưu vào cơ sở dữ liệu
         Ceramic::create($validated);
+
+        // Chuyển hướng về trang quản trị với thông báo thành công
         return redirect()->route('admin.index')->with('success', 'Thêm món đồ gốm thành công!');
     }
+
     // Cập nhật thông tin món đồ gốm
     public function updateCeramic(Request $request, $id)
     {
@@ -590,4 +616,64 @@ class AdminController extends Controller
             return redirect()->back()->with('llm_error', 'Lỗi khi cập nhật cài đặt: ' . $e->getMessage());
         }
     }
+    // Phương thức mới để cập nhật cài đặt model nhận diện
+    public function updateRecognitionModel(Request $request)
+{
+    $request->validate([
+        'recognition_model' => 'required|string|in:default,xception',
+    ]);
+
+    try {
+        // Ánh xạ giữa recognition_model và giá trị mong đợi trong request
+        $modelTypeMap = [
+            'default' => '66',
+            'xception' => '67',
+        ];
+        $expectedModelType = $modelTypeMap[$request->recognition_model];
+
+        // Gửi yêu cầu đến FastAPI
+        $apiKey = env('FASTAPI_KEY');
+        $switchResponse = Http::withHeaders([
+            'api-key' => $apiKey,
+        ])->post('http://localhost:55001/switch-model', [
+            'model_type' => $expectedModelType,
+        ]);
+
+        if ($switchResponse->failed()) {
+            Log::error('FastAPI recognition model switch failed', [
+                'status' => $switchResponse->status(),
+                'body' => $switchResponse->body(),
+            ]);
+            return redirect()->back()->with('recognition_model_error', 'Cập nhật mô hình nhận diện thất bại: ' . $switchResponse->body());
+        }
+
+        // Xử lý phản hồi từ FastAPI
+        $switchResponseBody = $switchResponse->json();
+
+        // Kiểm tra trường "status"
+        $status = $switchResponseBody['status'] ?? null;
+        if ($status !== 'success') {
+            Log::warning('FastAPI response status is not success', [
+                'status' => $status,
+                'body' => $switchResponseBody,
+            ]);
+            return redirect()->back()->with('recognition_model_error', 'Chuyển đổi mô hình không thành công: Trạng thái không hợp lệ.');
+        }
+
+        // Lưu cài đặt vào cơ sở dữ liệu nếu chuyển đổi thành công
+        Setting::updateOrCreate(
+            ['key' => 'recognition_model'],
+            ['value' => $request->recognition_model]
+        );
+
+        $successMessage = $switchResponseBody['message'] ?? 'Cài đặt mô hình nhận diện đã được cập nhật thành công!';
+        return redirect()->back()->with('recognition_model_success', $successMessage);
+    } catch (\Exception $e) {
+        Log::error('Recognition model settings update error', [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+        return redirect()->back()->with('recognition_model_error', 'Lỗi khi cập nhật cài đặt: ' . $e->getMessage());
+    }
+}
 }

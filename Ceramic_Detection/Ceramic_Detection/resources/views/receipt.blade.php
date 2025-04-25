@@ -228,15 +228,6 @@
             </tbody>
         </table>
 
-        <div class="proof-image">
-            @if ($proof_image && file_exists($proof_image))
-                <p><strong>Ảnh chứng minh:</strong></p>
-                <img src="{{ $proof_image }}" alt="Ảnh chứng minh">
-            @else
-                <p><strong>Ảnh chứng minh:</strong> Không có</p>
-            @endif
-        </div>
-
         <div class="footer">
             <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
             <p>Website: www.ceramicapp.com | Địa chỉ: 123 Đường Gốm, TP.HCM</p>

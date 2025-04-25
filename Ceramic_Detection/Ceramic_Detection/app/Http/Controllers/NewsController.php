@@ -15,14 +15,18 @@ class NewsController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required',
             'excerpt' => 'nullable|string',
             'image' => 'nullable|string',
         ]);
-
-        News::create($request->all());
+        if (!empty($validated['image'])) {
+            $validated['image'] = 'ceramics/' . ltrim($validated['image'], '/'); 
+        }
+    
+        // Lưu vào cơ sở dữ liệu
+        News::create($validated);
         return redirect()->back()->with('news_success', 'Thêm bài viết thành công!');
     }
 

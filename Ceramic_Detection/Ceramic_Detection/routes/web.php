@@ -10,6 +10,7 @@ use App\Http\Controllers\RechargeController;
 use App\Models\TermsAndConditions;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\MetadataController;
 // use App\Http\Controllers\ImageController;
 // use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\CustomForgotPasswordController;
@@ -241,6 +242,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/system/fastapi-stats', [AdminController::class, 'fastApiStats'])->name('admin.system.fastapi_stats');
     Route::post('/admin/toggle-optimization', [AdminController::class, 'toggleOptimization'])->name('admin.toggle-optimization');
 });
+
 Route::get('/admin/system/laravel-stats', [AdminController::class, 'laravelStats'])->name('admin.system.laravel_stats');
 //Sao lưu dữ liệu
 Route::post('/admin/backup', [AdminController::class, 'backup'])->name('admin.backup');
@@ -261,6 +263,22 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/llm-settings', [AdminController::class, 'updateLLMSettings'])->name('admin.updateLLMSettings');
     // ... other routes from your original AdminController ...
 });
+//Chỉnh sữa thong tin user user
+Route::post('/update-user-info', [App\Http\Controllers\DashboardController::class, 'updateUserInfo'])->name('update.user.info');
+//Xem thông tin chi tiết nhận diện
+Route::get('/classification/{id}/info', [PredictionController::class, 'getInfo'])->name('classification.info');
+
+use App\Http\Controllers\ApkController;
+
+Route::post('/admin/apk/upload', [ApkController::class, 'upload'])->name('admin.apk.upload');
+//Chỉnh metadata
+
+Route::get('/metadata', [MetadataController::class, 'index'])->name('admin.metadata.index');
+Route::post('/metadata', [MetadataController::class, 'store'])->name('admin.metadata.store');
+Route::get('/metadata/{id}/edit', [MetadataController::class, 'edit'])->name('admin.metadata.edit');
+Route::put('/metadata/{id}', [MetadataController::class, 'update'])->name('admin.metadata.update');
+
+Route::post('/admin/recognition-model/update', [AdminController::class, 'updateRecognitionModel'])->name('admin.recognition.model.update');
 //      ->name('admin.settings.captcha')
 //      ->middleware('auth'); // Đảm bảo phải đăng nhập
 /*use Illuminate\Support\Facades\Route;
@@ -298,17 +316,4 @@ Route::delete('/admin/users/{id}', [AdminController::class, 'delete'])->name('ad
 
 
 
-
-
-
-
-
-//===============================================================================================================================================
-// Route cho Android với tiền tố /adr
-
-// Route::post('/adr/login', [AuthController::class, 'apiLogin'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-// Route::post('/adr/predict', [PredictionController::class, 'predict'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-// Route::get('/adr/test', function () {
-//     return response()->json(['message' => 'Test API']);
-// })->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 

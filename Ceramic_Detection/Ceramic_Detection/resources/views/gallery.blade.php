@@ -5,11 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thư viện đồ gốm - Ceramic Classification</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
             --primary-color: #b3cde0;
@@ -52,7 +49,6 @@
             top: 0;
             z-index: 1000;
             width: 100%;
-            animation: slideDown 0.5s ease-out;
         }
 
         .header-content {
@@ -72,7 +68,6 @@
             font-weight: 600;
             text-decoration: none;
             flex-shrink: 0;
-            animation: fadeInUp 0.6s ease-out;
         }
 
         .logo img {
@@ -89,11 +84,6 @@
             list-style: none;
             display: flex;
             gap: clamp(1rem, 2vw, 1.5rem);
-        }
-
-        .nav-menu li {
-            animation: fadeInUp 0.6s ease-out;
-            animation-delay: calc(0.1s * var(--index));
         }
 
         .nav-menu li a {
@@ -121,7 +111,7 @@
             font-weight: 500;
             font-size: clamp(0.8rem, 1.2vw, 1rem);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
@@ -136,9 +126,7 @@
         }
 
         .login-section button:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-            animation: pulse 1s infinite;
+            background-color: var(--dark-color);
         }
 
         .hamburger {
@@ -149,7 +137,6 @@
             color: var(--dark-color);
             cursor: pointer;
             padding: 0.5rem;
-            transition: transform 0.3s ease;
         }
 
         .hamburger.active {
@@ -166,7 +153,7 @@
             color: var(--dark-color);
             text-align: center;
             margin-bottom: 2rem;
-            animation: fadeInUp 0.6s ease-out;
+            animation: fadeInUp 0.4s ease-out;
         }
 
         .filter-section {
@@ -185,8 +172,6 @@
             font-size: 1rem;
             color: var(--dark-color);
             background-color: var(--accent-color);
-            animation: zoomIn 0.5s ease-out;
-            animation-delay: calc(0.1s * var(--index));
         }
 
         .filter-section button {
@@ -196,13 +181,11 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            transition: background-color 0.3s ease;
         }
 
         .filter-section button:hover {
             background-color: var(--dark-color);
-            transform: translateY(-2px) scale(1.05);
-            animation: pulse 1s infinite;
         }
 
         .gallery-list {
@@ -216,20 +199,27 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: fadeInUp 0.6s ease-out;
-            animation-delay: calc(0.1s * var(--index));
+            transition: transform 0.3s ease;
+            animation: fadeInUp 0.4s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 300px; /* Kích thước cố định chiều rộng */
+            min-height: 400px; /* Kích thước cố định chiều cao tối thiểu */
+            padding: 1rem;
         }
 
         .gallery-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         .gallery-item img {
-            width: auto;
-            height: 200px;
-            object-fit: cover;
+            width: 100%;
+            height: 200px; /* Chiều cao cố định cho khu vực hình ảnh */
+            object-fit: cover; /* Đảm bảo hình ảnh lấp đầy mà không méo */
+            display: block;
+            margin: 0 auto;
+            border-radius: 5px;
             transition: transform 0.3s ease;
         }
 
@@ -239,6 +229,11 @@
 
         .gallery-content {
             padding: 1.5rem;
+            text-align: center;
+            flex: 1; /* Đảm bảo nội dung chiếm phần còn lại của thẻ */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .gallery-content h2 {
@@ -280,20 +275,18 @@
             border-radius: 5px;
             text-decoration: none;
             color: var(--dark-color);
-            transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease;
         }
 
         .pagination a:hover {
             background-color: var(--secondary-color);
             color: var(--text-light);
-            transform: scale(1.1);
         }
 
         .pagination .current {
             background-color: var(--dark-color);
             color: var(--text-light);
             border-color: var(--dark-color);
-            animation: pulse 1.5s infinite;
         }
 
         footer {
@@ -304,70 +297,17 @@
             margin-top: auto;
             width: 100%;
             font-size: clamp(0.8rem, 1.5vw, 1rem);
-            animation: fadeInUp 0.6s ease-out;
         }
 
         /* Animations */
-        @keyframes slideDown {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes zoomIn {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
         @keyframes fadeInUp {
             from {
-                transform: translateY(20px);
+                transform: translateY(10px);
                 opacity: 0;
             }
-
             to {
                 transform: translateY(0);
                 opacity: 1;
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            }
-
-            100% {
-                transform: scale(1);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-        }
-
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(90deg);
             }
         }
 
@@ -386,7 +326,6 @@
                 background-color: var(--primary-color);
                 padding: 1rem;
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-                animation: slideDown 0.5s ease-out;
             }
 
             .nav-container.active {
@@ -434,6 +373,15 @@
             .gallery-content p {
                 font-size: 1rem;
             }
+
+            .gallery-item {
+                width: 100%; /* Điều chỉnh kích thước trên màn hình nhỏ */
+                min-height: 350px; /* Giảm chiều cao tối thiểu */
+            }
+
+            .gallery-item img {
+                height: 180px; /* Giảm chiều cao hình ảnh */
+            }
         }
 
         @media (max-width: 480px) {
@@ -449,8 +397,13 @@
                 height: 25px;
             }
 
+            .gallery-item {
+                width: 100%;
+                min-height: 300px; /* Giảm thêm chiều cao tối thiểu */
+            }
+
             .gallery-item img {
-                height: 120px;
+                height: 150px; /* Giảm chiều cao hình ảnh */
             }
 
             .gallery-content h2 {
@@ -474,11 +427,10 @@
                 <button class="hamburger" aria-label="Toggle menu">☰</button>
                 <div class="nav-container">
                     <ul class="nav-menu">
-                        <li style="--index: 1;"><a href="/">Trang chủ</a></li>
-                        <li style="--index: 2;"><a href="/gallery">Thư viện đồ gốm</a></li>
-                        <li style="--index: 3;"><a href="/dashboard" id="classificationLink">Nhận diện</a></li>
-                        <li style="--index: 4;"><a href="#market">Mua bán</a></li>
-                        <!-- <li style="--index: 5;"><a href="#" id="contactLink">Liên hệ</a></li> -->
+                        <li><a href="/">Trang chủ</a></li>
+                        <li><a href="/gallery">Thư viện đồ gốm</a></li>
+                        <li><a href="/dashboard" id="classificationLink">Nhận diện</a></li>
+                        <li><a href="#market">Mua bán</a></li>
                     </ul>
                 </div>
             </div>
@@ -490,25 +442,25 @@
 
             <!-- Filter Section -->
             <form class="filter-section" method="GET" action="{{ route('gallery') }}">
-                <select name="category" style="--index: 1;">
+                <select name="category">
                     <option value="">Tất cả danh mục</option>
                     @foreach ($categories as $cat)
                         <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
                     @endforeach
                 </select>
-                <select name="origin" style="--index: 2;">
+                <select name="origin">
                     <option value="">Tất cả nguồn gốc</option>
                     @foreach ($origins as $org)
                         <option value="{{ $org }}" {{ request('origin') == $org ? 'selected' : '' }}>{{ $org }}</option>
                     @endforeach
                 </select>
-                <button type="submit" style="--index: 3;">Lọc</button>
+                <button type="submit">Lọc</button>
             </form>
 
             <!-- Gallery List -->
             <div class="gallery-list">
                 @forelse ($ceramics as $key => $ceramic)
-                    <article class="gallery-item" style="--index: {{ $key + 1 }};">
+                    <article class="gallery-item">
                         <img src="{{ $ceramic->image ? asset('storage/' . $ceramic->image) : 'https://via.placeholder.com/300x200' }}"
                             alt="{{ $ceramic->name }}">
                         <div class="gallery-content">
@@ -532,16 +484,13 @@
 
     <footer>
         <p>© 2023 Ceramic Classification System. All rights reserved.</p>
-    </footer>
+</footer>
 
     <script>
         // Toggle menu hamburger
         const hamburger = document.querySelector('.hamburger');
         const navContainer = document.querySelector('.nav-container');
         const classificationLink = document.querySelector('#classificationLink');
-        const loginPrompt = document.querySelector('#loginPrompt');
-        const contactLink = document.querySelector('#contactLink');
-        const contactSidebar = document.querySelector('#contactSidebar');
 
         hamburger.addEventListener('click', () => {
             navContainer.classList.toggle('active');

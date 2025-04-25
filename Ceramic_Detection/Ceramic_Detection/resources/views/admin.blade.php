@@ -906,6 +906,65 @@
             /* Màu placeholder xám nhạt */
             font-style: italic;
         }
+
+        .apk-update-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .apk-update-section h2 {
+            font-size: 2rem;
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .apk-info {
+            margin-bottom: 2rem;
+            text-align: left;
+            padding: 1rem;
+            background-color: var(--accent-color);
+            border-radius: 8px;
+        }
+
+        .apk-info h3 {
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .apk-info p {
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        .apk-info a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .apk-info a:hover {
+            color: var(--dark-color);
+        }
+
+        @media (max-width: 768px) {
+            .apk-update-section {
+                padding: 1.5rem;
+            }
+
+            .apk-update-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .apk-info {
+                padding: 0.5rem;
+            }
+        }
     </style>
 </head>
 
@@ -923,6 +982,8 @@
                 </a>
             </li>
             <li><a href="#" data-tab="users"><i class="fas fa-users"></i> Quản lý người dùng</a></li>
+            <li><a href="#" data-tab="metadata"><i class="fas fa-cogs"></i> Quản lý Metadata</a></li>
+            <li><a href="#" data-tab="apk-update"><i class="fas fa-upload"></i> Quản lý APK</a></li>
             <li>
                 <a href="#" data-tab="contacts">
                     <i class="fas fa-envelope"></i> Liên hệ
@@ -1057,6 +1118,41 @@
                     @endif
                 </div>
         </div>
+        <div class="container tab-content" id="apk-update" style="display: none;">
+    <h1>Quản Lý APK</h1>
+    @if (session('success'))
+        <div class="success-message">{{ session('success') }}</div>
+    @endif
+    <div class="apk-update-section">
+        <h2>Cập nhật APK</h2>
+        <div class="apk-info">
+            <h3>Thông tin APK hiện tại</h3>
+            @if ($latestApk)
+                <p><strong>Phiên bản:</strong> {{ $latestApk->version }}</p>
+                <p><strong>Tên tệp:</strong> {{ $latestApk->file_name }}</p>
+                <p><strong>Ngày cập nhật:</strong> {{ $latestApk->updated_at->format('d/m/Y H:i') }}</p>
+                <p><strong>Liên kết tải:</strong> <a href="{{ Storage::url($latestApk->file_path) }}" target="_blank">Tải xuống</a></p>
+            @else
+                <p>Chưa có APK nào được tải lên.</p>
+            @endif
+        </div>
+        <div class="apk-upload-form">
+            <h3>Tải lên APK mới</h3>
+            <form action="{{ route('admin.apk.upload') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <label for="version">Phiên bản</label>
+                    <input type="text" name="version" placeholder="Nhập phiên bản (VD: 1.0.0)" required>
+                </div>
+                <div class="form-group">
+                    <label for="apk_file">Tệp APK</label>
+                    <input type="file" name="apk_file" accept=".apk" required>
+                </div>
+                <button type="submit" class="action-btn save-btn"><i class="fas fa-upload"></i> Tải lên</button>
+            </form>
+        </div>
+    </div>
+</div>
         <!-- Tab Liên hệ -->
         <div class="container tab-content" id="contacts" style="display: none;">
             <h2>Danh sách liên hệ từ người dùng</h2>
@@ -1078,18 +1174,18 @@
                         @foreach ($contacts as $contact)
                             <tr
                                 style="background-color: {{ $contact->is_read ? 'var(--card-bg)' : 'rgba(42, 92, 139, 0.1)' }}; 
-                                                                                                                                                                                                                                                                                                                                                                                                            color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
-                                                                                                                                                                                                                                                                                                                                                                                                            border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    color: {{ $contact->is_read ? 'var(--text)' : 'var(--primary)' }};
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    border-left: 4px solid {{ $contact->is_read ? 'transparent' : 'var(--secondary)' }}">
                                 <td>{{ $contact->name }}</td>
                                 <td>
                                     <span
                                         style="display: inline-block; 
-                                                                                                                                                                                                                                                                                                                                                                                                                    padding: 0.25rem 0.5rem;
-                                                                                                                                                                                                                                                                                                                                                                                                                    border-radius: 12px;
-                                                                                                                                                                                                                                                                                                                                                                                                                    background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
-                                                                                                                                                                                                                                                                                                                                                                                                                    color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
-                                                                                                                                                                                                                                                                                                                                                                                                                    font-size: 0.85rem;
-                                                                                                                                                                                                                                                                                                                                                                                                                    font-weight: 500;">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            padding: 0.25rem 0.5rem;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            border-radius: 12px;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            background-color: {{ $contact->is_read ? 'var(--border)' : 'var(--secondary)' }};
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            color: {{ $contact->is_read ? 'var(--text)' : 'var(--text-light)' }};
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            font-size: 0.85rem;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            font-weight: 500;">
                                         {{ $contact->is_read ? 'Đã đọc' : 'Chưa đọc' }}
                                     </span>
                                 </td>
@@ -1106,6 +1202,42 @@
                     </tbody>
                 </table>
             @endif
+        </div>
+        <div class="container tab-content" id="apk-update" style="display: none;">
+            <h1>Quản Lý APK</h1>
+            @if (session('success'))
+                <div class="success-message">{{ session('success') }}</div>
+            @endif
+            <div class="apk-update-section">
+                <h2>Cập nhật APK</h2>
+                <div class="apk-info">
+                    <h3>Thông tin APK hiện tại</h3>
+                    @if ($latestApk)
+                        <p><strong>Phiên bản:</strong> {{ $latestApk->version }}</p>
+                        <p><strong>Tên tệp:</strong> {{ $latestApk->file_name }}</p>
+                        <p><strong>Ngày cập nhật:</strong> {{ $latestApk->updated_at->format('d/m/Y H:i') }}</p>
+                        <p><strong>Liên kết tải:</strong> <a href="{{ url('/storage/apks/' . $latestApk->file_name) }}"
+                                target="_blank">Tải xuống</a></p>
+                    @else
+                        <p>Chưa có APK nào được tải lên.</p>
+                    @endif
+                </div>
+                <div class="apk-upload-form">
+                    <h3>Tải lên APK mới</h3>
+                    <form action="{{ route('admin.apk.upload') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group">
+                            <label for="version">Phiên bản</label>
+                            <input type="text" name="version" placeholder="Nhập phiên bản (VD: 1.0.0)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="apk_file">Tệp APK</label>
+                            <input type="file" name="apk_file" accept=".apk" required>
+                        </div>
+                        <button type="submit" class="action-btn save-btn"><i class="fas fa-upload"></i> Tải lên</button>
+                    </form>
+                </div>
+            </div>
         </div>
         <!-- Tab Quản lý gói nạp tiền -->
         <div class="container tab-content" id="recharge-packages" style="display: none;">
@@ -1202,7 +1334,6 @@
                 </table>
             @endif
         </div>
-        <!-- Tab Quản lý người dùng -->
         <div class="container tab-content" id="users" style="display: none;">
             <h1>Quản Lý Người Dùng</h1>
             @if (session('success'))
@@ -1223,89 +1354,186 @@
             <div class="filter-search" style="margin-bottom: 20px;">
                 <input type="text" id="userSearch" placeholder="  Tìm kiếm theo tên hoặc email..."
                     onkeyup="filterUsers()">
-                <a id="roleFilter" onchange="filterUsers()">
-                </a>
+                <select id="roleFilter" onchange="filterUsers()">
+                    <option value="">Tất cả vai trò</option>
+                    <option value="user">Người dùng</option>
+                    <option value="admin">Admin</option>
+                </select>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tên</th>
-                        <th>Email</th>
-                        <th>Vai trò</th>
-                        <th>Tokens</th>
-                        <th>Tokens đã dùng</th>
-                        <th>Trạng thái</th> <!-- New Column -->
-                        <th>Hành động</th>
-                        <th>Lịch Sử Đăng Nhập</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $user)
-                        <tr id="row-{{ $user->id }}">
-                            <td>{{ $user->id }}</td>
-                            <td class="editable" data-field="name">
-                                <span class="display user-name"
-                                    onclick="showPopup('{{ $user->id }}', '{{ $user->name }}', '{{ $user->rating ?? 0 }}', '{{ $user->feedback ?? 'Chưa có phản hồi' }}')">{{ $user->name }}</span>
-                                <input type="text" name="name" value="{{ $user->name }}" style="display:none;">
-                            </td>
-                            <td class="editable" data-field="email">
-                                <span class="display">{{ $user->email }}</span>
-                                <input type="email" name="email" value="{{ $user->email }}" style="display:none;">
-                            </td>
-                            <td class="editable" data-field="role">
-                                <span class="display">{{ $user->role }}</span>
-                                <select name="role" style="display:none;">
-                                    <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Người dùng</option>
-                                    <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
-                                </select>
-                            </td>
-                            <td class="editable" data-field="tokens">
-                                <span class="display">{{ $user->tokens }}</span>
-                                <input type="number" name="tokens" value="{{ $user->tokens }}" style="display:none;"
-                                    min="0">
-                            </td>
-                            <td>{{ $user->tokens_used }}</td>
-                            <td class="editable" data-field="status"> <!-- New Status Field -->
-                                <span
-                                    class="display status {{ $user->status }}">{{ ucfirst($user->status === 'active' ? 'Hoạt động' : 'Không hoạt động') }}</span>
-                                <select name="status" style="display:none;">
-                                    <option value="active" {{ $user->status === 'active' ? 'selected' : '' }}>Hoạt động
-                                    </option>
-                                    <option value="inactive" {{ $user->status === 'inactive' ? 'selected' : '' }}>Không hoạt
-                                        động</option>
-                                </select>
-                            </td>
-                            <td class="actions">
-                                <form action="{{ route('admin.update', $user->id) }}" method="POST" class="edit-form"
-                                    id="form-{{ $user->id }}" style="display:inline;">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="button" class="action-btn edit-btn" onclick="editRow({{ $user->id }})"><i
-                                            class="fas fa-edit"></i> Sửa</button>
-                                    <button type="submit" class="action-btn save-btn" style="display:none;"><i
-                                            class="fas fa-save"></i> Lưu</button>
-                                    <button type="button" class="action-btn cancel-btn" style="display:none;"
-                                        onclick="cancelEdit({{ $user->id }})"><i class="fas fa-times"></i> Hủy</button>
-                                </form>
-                                <form action="{{ route('admin.delete', $user->id) }}" method="POST" style="display:inline;"
-                                    onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="action-btn delete-btn"><i class="fas fa-trash"></i>
-                                        Xóa</button>
-                                </form>
-                            </td>
-                            <td>
-                                <button class="action-btn save-btn"
-                                    onclick="showLoginHistory('{{ $user->id }}', '{{ $user->name }}')">
-                                    <i class="fas fa-eye"></i> Xem
-                                </button>
-                            </td>
+
+            <!-- Bảng Người Dùng Hoạt Động -->
+            <h3>Người Dùng Hoạt Động</h3>
+            @if ($users->where('status', 'active')->isEmpty())
+                <p>Không có người dùng hoạt động nào.</p>
+            @else
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Tokens</th>
+                            <th>Tokens đã dùng</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                            <th>Lịch Sử Đăng Nhập</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($users->where('status', 'active') as $user)
+                            <tr id="row-{{ $user->id }}">
+                                <td>{{ $user->id }}</td>
+                                <td class="editable" data-field="name">
+                                    <span class="display user-name"
+                                        onclick="showPopup('{{ $user->id }}', '{{ $user->name }}', '{{ $user->rating ?? 0 }}', '{{ $user->feedback ?? 'Chưa có phản hồi' }}')">{{ $user->name }}</span>
+                                    <input type="text" name="name" value="{{ $user->name }}" style="display:none;">
+                                </td>
+                                <td class="editable" data-field="email">
+                                    <span class="display">{{ $user->email }}</span>
+                                    <input type="email" name="email" value="{{ $user->email }}" style="display:none;">
+                                </td>
+                                <td class="editable" data-field="role">
+                                    <span class="display">{{ $user->role }}</span>
+                                    <select name="role" style="display:none;">
+                                        <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Người dùng</option>
+                                        <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                    </select>
+                                </td>
+                                <td class="editable" data-field="tokens">
+                                    <span class="display">{{ $user->tokens }}</span>
+                                    <input type="number" name="tokens" value="{{ $user->tokens }}" style="display:none;"
+                                        min="0">
+                                </td>
+                                <td>{{ $user->tokens_used }}</td>
+                                <td class="editable" data-field="status">
+                                    <span
+                                        class="display status {{ $user->status }}">{{ ucfirst($user->status === 'active' ? 'Hoạt động' : 'Không hoạt động') }}</span>
+                                    <select name="status" style="display:none;">
+                                        <option value="active" {{ $user->status === 'active' ? 'selected' : '' }}>Hoạt động
+                                        </option>
+                                        <option value="inactive" {{ $user->status === 'inactive' ? 'selected' : '' }}>Không hoạt
+                                            động</option>
+                                    </select>
+                                </td>
+                                <td class="actions">
+                                    <form action="{{ route('admin.update', $user->id) }}" method="POST" class="edit-form"
+                                        id="form-{{ $user->id }}" style="display:inline;">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="button" class="action-btn edit-btn" onclick="editRow({{ $user->id }})"><i
+                                                class="fas fa-edit"></i> Sửa</button>
+                                        <button type="submit" class="action-btn save-btn" style="display:none;"><i
+                                                class="fas fa-save"></i> Lưu</button>
+                                        <button type="button" class="action-btn cancel-btn" style="display:none;"
+                                            onclick="cancelEdit({{ $user->id }})"><i class="fas fa-times"></i> Hủy</button>
+                                    </form>
+                                    <!-- <form action="{{ route('admin.delete', $user->id) }}" method="POST" style="display:inline;"
+                                                        onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="action-btn delete-btn"><i class="fas fa-trash"></i>
+                                                            Xóa</button>
+                                                    </form> -->
+                                </td>
+                                <td>
+                                    <button class="action-btn save-btn"
+                                        onclick="showLoginHistory('{{ $user->id }}', '{{ $user->name }}')">
+                                        <i class="fas fa-eye"></i> Xem
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+
+            <!-- Bảng Người Dùng Không Hoạt Động -->
+            <h3 style="margin-top: 30px;">Người Dùng Không Hoạt Động</h3>
+            @if ($users->where('status', 'inactive')->isEmpty())
+                <p>Không có người dùng không hoạt động nào.</p>
+            @else
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Tokens</th>
+                            <th>Tokens đã dùng</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                            <th>Lịch Sử Đăng Nhập</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($users->where('status', 'inactive') as $user)
+                            <tr id="row-{{ $user->id }}">
+                                <td>{{ $user->id }}</td>
+                                <td class="editable" data-field="name">
+                                    <span class="display user-name"
+                                        onclick="showPopup('{{ $user->id }}', '{{ $user->name }}', '{{ $user->rating ?? 0 }}', '{{ $user->feedback ?? 'Chưa có phản hồi' }}')">{{ $user->name }}</span>
+                                    <input type="text" name="name" value="{{ $user->name }}" style="display:none;">
+                                </td>
+                                <td class="editable" data-field="email">
+                                    <span class="display">{{ $user->email }}</span>
+                                    <input type="email" name="email" value="{{ $user->email }}" style="display:none;">
+                                </td>
+                                <td class="editable" data-field="role">
+                                    <span class="display">{{ $user->role }}</span>
+                                    <select name="role" style="display:none;">
+                                        <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Người dùng</option>
+                                        <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                    </select>
+                                </td>
+                                <td class="editable" data-field="tokens">
+                                    <span class="display">{{ $user->tokens }}</span>
+                                    <input type="number" name="tokens" value="{{ $user->tokens }}" style="display:none;"
+                                        min="0">
+                                </td>
+                                <td>{{ $user->tokens_used }}</td>
+                                <td class="editable" data-field="status">
+                                    <span
+                                        class="display status {{ $user->status }}">{{ ucfirst($user->status === 'active' ? 'Hoạt động' : 'Không hoạt động') }}</span>
+                                    <select name="status" style="display:none;">
+                                        <option value="active" {{ $user->status === 'active' ? 'selected' : '' }}>Hoạt động
+                                        </option>
+                                        <option value="inactive" {{ $user->status === 'inactive' ? 'selected' : '' }}>Không hoạt
+                                            động</option>
+                                    </select>
+                                </td>
+                                <td class="actions">
+                                    <form action="{{ route('admin.update', $user->id) }}" method="POST" class="edit-form"
+                                        id="form-{{ $user->id }}" style="display:inline;">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="button" class="action-btn edit-btn" onclick="editRow({{ $user->id }})"><i
+                                                class="fas fa-edit"></i> Sửa</button>
+                                        <button type="submit" class="action-btn save-btn" style="display:none;"><i
+                                                class="fas fa-save"></i> Lưu</button>
+                                        <button type="button" class="action-btn cancel-btn" style="display:none;"
+                                            onclick="cancelEdit({{ $user->id }})"><i class="fas fa-times"></i> Hủy</button>
+                                    </form>
+                                    <!-- <form action="{{ route('admin.delete', $user->id) }}" method="POST" style="display:inline;"
+                                                        onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="action-btn delete-btn"><i class="fas fa-trash"></i>
+                                                            Xóa</button>
+                                                    </form> -->
+                                </td>
+                                <td>
+                                    <button class="action-btn save-btn"
+                                        onclick="showLoginHistory('{{ $user->id }}', '{{ $user->name }}')">
+                                        <i class="fas fa-eye"></i> Xem
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
         </div>
         <!-- Popup thêm gói nạp tiền mới -->
         <div class="popup-overlay" id="addPackageOverlay" onclick="hideAddPackagePopup()"></div>
@@ -1508,6 +1736,38 @@
         <div class="container tab-content" id="settings" style="display: none;">
             <h1>Cài Đặt</h1>
             @include('llm_settings')
+            <!-- Form chọn mô hình nhận diện -->
+            <h3>Cài Đặt Mô Hình Nhận Diện</h3>
+            @if (session('recognition_model_success'))
+                <div class="alert alert-success" style="margin-bottom: 15px;">
+                    {{ session('recognition_model_success') }}
+                </div>
+            @endif
+            @if (session('recognition_model_error'))
+                <div class="alert alert-danger" style="margin-bottom: 15px;">
+                    {{ session('recognition_model_error') }}
+                </div>
+            @endif
+            <form action="{{ route('admin.recognition.model.update') }}" method="POST" id="recognitionModelForm">
+                @csrf
+                <div style="margin-bottom: 20px;">
+                    <label for="recognition_model" style="font-weight: bold;">Chọn mô hình nhận diện:</label>
+                    <select name="recognition_model" id="recognition_model" class="form-control"
+                        style="width: 200px; padding: 8px;">
+                        @foreach ($availableRecognitionModels as $model)
+                            <option value="{{ $model }}" {{ $recognitionModel && $recognitionModel->value === $model ? 'selected' : '' }}>
+                                {{ $model === 'default' ? 'Default Model' : 'Xception Model' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('recognition_model')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+                <button type="submit" class="action-btn save-btn" id="saveButton" disabled>
+                    <i class="fas fa-save"></i> Lưu thay đổi
+                </button>
+            </form>
             <h3>Sao Lưu Dữ Liệu</h3>
             @if (session('backup_success'))
                 <div class="success-message">
@@ -1624,6 +1884,18 @@
                 </tbody>
             </table>
         </div>
+        <!-- Tab Quản lý Metadata -->
+        <div class="container tab-content" id="metadata" style="display: none;">
+            <h1>Quản lý Metadata</h1>
+            <button type="button" class="action-btn save-btn" onclick="showAddMetadataPopup()"
+                style="margin-bottom: 20px;">
+                <i class="fas fa-plus"></i> Thêm Metadata mới
+            </button>
+            @if (session('success'))
+                <div class="success-message">{{ session('success') }}</div>
+            @endif
+            @include('index-metadata', ['metadata' => $metadata])
+        </div>
         <!-- Tab Chính sách và điều khoản -->
         <div class="container tab-content" id="terms" style="display: none;">
             <h1>Chính sách và điều khoản</h1>
@@ -1739,59 +2011,55 @@
         </div>
         <!-- Tab Thông tin hệ thống -->
         <div class="container tab-content" id="system-info" style="display: none;">
-            <h1>Thông tin hệ thống</h1>
-            <!-- Hiển thị cảnh báo khẩn cấp -->
-            @if(!empty($alerts))
-                <div class="alert-emergency">
-                    <h3>CẢNH BÁO KHẨN CẤP</h3>
-                    <ul>
-                        @foreach($alerts as $alert)
-                            <li>{{ $alert }}</li>
-                        @endforeach
+            <h1>Thông Tin Hệ Thống</h1>
+            @if($isSystemInfoEnabled)
+                <button onclick="updateSystemCharts()" class="action-btn save-btn">Làm mới dữ liệu</button>
+                <div id="system-error" style="color: var(--error-color); display: none; margin-bottom: 20px;"></div>
+                <div class="tab-container">
+                    <button class="tab-button active" data-tab="fastapi" onclick="openSubTab('fastapi')">FastAPI
+                        Stats</button>
+                </div>
+                <div id="fastapi" class="tab-content" style="display: block;">
+                    <h3>FastAPI System Stats</h3>
+                    <ul id="fastapi-stats">
+                        <li>CPU Usage: <span id="cpu-usage">Đang tải...</span></li>
+                        <li>RAM Total: <span id="ram-total">Đang tải...</span></li>
+                        <li>RAM Used: <span id="ram-used">Đang tải...</span></li>
+                        <li>RAM Usage: <span id="ram-usage">Đang tải...</span></li>
+                        <li>GPU Usage: <span id="gpu-usage">Đang tải...</span></li>
+                        <li>GPU Total: <span id="gpu-total">Đang tải...</span></li>
+                        <li>GPU Used: <span id="gpu-used">Đang tải...</span></li>
                     </ul>
+                    <div class="stats-row">
+                        <div style="flex: 1;"><canvas id="fastApiRamChart"></canvas></div>
+                        <div style="flex: 1;"><canvas id="fastApiCpuChart"></canvas></div>
+                        <div style="flex: 1;"><canvas id="fastApiGpuChart"></canvas></div>
+                    </div>
                 </div>
+            @else
+                <p>Thông tin hệ thống hiện đang bị tắt.</p>
             @endif
-            <div style="margin-bottom: 20px;">
-                <h3>Tối ưu hóa thông tin hệ thống</h3>
-                <form method="POST" action="{{ route('admin.toggle-optimization') }}">
-                    @csrf
-                    <label>
-                        <input type="checkbox" name="optimization" {{ $isSystemInfoEnabled ? 'checked' : '' }}
-                            onchange="this.form.submit()">
-                        Bật thông tin hệ thống
-                    </label>
-                </form>
-            </div>
-            <div class="tab-container">
-
-                <!-- Tab FastAPI -->
-                <div id="fastapi" class="tab-content active">
-                    <h3>Tài nguyên FastAPI</h3>
-                    @if($isSystemInfoEnabled)
-                        <div>
-                            <h2>Tổng quan FastAPI</h2>
-                            <ul>
-                                <li>CPU Usage: {{ $fastapistats['cpu_usage_percent'] ?? 0 }}%</li>
-                                <li>RAM Total: {{ $fastapistats['ram_total_mb'] ?? 0 }} MB</li>
-                                <li>RAM Used: {{ $fastapistats['ram_used_mb'] ?? 0 }} MB</li>
-                                <li>RAM Usage: {{ $fastapistats['ram_usage_percent'] ?? 0 }}%</li>
-                                <li>GPU Usage: {{ $fastapistats['gpu_usage_percent'] ?? 0 }}%</li>
-                                <li>GPU Total: {{ $fastapistats['gpu_total_mb'] ?? 0 }} MB</li>
-                                <li>GPU Used: {{ $fastapistats['gpu_used_mb'] ?? 0 }} MB</li>
-                                @if(isset($fastapistats['error']))
-                                    <li>Lỗi: {{ $fastapistats['error'] }}</li>
-                                @endif
-                            </ul>
-                        </div>
-                        <canvas id="fastApiRamChart" width="300" height="150"></canvas>
-                        <canvas id="fastApiCpuChart" width="300" height="150"></canvas>
-                        <canvas id="fastApiGpuChart" width="300" height="150"></canvas>
-                    @else
-                        <p>Thông tin hệ thống đã bị tắt để tối ưu hiệu suất.</p>
-                    @endif
-                </div>
-            </div>
         </div>
+    </div>
+    <!-- Popup thêm metadata mới -->
+    <div class="popup-overlay" id="addMetadataOverlay" onclick="hideAddMetadataPopup()"></div>
+    <div class="popup" id="addMetadataPopup">
+        <h3>Thêm Metadata Mới</h3>
+        <form id="addMetadataForm" method="POST" action="{{ route('admin.metadata.store') }}"
+            enctype="multipart/form-data">
+            @csrf
+            <p><strong>Trang:</strong></p>
+            <input type="text" name="page" required placeholder="Nhập tên trang (ví dụ: index)">
+            <p><strong>Tiêu đề:</strong></p>
+            <input type="text" name="title" required placeholder="Nhập tiêu đề">
+            <p><strong>Mô tả:</strong></p>
+            <textarea name="description" rows="4" placeholder="Nhập mô tả (tùy chọn)"></textarea>
+            <p><strong>Từ khóa:</strong></p>
+            <input type="text" name="keywords" placeholder="Nhập từ khóa, cách nhau bằng dấu phẩy (tùy chọn)">
+            <p><strong>Favicon:</strong></p>
+            <input type="file" name="favicon" placeholder="Chọn favicon (tùy chọn)">
+            <button type="submit">Thêm</button>
+        </form>
     </div>
     <!-- Popup Chi tiết Liên hệ -->
     <div class="popup-overlay" id="contactOverlay" onclick="hideContactPopup()"></div>
@@ -1865,7 +2133,7 @@
             <p><strong>Mô tả ngắn:</strong></p>
             <input type="text" name="excerpt" placeholder="Nhập mô tả ngắn (tùy chọn)">
             <p><strong>Hình ảnh:</strong></p>
-            <input type="text" name="image" placeholder="Đường dẫn hình ảnh (news/ten_hinh.jpg)">
+            <input type="file" name="image" placeholder="Đường dẫn hình ảnh (ceramics/ten_hinh.jpg)">
             <p><strong>Nội dung:</strong></p>
             <textarea name="content" rows="6" placeholder="Nhập nội dung bài viết" required></textarea>
             <button type="submit">Thêm</button>
@@ -1875,14 +2143,15 @@
     <div class="popup-overlay" id="addCeramicOverlay" onclick="hideAddCeramicPopup()"></div>
     <div class="popup" id="addCeramicPopup">
         <h3>Thêm Món Đồ Gốm Mới</h3>
-        <form id="addCeramicForm" method="POST" action="{{ route('admin.ceramics.store') }}">
+        <form id="addCeramicForm" method="POST" action="{{ route('admin.ceramics.store') }}"
+            enctype="multipart/form-data">
             @csrf
             <p><strong>Tên:</strong></p>
             <input type="text" name="name" required placeholder="Nhập tên món đồ gốm">
             <p><strong>Mô tả:</strong></p>
             <textarea name="description" rows="4" placeholder="Nhập mô tả (tùy chọn)"></textarea>
             <p><strong>Hình ảnh:</strong></p>
-            <input type="text" name="image" placeholder="Đường dẫn hình ảnh (ceramics/ten_hinh.jpg)">
+            <input type="file" name="image" placeholder="Đường dẫn hình ảnh (ceramics/ten_hinh.jpg)">
             <p><strong>Danh mục:</strong></p>
             <input type="text" name="category" placeholder="Nhập danh mục (tùy chọn)">
             <p><strong>Nguồn gốc:</strong></p>
@@ -2553,8 +2822,21 @@
         function filterUsers() {
             const search = document.getElementById('userSearch').value.toLowerCase();
             const role = document.getElementById('roleFilter').value;
-            const rows = document.querySelectorAll('#users tbody tr');
-            rows.forEach(row => {
+
+            // Lọc trên bảng Người dùng Hoạt động
+            const activeRows = document.querySelectorAll('#users tbody')[0].querySelectorAll('tr');
+            activeRows.forEach(row => {
+                const name = row.cells[1].textContent.toLowerCase();
+                const email = row.cells[2].textContent.toLowerCase();
+                const roleValue = row.cells[3].textContent.toLowerCase();
+                const matchesSearch = name.includes(search) || email.includes(search);
+                const matchesRole = !role || roleValue === role;
+                row.style.display = matchesSearch && matchesRole ? '' : 'none';
+            });
+
+            // Lọc trên bảng Người dùng Không Hoạt động
+            const inactiveRows = document.querySelectorAll('#users tbody')[1].querySelectorAll('tr');
+            inactiveRows.forEach(row => {
                 const name = row.cells[1].textContent.toLowerCase();
                 const email = row.cells[2].textContent.toLowerCase();
                 const roleValue = row.cells[3].textContent.toLowerCase();
@@ -2799,94 +3081,191 @@
             document.getElementById(tabName).style.display = 'block';
             document.querySelector(`#system-info .tab-button[onclick="openSubTab('${tabName}')"]`).classList.add('active');
         }
-        @if($isSystemInfoEnabled)
-            const fastApiRamChart = new Chart(document.getElementById('fastApiRamChart').getContext('2d'), {
-                type: 'line',
-                data: { labels: [], datasets: [{ label: 'RAM (MB)', data: [], borderColor: 'blue', fill: false }] },
-                options: { scales: { y: { beginAtZero: true } } }
-            });
-            const fastApiCpuChart = new Chart(document.getElementById('fastApiCpuChart').getContext('2d'), {
-                type: 'line',
-                data: { labels: [], datasets: [{ label: 'CPU (%)', data: [], borderColor: 'red', fill: false }] },
-                options: { scales: { y: { beginAtZero: true, max: 100 } } }
-            });
-            const fastApiGpuChart = new Chart(document.getElementById('fastApiGpuChart').getContext('2d'), {
-                type: 'line',
-                data: { labels: [], datasets: [{ label: 'GPU (%)', data: [], borderColor: 'green', fill: false }] },
-                options: { scales: { y: { beginAtZero: true, max: 100 } } }
-            });
-            const laravelRamChart = new Chart(document.getElementById('laravelRamChart').getContext('2d'), {
-                type: 'line',
-                data: { labels: [], datasets: [{ label: 'RAM (MB)', data: [], borderColor: 'blue', fill: false }] },
-                options: { scales: { y: { beginAtZero: true } } }
-            });
-            const laravelCpuChart = new Chart(document.getElementById('laravelCpuChart').getContext('2d'), {
-                type: 'line',
-                data: { labels: [], datasets: [{ label: 'CPU (%)', data: [], borderColor: 'red', fill: false }] },
-                options: { scales: { y: { beginAtZero: true, max: 100 } } }
-            });
-            const laravelGpuChart = new Chart(document.getElementById('laravelGpuChart').getContext('2d'), {
-                type: 'line',
-                data: { labels: [], datasets: [{ label: 'GPU (%)', data: [], borderColor: 'green', fill: false }] },
-                options: { scales: { y: { beginAtZero: true, max: 100 } } }
-            });
-            function updateSystemCharts() {
-                fetch('/admin/system/fastapi-stats')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message) return;
-                        console.log('FastAPI Data:', data);
-                        const now = new Date().toLocaleTimeString();
-                        fastApiRamChart.data.labels.push(now);
-                        fastApiRamChart.data.datasets[0].data.push(data.ram_used_mb || 0);
-                        fastApiCpuChart.data.labels.push(now);
-                        fastApiCpuChart.data.datasets[0].data.push(data.cpu_usage_percent || 0);
-                        fastApiGpuChart.data.labels.push(now);
-                        fastApiGpuChart.data.datasets[0].data.push(data.gpu_usage_percent || 0);
-                        if (fastApiRamChart.data.labels.length > 20) {
-                            fastApiRamChart.data.labels.shift();
-                            fastApiRamChart.data.datasets[0].data.shift();
-                            fastApiCpuChart.data.labels.shift();
-                            fastApiCpuChart.data.datasets[0].data.shift();
-                            fastApiGpuChart.data.labels.shift();
-                            fastApiGpuChart.data.datasets[0].data.shift();
-                        }
-                        fastApiRamChart.update();
-                        fastApiCpuChart.update();
-                        fastApiGpuChart.update();
-                    })
-                    .catch(error => console.error('Lỗi FastAPI:', error));
-                fetch('/admin/system/laravel-stats')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message) return;
-                        console.log('Laravel Data:', data);
-                        const now = new Date().toLocaleTimeString();
-                        laravelRamChart.data.labels.push(now);
-                        laravelRamChart.data.datasets[0].data.push(data.ram_used || 0);
-                        laravelCpuChart.data.labels.push(now);
-                        laravelCpuChart.data.datasets[0].data.push(data.cpu_usage || 0);
-                        laravelGpuChart.data.labels.push(now);
-                        laravelGpuChart.data.datasets[0].data.push(data.gpu_usage || 0);
-                        if (laravelRamChart.data.labels.length > 20) {
-                            laravelRamChart.data.labels.shift();
-                            laravelRamChart.data.datasets[0].data.shift();
-                            laravelCpuChart.data.labels.shift();
-                            laravelCpuChart.data.datasets[0].data.shift();
-                            laravelGpuChart.data.labels.shift();
-                            laravelGpuChart.data.datasets[0].data.shift();
-                        }
-                        laravelRamChart.update();
-                        laravelCpuChart.update();
-                        laravelGpuChart.update();
-                    })
-                    .catch(error => console.error('Lỗi Laravel:', error));
+        function openTab(evt, tabName) {
+            console.log('openTab called with tabName:', tabName);
+            const tabcontent = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = 'none';
             }
-            // Gọi lần đầu khi tải trang
-            updateSystemCharts();
-            // Cập nhật mỗi 5 giây
-            setInterval(updateSystemCharts, 5000);
+            const tablinks = document.getElementsByClassName('tablinks');
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove('active');
+            }
+            const targetTab = document.getElementById(tabName);
+            if (!targetTab) {
+                console.warn('Tab not found:', tabName);
+                return;
+            }
+            targetTab.style.display = 'block';
+            if (evt?.currentTarget) {
+                evt.currentTarget.classList.add('active');
+            } else {
+                console.warn('Event currentTarget is null');
+            }
+            console.log('Opened tab:', tabName);
+            if (tabName === 'system-info') {
+                updateSystemCharts();
+            }
+        }
+
+        @if($isSystemInfoEnabled)
+            let isFetching = false;
+            let fastApiRamChart = null, fastApiCpuChart = null, fastApiGpuChart = null;
+
+            function getElement(id) {
+                const element = document.getElementById(id);
+                if (!element) console.warn(`Element with ID "${id}" not found`);
+                return element;
+            }
+
+            function initCharts() {
+                const canvases = [
+                    { id: 'fastApiRamChart', chart: fastApiRamChart, label: 'RAM (MB)', color: '#49eb34' },
+                    { id: 'fastApiCpuChart', chart: fastApiCpuChart, label: 'CPU (%)', color: '#e53935' },
+                    { id: 'fastApiGpuChart', chart: fastApiGpuChart, label: 'GPU (%)', color: '#43a047' }
+                ];
+
+                canvases.forEach(item => {
+                    const canvas = getElement(item.id);
+                    if (canvas) {
+                        if (item.chart) item.chart.destroy();
+                        item.chart = new Chart(canvas.getContext('2d'), {
+                            type: 'line',
+                            data: {
+                                labels: [],
+                                datasets: [{
+                                    label: item.label,
+                                    data: [],
+                                    borderColor: item.color,
+                                    backgroundColor: item.color.replace('1', '0.2'),
+                                    fill: true,
+                                    tension: 0.4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: { beginAtZero: true, max: item.label.includes('%') ? 100 : undefined },
+                                    x: { ticks: { font: { size: 10 } } }
+                                }
+                            }
+                        });
+                        if (item.id === 'fastApiRamChart') fastApiRamChart = item.chart;
+                        if (item.id === 'fastApiCpuChart') fastApiCpuChart = item.chart;
+                        if (item.id === 'fastApiGpuChart') fastApiGpuChart = item.chart;
+                    }
+                });
+                console.log('Charts initialized');
+            }
+
+            function updateSystemCharts() {
+                if (isFetching) {
+                    console.log('Fetch already in progress, skipping');
+                    return;
+                }
+                isFetching = true;
+                console.log('Calling fetch for /admin/system/fastapi-stats');
+
+                const errorDiv = getElement('system-error');
+                if (!errorDiv) {
+                    console.warn('Cannot proceed without system-error element');
+                    isFetching = false;
+                    return;
+                }
+
+                fetch('/admin/system/fastapi-stats', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                })
+                    .then(response => {
+                        console.log('Fetch response status:', response.status, 'OK:', response.ok);
+                        if (!response.ok) {
+                            if (response.status === 401 || response.status === 403) {
+                                throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+                            }
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Fetch data:', data);
+                        if (data.error || data.message) {
+                            errorDiv.textContent = data.error || data.message || 'Không thể lấy dữ liệu';
+                            errorDiv.style.display = 'block';
+                            return;
+                        }
+                        errorDiv.style.display = 'none';
+
+                        const now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        if (fastApiRamChart) {
+                            fastApiRamChart.data.labels.push(now);
+                            fastApiRamChart.data.datasets[0].data.push(data.ram_used_mb || 0);
+                            fastApiRamChart.update();
+                        }
+                        if (fastApiCpuChart) {
+                            fastApiCpuChart.data.labels.push(now);
+                            fastApiCpuChart.data.datasets[0].data.push(data.cpu_usage_percent || 0);
+                            fastApiCpuChart.update();
+                        }
+                        if (fastApiGpuChart) {
+                            fastApiGpuChart.data.labels.push(now);
+                            fastApiGpuChart.data.datasets[0].data.push(data.gpu_usage_percent || 0);
+                            fastApiGpuChart.update();
+                        }
+
+                        const statsList = getElement('fastapi-stats');
+                        if (statsList) {
+                            statsList.innerHTML = `
+                                                                                <li>CPU Usage: ${data.cpu_usage_percent || 0}%</li>
+                                                                                <li>RAM Total: ${data.ram_total_mb || 0} MB</li>
+                                                                                <li>RAM Used: ${data.ram_used_mb || 0} MB</li>
+                                                                                <li>RAM Usage: ${data.ram_usage_percent || 0}%</li>
+                                                                                <li>GPU Usage: ${data.gpu_usage_percent || 0}%</li>
+                                                                                <li>GPU Total: ${data.gpu_total_mb || 0} MB</li>
+                                                                                <li>GPU Used: ${data.gpu_used_mb || 0} MB</li>
+                                                                            `;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi lấy dữ liệu FastAPI:', error);
+                        errorDiv.textContent = 'Lỗi kết nối: ' + error.message;
+                        errorDiv.style.display = 'block';
+                        if (error.message.includes('đăng nhập')) {
+                            alert('Phiên đăng nhập hết hạn. Chuyển hướng tới trang đăng nhập.');
+                            window.location.href = '/login';
+                        }
+                    })
+                    .finally(() => {
+                        isFetching = false;
+                        console.log('Fetch completed');
+                    });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOM loaded, initializing system info');
+                const systemInfo = getElement('system-info');
+                if (!systemInfo) {
+                    console.warn('System info tab not found');
+                    return;
+                }
+                initCharts();
+                if (systemInfo.style.display !== 'none') {
+                    updateSystemCharts();
+                }
+                setInterval(() => {
+                    console.log('Interval triggered for updateSystemCharts');
+                    if (systemInfo.style.display !== 'none') {
+                        updateSystemCharts();
+                    }
+                }, 5000);
+            });
         @endif
+
 
         //Quản lý gói nạp tiền// Biến để lưu giá trị ban đầu của các gói nạp tiền
         let initialPackageValues = {};
@@ -3013,6 +3392,38 @@
 
                 form.submit();
             });
+        });
+        // Show/Hide Add Metadata Popup
+        function showAddMetadataPopup() {
+            const popup = document.getElementById('addMetadataPopup');
+            const overlay = document.getElementById('addMetadataOverlay');
+            popup.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        function hideAddMetadataPopup() {
+            const popup = document.getElementById('addMetadataPopup');
+            const overlay = document.getElementById('addMetadataOverlay');
+            popup.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectElement = document.getElementById('recognition_model');
+            const saveButton = document.getElementById('saveButton');
+            const currentModel = '{{ $recognitionModel ? $recognitionModel->value : '' }}';
+
+            // Hàm kiểm tra và cập nhật trạng thái nút Lưu
+            function updateSaveButton() {
+                const selectedModel = selectElement.value;
+                // Bật nút nếu mô hình được chọn khác với mô hình hiện tại
+                saveButton.disabled = (selectedModel === currentModel);
+            }
+
+            // Gọi hàm khi tải trang để thiết lập trạng thái ban đầu
+            updateSaveButton();
+
+            // Lắng nghe sự kiện thay đổi trên dropdown
+            selectElement.addEventListener('change', updateSaveButton);
         });
     </script>
 </body>

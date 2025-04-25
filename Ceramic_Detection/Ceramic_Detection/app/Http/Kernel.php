@@ -45,4 +45,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'api.token' => \App\Http\Middleware\ApiTokenAuth::class,
     ];
+    protected $commands = [
+        \App\Console\Commands\GenerateSwaggerAnnotations::class,
+    ];
 }

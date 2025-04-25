@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Ceramic Recognition Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -11,6 +12,90 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <style>
+        /* Enhanced styling for the user info popup */
+        #userInfoPopup {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            width: 90%;
+            animation: zoomIn 0.3s ease;
+        }
+
+        #userInfoPopup h3 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #userInfoContent {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #userInfoContent input,
+        #userInfoContent select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--dark-gray);
+            background: var(--light-gray);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #userInfoContent input:focus,
+        #userInfoContent select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(38, 70, 82, 0.2);
+            outline: none;
+        }
+
+        #userInfoContent select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%26263238' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            cursor: pointer;
+        }
+
+        #userInfoContent input::placeholder {
+            color: #90a4ae;
+        }
+
+        #userInfoPopup button {
+            margin-top: 15px;
+            padding: 12px;
+            background: var(--gradient);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        #userInfoPopup button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #userInfoError {
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 8px;
+            background: #ffebee;
+            border-radius: 5px;
+        }
+
         :root {
             --primary-color: rgb(38, 70, 82);
             --secondary-color: rgb(118, 218, 236);
@@ -331,7 +416,7 @@
             background: var(--gradient);
             color: var(--white);
             border: none;
-            border-radius: 8px;
+            /* border-radius: 8px; */
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
         }
@@ -339,6 +424,7 @@
         .ceramic-ai .upload-area button:hover {
             transform: scale(1.02);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
         }
 
         .ceramic-ai .preview-area img {
@@ -443,6 +529,10 @@
         .rating-form textarea:focus {
             border-color: var(--primary-color);
             outline: none;
+        }
+
+        button.mode-btn.active {
+            background: var(--success-color);
         }
 
         .rating-form button {
@@ -1101,6 +1191,12 @@
         .camera-mode.active {
             animation: cameraFadeIn 0.5s ease;
         }
+
+        .user-info #tokenCount,
+        .user-info #tokenUseCount {
+            font-weight: 600;
+            color: rgb(111, 202, 142);
+        }
     </style>
 </head>
 
@@ -1118,7 +1214,7 @@
         <div class="logo">
             <i class="fas fa-microchip fa-spin-hover"></i> <!-- Icon công nghệ AI -->
         </div>
-        <div class="user-name">
+        <div class="user-name" onclick="showUserInfoPopup()">
             <i class="fas fa-user-circle"></i>
             <span>{{ Auth::user()->name }}</span>
         </div>
@@ -1132,8 +1228,7 @@
             <li><a href="/recharge"><i class="fas fa-coins"></i><span>Recharge</span></a></li> <!-- Icon tiền -->
             <li><a href="#" onclick="toggleTheme()"><i class="fas fa-moon"></i><span>Đổi Theme</span></a></li>
             <!-- Icon theme -->
-            <li><a href="#" onclick="showChangeNamePopup()"><i class="fas fa-pen-to-square"></i><span>Đổi tên</span></a>
-            </li> <!-- Icon chỉnh sửa -->
+
             <li>
                 <form method="POST" action="{{ route('logout') }}" class="logout-form">
                     @csrf
@@ -1155,6 +1250,8 @@
                 <h2>
                     Xin chào, {{ Auth::user()->name }}! Bạn còn <span id="tokenCount">{{ Auth::user()->tokens }}</span>
                     lượt dự đoán.
+                    <br>
+                    Bạn đã sử dụng <span id="tokenUseCount">{{ Auth::user()->tokens_used }}</span> lượt.
                     <br>
                     <a href="/recharge"><u>Nạp thêm lượt</u></a>
                 </h2>
@@ -1317,234 +1414,617 @@
                 </div>
                 <button onclick="hideInfoPopup()">Đóng</button>
             </div>
-            <!-- Popup đổi tên -->
-            <div class="popup-overlay" id="changeNamePopupOverlay" onclick="hideChangeNamePopup()"></div>
-            <div class="popup" id="changeNamePopup">
-                <h3>Đổi Tên Người Dùng</h3>
-                <div id="changeNameContent">
-                    <p>Tên hiện tại: <strong>{{ Auth::user()->name }}</strong></p>
-                    <input type="text" id="newName" placeholder="Nhập tên mới"
-                        style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid var(--light-gray);">
-                    <p id="changeNameError" style="color: #f44336; display: none;"></p>
+
+            <!-- Popup cập nhật thông tin người dùng -->
+            <div class="popup-overlay" id="userInfoPopupOverlay" onclick="hideUserInfoPopup()"></div>
+            <div class="popup" id="userInfoPopup">
+                <h3>Cập Nhật Thông Tin Người Dùng</h3>
+                <div id="userInfoContent">
+                    <p id="userInfoError" style="color: #f44336; display: none;"></p>
+                    <h5>User Name</h5>
+                    <input type="text" id="userName" placeholder="Tên" value="{{ Auth::user()->name }}">
+                    <h5>User Phone</h5>
+                    <input type="text" id="userPhone" placeholder="Số điện thoại"
+                        value="{{ Auth::user()->phone ?? '' }}">
+                    <h5>User Gender</h5>
+                    <select id="userGender">
+                        <option value="" disabled {{ !Auth::user()->gender ? 'selected' : '' }}>Chọn giới tính</option>
+                        <option value="male" {{ Auth::user()->gender == 'male' ? 'selected' : '' }}>Nam</option>
+                        <option value="female" {{ Auth::user()->gender == 'female' ? 'selected' : '' }}>Nữ</option>
+                        <option value="other" {{ Auth::user()->gender == 'other' ? 'selected' : '' }}>Khác</option>
+                    </select>
+                    <h5>User Address</h5>
+                    <input type="text" id="userAddress" placeholder="Địa chỉ" value="{{ Auth::user()->address ?? '' }}">
                 </div>
-                <button onclick="submitNewName()">Lưu</button>
+                <button onclick="submitUserInfo()">Lưu</button>
             </div>
-            <script>
-                const userId = "{{ Auth::user()->id ?? 'anonymous' }}";
-                let tokens = {{ Auth::user()->tokens ?? 0 }};
-                console.log("User ID:", userId);
-                console.log("Tokens còn lại:", tokens);
+        </div>
+        <script>
+            const userId = "{{ Auth::user()->id ?? 'anonymous' }}";
+            let tokens = {{ Auth::user()->tokens ?? 0 }};
+            console.log("User ID:", userId);
+            console.log("Tokens còn lại:", tokens);
 
-                document.getElementById('imageInput').addEventListener('change', function (e) {
-                    const file = e.target.files[0];
-                    const preview = document.getElementById('previewImage');
-                    preview.src = URL.createObjectURL(file);
-                    preview.style.display = 'block';
-                });
+            document.getElementById('imageInput').addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                const preview = document.getElementById('previewImage');
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+            });
 
-                async function predictImage() {
-                    const fileInput = document.getElementById('imageInput');
-                    const resultElement = document.getElementById('result');
-                    const chatbotElement = document.getElementById('chatbotResponse');
-                    const predictBtn = document.getElementById('predictBtn');
-                    const spinner = document.getElementById('predictSpinner');
-                    const tokenCountElement = document.getElementById('tokenCount');
-                    // Bật animation khi bắt đầu xử lý
-                    predictBtn.disabled = true;
-                    predictBtn.classList.add('processing'); // Animation pulse cho nút
-                    spinner.style.display = 'inline-block';
-                    resultElement.textContent = 'Đang phân tích mẫu gốm...';
-                    resultElement.classList.add('result-processing'); // Animation nhấp nháy cho Result
-                    chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
-                    chatbotElement.classList.add('chatbot-processing'); // Animation nhấp nháy cho Chatbot
-                    if (!fileInput.files[0]) {
-                        resultElement.textContent = 'Vui lòng upload ảnh trước!';
-                        return;
-                    }
-
-                    const formData = new FormData();
-                    formData.append('file', fileInput.files[0]);
-                    formData.append('_token', '{{ csrf_token() }}');
-
-                    predictBtn.disabled = true;
-                    spinner.style.display = 'inline-block';
-                    resultElement.textContent = 'Đang phân tích mẫu gốm...';
-                    chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
-
-                    try {
-                        const response = await fetch('{{ route('predict.image') }}', {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        const data = await response.json();
-                        // Xóa animation khi xử lý xong
-                        predictBtn.classList.remove('processing');
-                        resultElement.classList.remove('result-processing');
-                        chatbotElement.classList.remove('chatbot-processing');
-                        if (data.error) {
-                            resultElement.textContent = `Lỗi: ${data.error}`;
-                            chatbotElement.innerHTML = `<p>${data.error}</p>`;
-                        } else {
-                            tokenCountElement.textContent = data.tokens;
-                            resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
-                            resultElement.classList.add('result-loaded');
-                            const llmResponse = data.llm_response;
-                            const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
-                            let formattedResponse = '';
-                            paragraphs.forEach(paragraph => {
-                                const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
-                                formattedResponse += `<p>${formattedParagraph}</p>`;
-                            });
-                            chatbotElement.innerHTML = formattedResponse;
-                            chatbotElement.classList.add('result-loaded');
-                        }
-                    } catch (error) {
-                        predictBtn.classList.remove('processing');
-                        resultElement.classList.remove('result-processing');
-                        chatbotElement.classList.remove('chatbot-processing');
-                        resultElement.textContent = `Lỗi: ${error.message}`;
-                        chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
-                    } finally {
-                        predictBtn.disabled = false;
-                        spinner.style.display = 'none';
-                        // Xóa class result-loaded sau khi animation hoàn tất (để có thể tái sử dụng)
-                        setTimeout(() => {
-                            resultElement.classList.remove('result-loaded');
-                            chatbotElement.classList.remove('result-loaded');
-                        }, 500); // Thời gian khớp với animation slideUp
-                    }
+            async function predictImage() {
+                const fileInput = document.getElementById('imageInput');
+                const resultElement = document.getElementById('result');
+                const chatbotElement = document.getElementById('chatbotResponse');
+                const predictBtn = document.getElementById('predictBtn');
+                const spinner = document.getElementById('predictSpinner');
+                const tokenCountElement = document.getElementById('tokenCount');
+                // Bật animation khi bắt đầu xử lý
+                predictBtn.disabled = true;
+                predictBtn.classList.add('processing'); // Animation pulse cho nút
+                spinner.style.display = 'inline-block';
+                resultElement.textContent = 'Đang phân tích mẫu gốm...';
+                resultElement.classList.add('result-processing'); // Animation nhấp nháy cho Result
+                chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
+                chatbotElement.classList.add('chatbot-processing'); // Animation nhấp nháy cho Chatbot
+                if (!fileInput.files[0]) {
+                    resultElement.textContent = 'Vui lòng upload ảnh trước!';
+                    return;
                 }
 
-                const stars = document.querySelectorAll('.rating-form .rating-stars .fa-star');
-                let selectedRating = 0;
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('_token', '{{ csrf_token() }}');
 
-                stars.forEach(star => {
-                    star.addEventListener('click', function () {
-                        selectedRating = this.getAttribute('data-value');
+                predictBtn.disabled = true;
+                spinner.style.display = 'inline-block';
+                resultElement.textContent = 'Đang phân tích mẫu gốm...';
+                chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
+
+                try {
+                    const response = await fetch('{{ route('predict.image') }}', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    // Xóa animation khi xử lý xong
+                    predictBtn.classList.remove('processing');
+                    resultElement.classList.remove('result-processing');
+                    chatbotElement.classList.remove('chatbot-processing');
+                    if (data.error) {
+                        resultElement.textContent = `Lỗi: ${data.error}`;
+                        chatbotElement.innerHTML = `<p>${data.error}</p>`;
+                    } else {
+                        tokenCountElement.textContent = data.tokens;
+                        resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
+                        resultElement.classList.add('result-loaded');
+                        const llmResponse = data.llm_response;
+                        const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
+                        let formattedResponse = '';
+                        paragraphs.forEach(paragraph => {
+                            const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
+                            formattedResponse += `<p>${formattedParagraph}</p>`;
+                        });
+                        chatbotElement.innerHTML = formattedResponse;
+                        chatbotElement.classList.add('result-loaded');
+                    }
+                } catch (error) {
+                    predictBtn.classList.remove('processing');
+                    resultElement.classList.remove('result-processing');
+                    chatbotElement.classList.remove('chatbot-processing');
+                    resultElement.textContent = `Lỗi: ${error.message}`;
+                    chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
+                } finally {
+                    predictBtn.disabled = false;
+                    spinner.style.display = 'none';
+                    // Xóa class result-loaded sau khi animation hoàn tất (để có thể tái sử dụng)
+                    setTimeout(() => {
+                        resultElement.classList.remove('result-loaded');
+                        chatbotElement.classList.remove('result-loaded');
+                    }, 500); // Thời gian khớp với animation slideUp
+                }
+            }
+
+            const stars = document.querySelectorAll('.rating-form .rating-stars .fa-star');
+            let selectedRating = 0;
+
+            stars.forEach(star => {
+                star.addEventListener('click', function () {
+                    selectedRating = this.getAttribute('data-value');
+                    stars.forEach(s => {
+                        s.classList.remove('active');
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                        if (s.getAttribute('data-value') <= selectedRating) {
+                            s.classList.add('active');
+                            s.classList.add('fas');
+                            s.classList.remove('far');
+                        }
+                    });
+                });
+            });
+
+            async function submitRating() {
+                const feedback = document.getElementById('feedback').value;
+                if (!selectedRating) {
+                    alert('Vui lòng chọn số sao!');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/submit-rating', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            rating: selectedRating,
+                            feedback: feedback
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Đánh giá của bạn đã được gửi thành công!');
+                        document.getElementById('feedback').value = '';
                         stars.forEach(s => {
                             s.classList.remove('active');
                             s.classList.remove('fas');
                             s.classList.add('far');
-                            if (s.getAttribute('data-value') <= selectedRating) {
-                                s.classList.add('active');
-                                s.classList.add('fas');
-                                s.classList.remove('far');
-                            }
                         });
-                    });
-                });
-
-                async function submitRating() {
-                    const feedback = document.getElementById('feedback').value;
-                    if (!selectedRating) {
-                        alert('Vui lòng chọn số sao!');
-                        return;
+                        selectedRating = 0;
+                        location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi gửi đánh giá!');
                     }
-
-                    try {
-                        const response = await fetch('/submit-rating', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                userId: userId,
-                                rating: selectedRating,
-                                feedback: feedback
-                            })
-                        });
-
-                        const data = await response.json();
-                        if (data.success) {
-                            alert('Đánh giá của bạn đã được gửi thành công!');
-                            document.getElementById('feedback').value = '';
-                            stars.forEach(s => {
-                                s.classList.remove('active');
-                                s.classList.remove('fas');
-                                s.classList.add('far');
-                            });
-                            selectedRating = 0;
-                            location.reload();
-                        } else {
-                            alert('Có lỗi xảy ra khi gửi đánh giá!');
-                        }
-                    } catch (error) {
-                        alert(`Lỗi: ${error.message}`);
-                    }
+                } catch (error) {
+                    alert(`Lỗi: ${error.message}`);
                 }
+            }
 
-                async function showInfoPopup(classificationId) {
-                    const popup = document.getElementById('infoPopup');
-                    const overlay = document.getElementById('infoPopupOverlay');
-                    const content = document.getElementById('infoPopupContent');
+            async function showInfoPopup(classificationId) {
+                const popup = document.getElementById('infoPopup');
+                const overlay = document.getElementById('infoPopupOverlay');
+                const content = document.getElementById('infoPopupContent');
 
-                    try {
-                        const response = await fetch(`/classification/${classificationId}/info`, {
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            }
-                        });
-                        const data = await response.json();
-
-                        if (data.llm_response) {
-                            const paragraphs = data.llm_response.split('\n').filter(p => p.trim() !== '');
-                            let formattedResponse = '';
-                            paragraphs.forEach(paragraph => {
-                                const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
-                                formattedResponse += `<p>${formattedParagraph}</p>`;
-                            });
-                            content.innerHTML = formattedResponse;
-                        } else {
-                            content.innerHTML = '<p>Không có thông tin chi tiết.</p>';
-                        }
-                    } catch (error) {
-                        content.innerHTML = '<p>Lỗi khi tải thông tin chi tiết.</p>';
-                        console.error('Error fetching classification info:', error);
-                    }
-
-                    popup.style.display = 'block';
-                    overlay.style.display = 'block';
-                }
-
-                function hideInfoPopup() {
-                    const popup = document.getElementById('infoPopup');
-                    const overlay = document.getElementById('infoPopupOverlay');
-                    popup.style.display = 'none';
-                    overlay.style.display = 'none';
-                }
-
-                document.querySelectorAll('.sidebar a').forEach(link => {
-                    link.addEventListener('click', function (e) {
-                        if (!this.href.includes('/recharge')) {
-                            e.preventDefault();
-                            document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-                            this.classList.add('active');
-                            document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
-                            const section = document.getElementById(this.dataset.section);
-                            if (section) section.style.display = 'block';
+                try {
+                    const response = await fetch(`/classification/${classificationId}/info`, {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
                     });
-                });
+                    const data = await response.json();
 
-                document.addEventListener('DOMContentLoaded', () => {
-                    document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
-                    document.getElementById('ceramic-ai').style.display = 'block';
-                });
-                function handleDragOver(e) {
-                    e.preventDefault();
-                    e.target.classList.add('dragover');
+                    if (data.llm_response) {
+                        const paragraphs = data.llm_response.split('\n').filter(p => p.trim() !== '');
+                        let formattedResponse = '';
+                        paragraphs.forEach(paragraph => {
+                            const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
+                            formattedResponse += `<p>${formattedParagraph}</p>`;
+                        });
+                        content.innerHTML = formattedResponse;
+                    } else {
+                        content.innerHTML = '<p>Không có thông tin chi tiết.</p>';
+                    }
+                } catch (error) {
+                    content.innerHTML = '<p>Lỗi khi tải thông tin chi tiết.</p>';
+                    console.error('Error fetching classification info:', error);
                 }
 
-                function handleDragLeave(e) {
-                    e.target.classList.remove('dragover');
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
+            }
+
+            function hideInfoPopup() {
+                const popup = document.getElementById('infoPopup');
+                const overlay = document.getElementById('infoPopupOverlay');
+                popup.style.display = 'none';
+                overlay.style.display = 'none';
+            }
+
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    if (!this.href.includes('/recharge')) {
+                        e.preventDefault();
+                        document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+                        this.classList.add('active');
+                        document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
+                        const section = document.getElementById(this.dataset.section);
+                        if (section) section.style.display = 'block';
+                    }
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
+                document.getElementById('ceramic-ai').style.display = 'block';
+            });
+            const input = document.getElementById('someInputId');
+            if (input) {
+                console.log(input.value);
+            }
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.target.classList.add('dragover');
+            }
+
+            function handleDragLeave(e) {
+                e.target.classList.remove('dragover');
+            }
+
+            function handleDrop(e) {
+                e.preventDefault();
+                e.target.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    document.getElementById('imageInput').files = e.dataTransfer.files;
+                    const preview = document.getElementById('previewImage');
+                    preview.src = URL.createObjectURL(file);
+                    preview.style.display = 'block';
+                } else {
+                    alert('Vui lòng kéo thả file ảnh!');
+                }
+            }
+            function filterHistory() {
+                const query = document.getElementById('historySearch').value.toLowerCase();
+                const rows = document.querySelectorAll('#history table tbody tr');
+                rows.forEach(row => {
+                    const result = row.cells[2].textContent.toLowerCase();
+                    row.style.display = result.includes(query) ? '' : 'none';
+                });
+            }
+            //Đổi theme
+            function toggleTheme() {
+                document.body.classList.toggle('dark-theme');
+                localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+            }
+            if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+            // Hiển thị popup đổi tên
+            function showChangeNamePopup() {
+                const popup = document.getElementById('changeNamePopup');
+                const overlay = document.getElementById('changeNamePopupOverlay');
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
+                document.getElementById('newName').value = ''; // Xóa nội dung input khi mở
+                document.getElementById('changeNameError').style.display = 'none'; // Ẩn thông báo lỗi
+            }
+
+            // Ẩn popup đổi tên
+            function hideChangeNamePopup() {
+                const popup = document.getElementById('changeNamePopup');
+                const overlay = document.getElementById('changeNamePopupOverlay');
+                popup.style.display = 'none';
+                overlay.style.display = 'none';
+            }
+
+            // Gửi yêu cầu đổi tên
+            async function submitNewName() {
+                const newName = document.getElementById('newName').value.trim();
+                const errorElement = document.getElementById('changeNameError');
+
+                if (!newName) {
+                    errorElement.textContent = 'Vui lòng nhập tên mới!';
+                    errorElement.style.display = 'block';
+                    return;
                 }
 
-                function handleDrop(e) {
+                if (newName.length < 3) {
+                    errorElement.textContent = 'Tên phải có ít nhất 3 ký tự!';
+                    errorElement.style.display = 'block';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/change-name', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            name: newName
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Tên của bạn đã được cập nhật thành công!');
+                        document.querySelector('.user-name span').textContent = newName; // Cập nhật tên trong sidebar
+                        document.querySelector('.user-info').innerHTML = `Xin chào, ${newName}! Bạn còn <span id="tokenCount">${tokens}</span> lượt dự đoán.<br><a href="/recharge">Nạp thêm lượt</a>`; // Cập nhật tên trong header
+                        hideChangeNamePopup();
+                    } else {
+                        errorElement.textContent = data.error || 'Có lỗi xảy ra khi đổi tên!';
+                        errorElement.style.display = 'block';
+                    }
+                } catch (error) {
+                    errorElement.textContent = `Lỗi: ${error.message}`;
+                    errorElement.style.display = 'block';
+                }
+            }
+            // Dữ liệu rating từ server
+            const allUserRatings = @json($allUserRatings);
+            const ITEMS_PER_PAGE = 10; // Giới hạn 10 người dùng mỗi trang
+            let currentPage = 1;
+            let filteredRatings = allUserRatings; // Danh sách ratings sau khi lọc
+
+            // Hàm render bảng ratings
+            function renderRatings(page = 1) {
+                const tbody = document.getElementById('ratingsBody');
+                const noRatingsMessage = document.getElementById('noRatingsMessage');
+                const start = (page - 1) * ITEMS_PER_PAGE;
+                const end = start + ITEMS_PER_PAGE;
+                const paginatedRatings = filteredRatings.slice(start, end);
+
+                // Xóa nội dung bảng
+                tbody.innerHTML = '';
+
+                // Kiểm tra nếu không có dữ liệu
+                if (filteredRatings.length === 0) {
+                    noRatingsMessage.style.display = 'block';
+                    document.getElementById('ratingsTable').style.display = 'none';
+                    document.getElementById('pagination').style.display = 'none';
+                    return;
+                }
+
+                // Hiển thị bảng và ẩn thông báo
+                noRatingsMessage.style.display = 'none';
+                document.getElementById('ratingsTable').style.display = 'table';
+                document.getElementById('pagination').style.display = 'flex';
+
+                // Render các dòng trong bảng
+                paginatedRatings.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>${user.name}</td>
+                <td>
+                    ${Array.from({ length: 5 }, (_, i) =>
+                        `<i class="fa-star ${i < user.rating ? 'fas' : 'far'}"></i>`
+                    ).join('')}
+                </td>
+                <td>${user.feedback || 'Không có phản hồi.'}</td>
+            `;
+                    tbody.appendChild(row);
+                });
+
+                // Render phân trang
+                renderPagination();
+            }
+
+            // Hàm render phân trang
+            function renderPagination() {
+                const pagination = document.getElementById('pagination');
+                const totalPages = Math.ceil(filteredRatings.length / ITEMS_PER_PAGE);
+
+                // Xóa nội dung phân trang cũ
+                pagination.innerHTML = '';
+
+                // Thêm nút Previous
+                const prevLink = document.createElement('span');
+                prevLink.className = 'page-link';
+                prevLink.textContent = '«';
+                prevLink.onclick = () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderRatings(currentPage);
+                    }
+                };
+                pagination.appendChild(prevLink);
+
+                // Thêm các nút số trang
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLink = document.createElement('span');
+                    pageLink.className = `page-link ${i === currentPage ? 'active' : ''}`;
+                    pageLink.textContent = i;
+                    pageLink.onclick = () => {
+                        currentPage = i;
+                        renderRatings(currentPage);
+                    };
+                    pagination.appendChild(pageLink);
+                }
+
+                // Thêm nút Next
+                const nextLink = document.createElement('span');
+                nextLink.className = 'page-link';
+                nextLink.textContent = '»';
+                nextLink.onclick = () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderRatings(currentPage);
+                    }
+                };
+                pagination.appendChild(nextLink);
+            }
+
+            // Hàm lọc theo số sao
+            function filterAndPaginateRatings() {
+                const filterValue = document.getElementById('ratingFilter').value;
+                currentPage = 1; // Reset về trang 1 khi lọc
+
+                if (filterValue === 'all') {
+                    filteredRatings = allUserRatings;
+                } else {
+                    filteredRatings = allUserRatings.filter(user => user.rating === parseInt(filterValue));
+                }
+
+                renderRatings(currentPage);
+            }
+
+            // Khởi tạo khi tải trang
+            document.addEventListener('DOMContentLoaded', () => {
+                renderRatings(currentPage);
+            });
+            // Các hàm khác giữ nguyên...
+            // Quản lý chế độ upload/camera
+            let currentMode = 'upload';
+            let stream = null;
+
+            function selectMode(mode) {
+                currentMode = mode;
+                const uploadMode = document.getElementById('uploadMode');
+                const cameraMode = document.getElementById('cameraMode');
+                const modeButtons = document.querySelectorAll('.mode-btn');
+
+                // Cập nhật giao diện
+                modeButtons.forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`.mode-btn[onclick="selectMode('${mode}')"]`).classList.add('active');
+
+                if (mode === 'upload') {
+                    uploadMode.classList.add('active');
+                    cameraMode.classList.remove('active');
+                    stopCamera();
+                } else {
+                    uploadMode.classList.remove('active');
+                    cameraMode.classList.add('active');
+                    startCamera();
+                }
+            }
+
+            // Khởi động camera
+            async function startCamera() {
+                const video = document.getElementById('cameraStream');
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment' } // Ưu tiên camera sau trên mobile
+                    });
+                    video.srcObject = stream;
+                } catch (error) {
+                    console.error('Lỗi khi truy cập camera:', error);
+                    alert('Không thể truy cập camera. Vui lòng kiểm tra quyền hoặc thử lại.');
+                    selectMode('upload');
+                }
+            }
+
+            // Dừng camera
+            function stopCamera() {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                    document.getElementById('cameraStream').srcObject = null;
+                }
+            }
+
+            // Chụp ảnh từ camera
+            function capturePhoto() {
+                const video = document.getElementById('cameraStream');
+                const canvas = document.getElementById('cameraCanvas');
+                const preview = document.getElementById('previewImage');
+
+                // Thiết lập canvas
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+
+                // Chuyển canvas thành blob để gửi
+                canvas.toBlob(blob => {
+                    const file = new File([blob], 'captured_photo.jpg', { type: 'image/jpeg' });
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    document.getElementById('imageInput').files = dataTransfer.files;
+
+                    // Cập nhật preview
+                    preview.src = URL.createObjectURL(file);
+                    preview.style.display = 'block';
+
+                    // Tắt camera sau khi chụp
+                    stopCamera();
+                    selectMode('upload');
+                }, 'image/jpeg', 0.95);
+            }
+
+            // Sửa hàm predictImage để hỗ trợ cả hai chế độ
+            async function predictImage() {
+                const fileInput = document.getElementById('imageInput');
+                const resultElement = document.getElementById('result');
+                const chatbotElement = document.getElementById('chatbotResponse');
+                const predictBtn = document.getElementById('predictBtn');
+                const spinner = document.getElementById('predictSpinner');
+                const tokenCountElement = document.getElementById('tokenCount');
+
+                // Kiểm tra file
+                if (!fileInput.files[0]) {
+                    resultElement.textContent = 'Vui lòng chọn hoặc chụp ảnh trước!';
+                    predictBtn.classList.remove('processing');
+                    spinner.style.display = 'none';
+                    return;
+                }
+
+                // Bật animation khi bắt đầu xử lý
+                predictBtn.disabled = true;
+                predictBtn.classList.add('processing');
+                spinner.style.display = 'inline-block';
+                resultElement.textContent = 'Đang phân tích mẫu gốm...';
+                resultElement.classList.add('result-processing');
+                chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
+                chatbotElement.classList.add('chatbot-processing');
+
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('_token', '{{ csrf_token() }}');
+
+                try {
+                    const response = await fetch('{{ route('predict.image') }}', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    predictBtn.classList.remove('processing');
+                    resultElement.classList.remove('result-processing');
+                    chatbotElement.classList.remove('chatbot-processing');
+
+                    if (data.error) {
+                        resultElement.textContent = `Lỗi: ${data.error}`;
+                        chatbotElement.innerHTML = `<p>${data.error}</p>`;
+                    } else {
+                        tokenCountElement.textContent = data.tokens;
+                        resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
+                        resultElement.classList.add('result-loaded');
+                        const llmResponse = data.llm_response;
+                        const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
+                        let formattedResponse = '';
+                        paragraphs.forEach(paragraph => {
+                            const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
+                            formattedResponse += `<p>${formattedParagraph}</p>`;
+                        });
+                        chatbotElement.innerHTML = formattedResponse;
+                        chatbotElement.classList.add('result-loaded');
+                    }
+                } catch (error) {
+                    resultElement.textContent = `Lỗi: ${error.message}`;
+                    chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
+                } finally {
+                    predictBtn.disabled = false;
+                    spinner.style.display = 'none';
+                    setTimeout(() => {
+                        resultElement.classList.remove('result-loaded');
+                        chatbotElement.classList.remove('result-loaded');
+                    }, 500);
+                }
+            }
+
+            // Cập nhật drag-and-drop để chỉ hoạt động ở chế độ upload
+            function handleDragOver(e) {
+                if (currentMode === 'upload') {
                     e.preventDefault();
-                    e.target.classList.remove('dragover');
+                    e.target.closest('.upload-area').classList.add('dragover');
+                }
+            }
+
+            function handleDragLeave(e) {
+                if (currentMode === 'upload') {
+                    e.target.closest('.upload-area').classList.remove('dragover');
+                }
+            }
+
+            function handleDrop(e) {
+                if (currentMode === 'upload') {
+                    e.preventDefault();
+                    e.target.closest('.upload-area').classList.remove('dragover');
                     const file = e.dataTransfer.files[0];
                     if (file && file.type.startsWith('image/')) {
                         document.getElementById('imageInput').files = e.dataTransfer.files;
@@ -1555,374 +2035,104 @@
                         alert('Vui lòng kéo thả file ảnh!');
                     }
                 }
-                function filterHistory() {
-                    const query = document.getElementById('historySearch').value.toLowerCase();
-                    const rows = document.querySelectorAll('#history table tbody tr');
-                    rows.forEach(row => {
-                        const result = row.cells[2].textContent.toLowerCase();
-                        row.style.display = result.includes(query) ? '' : 'none';
-                    });
-                }
-                //Đổi theme
-                function toggleTheme() {
-                    document.body.classList.toggle('dark-theme');
-                    localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-                }
-                if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
-                // Hiển thị popup đổi tên
-                function showChangeNamePopup() {
-                    const popup = document.getElementById('changeNamePopup');
-                    const overlay = document.getElementById('changeNamePopupOverlay');
-                    popup.style.display = 'block';
-                    overlay.style.display = 'block';
-                    document.getElementById('newName').value = ''; // Xóa nội dung input khi mở
-                    document.getElementById('changeNameError').style.display = 'none'; // Ẩn thông báo lỗi
-                }
+            }
+            // Hiển thị popup thông tin người dùng
+            function showUserInfoPopup() {
+                const popup = document.getElementById('userInfoPopup');
+                const overlay = document.getElementById('userInfoPopupOverlay');
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
+                document.getElementById('userInfoError').style.display = 'none';
+            }
 
-                // Ẩn popup đổi tên
-                function hideChangeNamePopup() {
-                    const popup = document.getElementById('changeNamePopup');
-                    const overlay = document.getElementById('changeNamePopupOverlay');
-                    popup.style.display = 'none';
-                    overlay.style.display = 'none';
-                }
+            // Ẩn popup thông tin người dùng
+            function hideUserInfoPopup() {
+                const popup = document.getElementById('userInfoPopup');
+                const overlay = document.getElementById('userInfoPopupOverlay');
+                popup.style.display = 'none';
+                overlay.style.display = 'none';
+            }
 
-                // Gửi yêu cầu đổi tên
-                async function submitNewName() {
-                    const newName = document.getElementById('newName').value.trim();
-                    const errorElement = document.getElementById('changeNameError');
+            // Gửi yêu cầu cập nhật thông tin người dùng
+            async function submitUserInfo() {
+                const name = document.getElementById('userName').value.trim();
+                const phone = document.getElementById('userPhone').value.trim();
+                const gender = document.getElementById('userGender').value;
+                const address = document.getElementById('userAddress').value.trim();
+                const errorElement = document.getElementById('userInfoError');
 
-                    if (!newName) {
-                        errorElement.textContent = 'Vui lòng nhập tên mới!';
-                        errorElement.style.display = 'block';
-                        return;
-                    }
 
-                    if (newName.length < 3) {
-                        errorElement.textContent = 'Tên phải có ít nhất 3 ký tự!';
-                        errorElement.style.display = 'block';
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch('/change-name', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                userId: userId,
-                                name: newName
-                            })
-                        });
-
-                        const data = await response.json();
-                        if (data.success) {
-                            alert('Tên của bạn đã được cập nhật thành công!');
-                            document.querySelector('.user-name span').textContent = newName; // Cập nhật tên trong sidebar
-                            document.querySelector('.user-info').innerHTML = `Xin chào, ${newName}! Bạn còn <span id="tokenCount">${tokens}</span> lượt dự đoán.<br><a href="/recharge">Nạp thêm lượt</a>`; // Cập nhật tên trong header
-                            hideChangeNamePopup();
-                        } else {
-                            errorElement.textContent = data.error || 'Có lỗi xảy ra khi đổi tên!';
-                            errorElement.style.display = 'block';
-                        }
-                    } catch (error) {
-                        errorElement.textContent = `Lỗi: ${error.message}`;
-                        errorElement.style.display = 'block';
-                    }
-                }
-                // Dữ liệu rating từ server
-                const allUserRatings = @json($allUserRatings);
-                const ITEMS_PER_PAGE = 10; // Giới hạn 10 người dùng mỗi trang
-                let currentPage = 1;
-                let filteredRatings = allUserRatings; // Danh sách ratings sau khi lọc
-
-                // Hàm render bảng ratings
-                function renderRatings(page = 1) {
-                    const tbody = document.getElementById('ratingsBody');
-                    const noRatingsMessage = document.getElementById('noRatingsMessage');
-                    const start = (page - 1) * ITEMS_PER_PAGE;
-                    const end = start + ITEMS_PER_PAGE;
-                    const paginatedRatings = filteredRatings.slice(start, end);
-
-                    // Xóa nội dung bảng
-                    tbody.innerHTML = '';
-
-                    // Kiểm tra nếu không có dữ liệu
-                    if (filteredRatings.length === 0) {
-                        noRatingsMessage.style.display = 'block';
-                        document.getElementById('ratingsTable').style.display = 'none';
-                        document.getElementById('pagination').style.display = 'none';
-                        return;
-                    }
-
-                    // Hiển thị bảng và ẩn thông báo
-                    noRatingsMessage.style.display = 'none';
-                    document.getElementById('ratingsTable').style.display = 'table';
-                    document.getElementById('pagination').style.display = 'flex';
-
-                    // Render các dòng trong bảng
-                    paginatedRatings.forEach(user => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                <td>${user.name}</td>
-                <td>
-                    ${Array.from({ length: 5 }, (_, i) =>
-                            `<i class="fa-star ${i < user.rating ? 'fas' : 'far'}"></i>`
-                        ).join('')}
-                </td>
-                <td>${user.feedback || 'Không có phản hồi.'}</td>
-            `;
-                        tbody.appendChild(row);
+                try {
+                    const response = await fetch('/update-user-info', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            name: name,
+                            phone: phone,
+                            gender: gender,
+                            address: address
+                        })
                     });
 
-                    // Render phân trang
-                    renderPagination();
-                }
-
-                // Hàm render phân trang
-                function renderPagination() {
-                    const pagination = document.getElementById('pagination');
-                    const totalPages = Math.ceil(filteredRatings.length / ITEMS_PER_PAGE);
-
-                    // Xóa nội dung phân trang cũ
-                    pagination.innerHTML = '';
-
-                    // Thêm nút Previous
-                    const prevLink = document.createElement('span');
-                    prevLink.className = 'page-link';
-                    prevLink.textContent = '«';
-                    prevLink.onclick = () => {
-                        if (currentPage > 1) {
-                            currentPage--;
-                            renderRatings(currentPage);
-                        }
-                    };
-                    pagination.appendChild(prevLink);
-
-                    // Thêm các nút số trang
-                    for (let i = 1; i <= totalPages; i++) {
-                        const pageLink = document.createElement('span');
-                        pageLink.className = `page-link ${i === currentPage ? 'active' : ''}`;
-                        pageLink.textContent = i;
-                        pageLink.onclick = () => {
-                            currentPage = i;
-                            renderRatings(currentPage);
-                        };
-                        pagination.appendChild(pageLink);
+                    // Kiểm tra trạng thái phản hồi
+                    if (!response.ok) {
+                        const text = await response.text(); // Lấy nội dung phản hồi dưới dạng text
+                        throw new Error(`Phản hồi không thành công: ${response.status} - ${text}`);
                     }
 
-                    // Thêm nút Next
-                    const nextLink = document.createElement('span');
-                    nextLink.className = 'page-link';
-                    nextLink.textContent = '»';
-                    nextLink.onclick = () => {
-                        if (currentPage < totalPages) {
-                            currentPage++;
-                            renderRatings(currentPage);
-                        }
-                    };
-                    pagination.appendChild(nextLink);
-                }
-
-                // Hàm lọc theo số sao
-                function filterAndPaginateRatings() {
-                    const filterValue = document.getElementById('ratingFilter').value;
-                    currentPage = 1; // Reset về trang 1 khi lọc
-
-                    if (filterValue === 'all') {
-                        filteredRatings = allUserRatings;
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Thông tin của bạn đã được cập nhật thành công!');
+                        document.querySelector('.user-name span').textContent = name;
+                        document.querySelector('.user-info').innerHTML = `Xin chào, ${name}! Bạn còn <span id="tokenCount">${tokens}</span> lượt dự đoán.<br><a href="/recharge">Nạp thêm lượt</a>`;
+                        hideUserInfoPopup();
                     } else {
-                        filteredRatings = allUserRatings.filter(user => user.rating === parseInt(filterValue));
+                        errorElement.textContent = data.error || 'Có lỗi xảy ra khi cập nhật thông tin!';
+                        errorElement.style.display = 'block';
                     }
-
-                    renderRatings(currentPage);
+                } catch (error) {
+                    errorElement.textContent = `Lỗi: ${error.message}`;
+                    errorElement.style.display = 'block';
+                    console.error('Chi tiết lỗi:', error);
                 }
+            }
+            async function showInfoPopup(classificationId) {
+                const popup = document.getElementById('infoPopup');
+                const overlay = document.getElementById('infoPopupOverlay');
+                const content = document.getElementById('infoPopupContent');
 
-                // Khởi tạo khi tải trang
-                document.addEventListener('DOMContentLoaded', () => {
-                    renderRatings(currentPage);
-                });
-                // Các hàm khác giữ nguyên...
-                // Quản lý chế độ upload/camera
-                let currentMode = 'upload';
-                let stream = null;
-
-                function selectMode(mode) {
-                    currentMode = mode;
-                    const uploadMode = document.getElementById('uploadMode');
-                    const cameraMode = document.getElementById('cameraMode');
-                    const modeButtons = document.querySelectorAll('.mode-btn');
-
-                    // Cập nhật giao diện
-                    modeButtons.forEach(btn => btn.classList.remove('active'));
-                    document.querySelector(`.mode-btn[onclick="selectMode('${mode}')"]`).classList.add('active');
-
-                    if (mode === 'upload') {
-                        uploadMode.classList.add('active');
-                        cameraMode.classList.remove('active');
-                        stopCamera();
-                    } else {
-                        uploadMode.classList.remove('active');
-                        cameraMode.classList.add('active');
-                        startCamera();
-                    }
-                }
-
-                // Khởi động camera
-                async function startCamera() {
-                    const video = document.getElementById('cameraStream');
-                    try {
-                        stream = await navigator.mediaDevices.getUserMedia({
-                            video: { facingMode: 'environment' } // Ưu tiên camera sau trên mobile
-                        });
-                        video.srcObject = stream;
-                    } catch (error) {
-                        console.error('Lỗi khi truy cập camera:', error);
-                        alert('Không thể truy cập camera. Vui lòng kiểm tra quyền hoặc thử lại.');
-                        selectMode('upload');
-                    }
-                }
-
-                // Dừng camera
-                function stopCamera() {
-                    if (stream) {
-                        stream.getTracks().forEach(track => track.stop());
-                        stream = null;
-                        document.getElementById('cameraStream').srcObject = null;
-                    }
-                }
-
-                // Chụp ảnh từ camera
-                function capturePhoto() {
-                    const video = document.getElementById('cameraStream');
-                    const canvas = document.getElementById('cameraCanvas');
-                    const preview = document.getElementById('previewImage');
-
-                    // Thiết lập canvas
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    canvas.getContext('2d').drawImage(video, 0, 0);
-
-                    // Chuyển canvas thành blob để gửi
-                    canvas.toBlob(blob => {
-                        const file = new File([blob], 'captured_photo.jpg', { type: 'image/jpeg' });
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(file);
-                        document.getElementById('imageInput').files = dataTransfer.files;
-
-                        // Cập nhật preview
-                        preview.src = URL.createObjectURL(file);
-                        preview.style.display = 'block';
-
-                        // Tắt camera sau khi chụp
-                        stopCamera();
-                        selectMode('upload');
-                    }, 'image/jpeg', 0.95);
-                }
-
-                // Sửa hàm predictImage để hỗ trợ cả hai chế độ
-                async function predictImage() {
-                    const fileInput = document.getElementById('imageInput');
-                    const resultElement = document.getElementById('result');
-                    const chatbotElement = document.getElementById('chatbotResponse');
-                    const predictBtn = document.getElementById('predictBtn');
-                    const spinner = document.getElementById('predictSpinner');
-                    const tokenCountElement = document.getElementById('tokenCount');
-
-                    // Kiểm tra file
-                    if (!fileInput.files[0]) {
-                        resultElement.textContent = 'Vui lòng chọn hoặc chụp ảnh trước!';
-                        predictBtn.classList.remove('processing');
-                        spinner.style.display = 'none';
-                        return;
-                    }
-
-                    // Bật animation khi bắt đầu xử lý
-                    predictBtn.disabled = true;
-                    predictBtn.classList.add('processing');
-                    spinner.style.display = 'inline-block';
-                    resultElement.textContent = 'Đang phân tích mẫu gốm...';
-                    resultElement.classList.add('result-processing');
-                    chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
-                    chatbotElement.classList.add('chatbot-processing');
-
-                    const formData = new FormData();
-                    formData.append('file', fileInput.files[0]);
-                    formData.append('_token', '{{ csrf_token() }}');
-
-                    try {
-                        const response = await fetch('{{ route('predict.image') }}', {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        const data = await response.json();
-                        predictBtn.classList.remove('processing');
-                        resultElement.classList.remove('result-processing');
-                        chatbotElement.classList.remove('chatbot-processing');
-
-                        if (data.error) {
-                            resultElement.textContent = `Lỗi: ${data.error}`;
-                            chatbotElement.innerHTML = `<p>${data.error}</p>`;
-                        } else {
-                            tokenCountElement.textContent = data.tokens;
-                            resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
-                            resultElement.classList.add('result-loaded');
-                            const llmResponse = data.llm_response;
-                            const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');
-                            let formattedResponse = '';
-                            paragraphs.forEach(paragraph => {
-                                const formattedParagraph = paragraph.replace(/^(.*?):/g, '<strong>$1:</strong>');
-                                formattedResponse += `<p>${formattedParagraph}</p>`;
-                            });
-                            chatbotElement.innerHTML = formattedResponse;
-                            chatbotElement.classList.add('result-loaded');
+                try {
+                    const response = await fetch(`/classification/${classificationId}/info`, {
+                        headers: {
+                            'Accept': 'text/html', // Đảm bảo trả về HTML
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
-                    } catch (error) {
-                        resultElement.textContent = `Lỗi: ${error.message}`;
-                        chatbotElement.innerHTML = '<p>Lỗi khi kết nối với server.</p>';
-                    } finally {
-                        predictBtn.disabled = false;
-                        spinner.style.display = 'none';
-                        setTimeout(() => {
-                            resultElement.classList.remove('result-loaded');
-                            chatbotElement.classList.remove('result-loaded');
-                        }, 500);
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Không thể tải thông tin chi tiết.');
                     }
+
+                    const html = await response.text();
+                    content.innerHTML = html; // Chèn nội dung HTML từ file view vào popup
+                } catch (error) {
+                    content.innerHTML = '<p>Lỗi khi tải thông tin chi tiết.</p>';
+                    console.error('Error fetching classification info:', error);
                 }
 
-                // Cập nhật drag-and-drop để chỉ hoạt động ở chế độ upload
-                function handleDragOver(e) {
-                    if (currentMode === 'upload') {
-                        e.preventDefault();
-                        e.target.closest('.upload-area').classList.add('dragover');
-                    }
-                }
-
-                function handleDragLeave(e) {
-                    if (currentMode === 'upload') {
-                        e.target.closest('.upload-area').classList.remove('dragover');
-                    }
-                }
-
-                function handleDrop(e) {
-                    if (currentMode === 'upload') {
-                        e.preventDefault();
-                        e.target.closest('.upload-area').classList.remove('dragover');
-                        const file = e.dataTransfer.files[0];
-                        if (file && file.type.startsWith('image/')) {
-                            document.getElementById('imageInput').files = e.dataTransfer.files;
-                            const preview = document.getElementById('previewImage');
-                            preview.src = URL.createObjectURL(file);
-                            preview.style.display = 'block';
-                        } else {
-                            alert('Vui lòng kéo thả file ảnh!');
-                        }
-                    }
-                }
-            </script>
+                // Hiển thị popup với hiệu ứng
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
+                setTimeout(() => {
+                    popup.classList.add('active');
+                    overlay.classList.add('active');
+                }, 10); // Delay nhỏ để kích hoạt transition
+            }
+        </script>
 </body>
 
 </html>

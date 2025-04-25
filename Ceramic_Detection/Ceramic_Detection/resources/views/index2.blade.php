@@ -2,10 +2,15 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Ceramic Classification - Elegant Design</title>
+    @php
+        $metadata = App\Models\Metadata::where('page', 'index')->first();
+    @endphp
+    <title>{{ $metadata->title ?? 'Trang chủ' }}</title>
+    <meta name="description" content="{{ $metadata->description ?? '' }}">
+    <meta name="keywords" content="{{ $metadata->keywords ?? '' }}">
+    @if ($metadata->favicon)
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $metadata->favicon) }}">
+    @endif
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
@@ -564,6 +569,49 @@
 
         <!-- About Section -->
         <section class="about-section">
+            <!-- APK Update Section -->
+<section class="apk-update-section">
+    <h2>Cập nhật APK</h2>
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-error">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <!-- Hiển thị thông tin APK hiện tại -->
+    @if ($apk)
+        <div class="apk-info">
+            <h3>Phiên bản hiện tại: {{ $apk->version }}</h3>
+            <p>Tên file: {{ $apk->file_name }}</p>
+            <p>Ngày cập nhật: {{ $apk->updated_at->format('d/m/Y H:i:s') }}</p>
+            <a href="{{ asset('storage/apk/' . $apk->file_name) }}" download>Tải xuống APK hiện tại</a>
+        </div>
+    @else
+        <p>Chưa có APK nào được tải lên.</p>
+    @endif
+
+    <!-- Form để tải lên APK mới -->
+    <div class="apk-upload-form">
+        <h3>Tải lên APK mới</h3>
+        <form id="apkUploadForm" method="POST" action="{{ route('apk.update') }}" enctype="multipart/form-data">
+            @csrf
+            <div class="form-group">
+                <label for="version">Phiên bản APK:</label>
+                <input type="text" name="version" placeholder="Nhập phiên bản (VD: 1.0.0)" required>
+            </div>
+            <div class="form-group">
+                <label for="apk_file">Chọn file APK:</label>
+                <input type="file" name="apk_file" accept=".apk" required>
+            </div>
+            <button type="submit">Cập nhật APK</button>
+        </form>
+    </div>
+</section>
             <h2>Giới thiệu tổng quan về Ceramic AI</h2>
             <div class="feature-point">
                 <h3><i class="fas fa-question-circle"></i> Ceramic AI là gì?</h3>

@@ -44,9 +44,12 @@ Route::prefix('adr')->group(function () {
     Route::get('/recharge-packages', [RechargePackageController::class, 'index']);
     Route::middleware(['auth:api'])->post('/recharge/submit', [RechargeController::class, 'submitAdr']);
     Route::middleware(['auth:api'])->get('/recharge/history', [RechargeController::class, 'getHistory']);
-   // Route::get('/recharge/history', [RechargeController::class, 'getHistory']);
+    // Route::get('/recharge/history', [RechargeController::class, 'getHistory']);
 
 
-   // Route mới để lấy lịch sử nhận diện
-   Route::get('/history', [CeramicController::class, 'getHistory'])->middleware('auth:api');
+    // Route mới để lấy lịch sử nhận diện
+    Route::get('/history', [CeramicController::class, 'getHistory'])->middleware('auth:api');
+
+    Route::get('/google/redirect', [AuthController::class, 'redirectToGoogle']);
+    Route::get('/google/callback', [AuthController::class, 'handleGoogleCallback']);
 });

@@ -1,76 +1,53 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Apk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ApkController extends Controller
 {
-    /**
-     * @OA\Post(
-     *     path="/upload-apk",
-     *     summary="Upload APK file",
-     *     tags={"APK"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     property="version",
-     *                     type="string",
-     *                     description="Version of the APK"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="apk_file",
-     *                     type="file",
-     *                     description="APK file to upload"
-     *                 ),
-     *                 required={"version", "apk_file"}
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Tải lên APK thành công",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Tải lên APK thành công!")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Tải lên APK thất bại",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Tải lên APK thất bại.")
-     *         )
-     *     )
-     * )
-     */
     public function upload(Request $request)
     {
-        // Xác thực dữ liệu
-        $request->validate([
-            'version' => 'required|string|max:255',
-            'apk_file' => 'required|file|mimes:apk|max:102400', // Giới hạn 100MB
-        ]);
+        Log::info('APK upload request data:', $request->all());
+        Log::info('Files:', $request->file());
+        try {
+            // Xác thực dữ liệu
+            $request->validate([
+                'apkFile' => 'required|file', // Chấp nhận mọi loại tệp
+                'version' => 'required|integer|min:1',
+            ], [
+                'apkFile.max' => 'File không được vượt quá 100MB', // Lưu lại nếu vẫn cần giới hạn kích thước
+            ]);
 
-        // Lưu tệp APK
-        if ($request->hasFile('apk_file')) {
-            $file = $request->file('apk_file');
+            // Kiểm tra version trùng lặp
+            $existingApk = Apk::where('version', $request->version)->first();
+            if ($existingApk) {
+                return redirect()->back()->withErrors(['version' => 'Version đã được sử dụng']);
+            }
+
+            // Lưu file
+            $file = $request->file('apkFile');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('apks', $fileName, 'public'); // Lưu vào storage/app/public/apks
+            $filePath = $file->storeAs('uploads', $fileName, 'public'); // Thay đổi thư mục lưu nếu cần
 
             // Lưu thông tin vào database
             Apk::create([
-                'version' => $request->version,
+                'version' => $request->version, // Đổi từ version_code thành version
                 'file_name' => $fileName,
                 'file_path' => $filePath,
             ]);
 
-            return redirect()->back()->with('success', 'Tải lên APK thành công!');
+            return redirect()->back()->with('success', 'Tải lên file thành công!');
+        } catch (\Exception $e) {
+            Log::error('Upload failed', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'version' => $request->version,
+            ]);
+            return redirect()->back()->withErrors(['apkFile' => 'Tải lên thất bại: ' . $e->getMessage()]);
         }
-
-        return redirect()->back()->with('error', 'Tải lên APK thất bại.');
     }
 }

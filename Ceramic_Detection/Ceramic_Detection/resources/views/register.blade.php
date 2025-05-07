@@ -337,7 +337,7 @@
 
 <body>
     <div class="register-container">
-        <h2>Đăng ký</h2>
+        <h2>Register</h2>
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
@@ -351,7 +351,7 @@
         <form method="POST" action="{{ route('register') }}">
             @csrf
             <div class="input-group">
-                <label for="name">Tên:</label>
+                <label for="name">Name:</label>
                 <input type="text" id="name" name="name" value="{{ old('name') }}" required>
                 <i class="fas fa-user"></i>
             </div>
@@ -361,47 +361,47 @@
                 <i class="fas fa-envelope"></i>
             </div>
             <div class="input-group">
-                <label for="phone">Số điện thoại:</label>
+                <label for="phone">Phone:</label>
                 <input type="text" id="phone" name="phone" value="{{ old('phone') }}">
                 <i class="fas fa-phone"></i>
             </div>
             <div class="input-group">
-                <label for="address">Địa chỉ:</label>
+                <label for="address">Address:</label>
                 <input type="text" id="address" name="address" value="{{ old('address') }}">
                 <i class="fas fa-map-marker-alt"></i>
             </div>
             <div class="input-group">
-                <label for="id_number">Số CMND/CCCD:</label>
+                <label for="id_number">ID card number:</label>
                 <input type="text" id="id_number" name="id_number" value="{{ old('id_number') }}">
                 <i class="fas fa-id-card"></i>
             </div>
             <div class="input-group">
-                <label for="passport">Hộ chiếu:</label>
-                <input type="text" id="passport" name="passport" value="{{ old('passport') }}">
+                <label for="passport">Passport:</label>
+                <input type="text" id="passport" name="passport" value="{{ old('passport') }}" placeholder="Can be ignored....">
                 <i class="fas fa-passport"></i>
             </div>
             <div class="input-group">
-                <label for="password">Mật khẩu:</label>
+                <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
                 <i class="fas fa-lock"></i>
             </div>
             <div class="input-group">
-                <label for="password_confirmation">Xác nhận mật khẩu:</label>
+                <label for="password_confirmation">Re-enter password:</label>
                 <input type="password" id="password_confirmation" name="password_confirmation" required>
                 <i class="fas fa-lock"></i>
             </div>
 
             <div class="terms-checkbox">
                 <input type="checkbox" id="terms" name="terms" required>
-                <label for="terms">Tôi đồng ý với <a href="#" id="termsLink">Chính sách và điều khoản</a></label>
+                <label for="terms">I agree to the <a href="#" id="termsLink">terms and conditions</a></label>
             </div>
 
             <button type="submit">
-                <i class="fas fa-user-plus"></i> Đăng ký
+                <i class="fas fa-user-plus"></i> Register
             </button>
         </form>
 
-        <p class="links">Bạn đã có tài khoản? <a href="{{ route('login') }}">Đăng nhập</a></p>
+        <p class="links">Already have an account? <a href="{{ route('login') }}">Log in</a></p>
     </div>
 
     <div class="popup-overlay" id="termsOverlay"></div>

@@ -64,7 +64,7 @@ class AdminController extends Controller
     {
         $users = User::all();
         $metadata = Metadata::all();
-        //Liên quan bật tăt thôngt tin hệ thống
+        //Liên quan bật tắt thông tin hệ thống
         $optimizationSetting = Setting::where('key', 'system_info_optimization')->first();
         $isSystemInfoEnabled = $optimizationSetting && $optimizationSetting->value === 'enabled';
         \Log::info('isSystemInfoEnabled: ' . ($isSystemInfoEnabled ? 'true' : 'false')); // Debug log
@@ -100,7 +100,7 @@ class AdminController extends Controller
         }
         // Lấy giao diện hiện tại từ database
         $currentTheme = Setting::where('key', 'theme')->first()->value ?? 'index';
-        $users = User::with('loginHistories')->get();//lưu lịch sử đăng nhập
+        $users = User::with('loginHistories')->get(); //lưu lịch sử đăng nhập
         $rechargeRequests = RechargeRequest::where('status', 'pending')->get();
         $totalRevenue = RechargeHistory::sum('amount');
         $averageRating = User::avg('rating') ?? 0;
@@ -119,6 +119,18 @@ class AdminController extends Controller
             ->groupBy('day')
             ->orderBy('day')
             ->get();
+        // Cập nhật để tính doanh thu theo tháng
+        $revenueDataM = RechargeHistory::select(
+            DB::raw('DATE_FORMAT(approved_at, "%Y-%m-%d") as month'),  // Đổi thành '%Y-%m' để lấy theo tháng
+            DB::raw('SUM(amount) as total')
+        )
+            ->whereNotNull('approved_at')
+            ->groupBy('month')  // Nhóm theo tháng
+            ->orderBy('month')  // Sắp xếp theo tháng
+            ->get();
+
+        $revenueLabelsM = $revenueDataM->pluck('month')->toArray();
+        $revenueDataM = $revenueDataM->pluck('total')->toArray();
         // Lấy múi giờ hiện tại từ bảng settings
         $currentTimezone = \App\Models\Setting::where('key', 'timezone')->first()->value ?? config('app.timezone');
         // Lấy lịch sử giao dịch (tất cả các yêu cầu nạp tiền)
@@ -144,11 +156,13 @@ class AdminController extends Controller
                 ];
             });
         $revenueLabels = $revenueData->pluck('day')->toArray();
+
         $revenueData = $revenueData->pluck('total')->toArray();
         if (empty($revenueLabels)) {
             $revenueLabels = ['Chưa có dữ liệu'];
             $revenueData = [0];
         }
+
         // Lấy danh sách người dùng đã gửi tin nhắn
         $chatUsers = User::whereHas('messages', function ($query) {
             $query->whereNotNull('message');
@@ -158,24 +172,25 @@ class AdminController extends Controller
         //dd($classifications);
         //dữ liệu từ bảng ceramics
         $ceramics = Ceramic::all();
-        //Chính sáchd  và điều khoản
+        //Chính sách và điều khoản
         $terms = \App\Models\TermsAndConditions::first();
         // Lấy trạng thái CAPTCHA từ cột mới
         $recaptchaEnabled = Setting::where('key', 'recaptcha_enabled')->first();
         $recaptchaEnabled = $recaptchaEnabled ? ($recaptchaEnabled->recaptcha_enabled == 1) : false;
         //Liên hệ
         $contacts = \App\Models\Contact::latest()->get();
-        //stats cho 4 tabtổng quan
+        //stats cho 4 tab tổng quan
         $userTrend = $this->getTrendData(User::class, 'created_at');
         $rechargeTrend = $this->getTrendData(RechargeRequest::class, 'created_at', ['status' => 'pending']);
         $revenueTrend = $this->getTrendData(RechargeRequest::class, 'created_at', ['status' => 'approved'], 'amount');
         $ratingTrend = $this->getTrendData(User::class, 'updated_at', [], 'rating');
         //cập nhật tin tức
-        $news = News::all();
+        $news = News::orderBy('created_at', 'desc')->take(6)->get();
+
         // Tổng số lượt nhận diện (tokens_used) từ bảng users
         $totalTokenUsed = User::sum('tokens_used'); // Lấy tổng từ cột tokens_used trong bảng users
         // Xu hướng sử dụng token (trend data) trong 7 ngày
-        $tokenTrend = $this->getTrendData(User::class, 'created_at', [], 'tokens_used');
+
         $packages = RechargePackage::all();
         $llmModel = Setting::where('key', 'llm_model')->first();
         $llmApiKey = Setting::where('key', 'llm_api_key')->first();
@@ -187,9 +202,41 @@ class AdminController extends Controller
             Log::error('Error fetching latest APK: ' . $e->getMessage());
             $latestApk = null;
         }
+        $pendingRequests = $rechargeRequests->count();
         $recognitionModel = Setting::where('key', 'recognition_model')->first();
+        $recognitionModelClass = Setting::where('key', 'recognition_model_class')->first();
+        $recognitionModelPath = Setting::where('key', 'recognition_model_path')->first();
         $availableRecognitionModels = ['default', 'xception']; // Danh sách model khả dụng
-        return view('admin', compact('users', 'optimizationSetting', 'latestApk','metadata', 'isSystemInfoEnabled', 'llmModel', 'llmApiKey', 'availableModels', 'rechargeRequests', 'packages', 'totalTokenUsed', 'tokenTrend', 'fastapistats', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers', 'transactionHistory', 'ceramics', 'currentTimezone', 'classifications', 'terms', 'recaptchaEnabled', 'revenueByUser', 'currentTheme', 'contacts', 'userTrend', 'rechargeTrend', 'revenueTrend', 'ratingTrend', 'chatUsers', 'news', 'approvedRequests', 'rejectedRequests', 'activeUsers', 'inactiveUsers', 'laravelStats', 'isSystemInfoEnabled', 'alerts', 'recognitionModel', 'availableRecognitionModels'));
+
+        // Calculate revenue trend (e.g., daily revenue over the last 7 days)
+        $days = 7; // Last 7 days
+        $revenueTrendLabels = [];
+        $revenueTrendValues = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $revenueTrendLabels[] = now()->subDays($i)->format('d/m'); // Format as "dd/mm"
+            $revenue = RechargeRequest::where('status', 'approved')
+                ->whereDate('created_at', $date)
+                ->sum('amount'); // Sum the 'amount' for approved requests
+            $revenueTrendValues[] = $revenue;
+        }
+        // Calculate token trend (e.g., weekly token usage over the last 7 weeks)
+        $weeks = 7; // Last 7 weeks
+        $tokenTrendLabels = [];
+        $tokenTrendValues = [];
+        for ($i = $weeks - 1; $i >= 0; $i--) {
+            $startOfWeek = now()->subWeeks($i)->startOfWeek(); // Start of the week
+            $endOfWeek = now()->subWeeks($i)->endOfWeek(); // End of the week
+            $weekLabel = $startOfWeek->format('d/m') . ' - ' . $endOfWeek->format('d/m'); // Format as "dd/mm - dd/mm"
+            $tokenTrendLabels[] = $weekLabel;
+            $tokensUsed = User::whereBetween('updated_at', [$startOfWeek, $endOfWeek])
+                ->sum('tokens_used'); // Sum the 'tokens_used' for users updated in this week
+            $tokenTrendValues[] = $tokensUsed;
+        }
+        $tokenTrend = ['labels' => $tokenTrendLabels, 'values' => $tokenTrendValues];
+        $revenueTrend = ['labels' => $revenueTrendLabels, 'values' => $revenueTrendValues];
+
+        return view('admin', compact('users', 'optimizationSetting', 'revenueLabelsM', 'revenueDataM', 'pendingRequests', 'recognitionModel', 'recognitionModelPath', 'recognitionModelClass', 'recognitionModelPath', 'latestApk', 'metadata', 'isSystemInfoEnabled', 'llmModel', 'llmApiKey', 'availableModels', 'rechargeRequests', 'packages', 'totalTokenUsed', 'tokenTrend', 'fastapistats', 'totalRevenue', 'averageRating', 'revenueLabels', 'revenueData', 'chatUsers', 'transactionHistory', 'ceramics', 'currentTimezone', 'classifications', 'terms', 'recaptchaEnabled', 'revenueByUser', 'currentTheme', 'contacts', 'userTrend', 'rechargeTrend', 'revenueTrend', 'ratingTrend', 'chatUsers', 'news', 'approvedRequests', 'rejectedRequests', 'activeUsers', 'inactiveUsers', 'laravelStats', 'isSystemInfoEnabled', 'alerts', 'recognitionModel', 'availableRecognitionModels'));
     }
     public function sendChatMessage(Request $request)
     {
@@ -618,62 +665,373 @@ class AdminController extends Controller
     }
     // Phương thức mới để cập nhật cài đặt model nhận diện
     public function updateRecognitionModel(Request $request)
-{
-    $request->validate([
-        'recognition_model' => 'required|string|in:default,xception',
-    ]);
-
-    try {
-        // Ánh xạ giữa recognition_model và giá trị mong đợi trong request
-        $modelTypeMap = [
-            'default' => '66',
-            'xception' => '67',
-        ];
-        $expectedModelType = $modelTypeMap[$request->recognition_model];
-
-        // Gửi yêu cầu đến FastAPI
-        $apiKey = env('FASTAPI_KEY');
-        $switchResponse = Http::withHeaders([
-            'api-key' => $apiKey,
-        ])->post('http://localhost:55001/switch-model', [
-            'model_type' => $expectedModelType,
+    {
+        $request->validate([
+            'recognition_model' => 'required|string|in:default,xception',
+            'model_file' => 'nullable|file|max:512000|mimes:json', // Hỗ trợ file JSON tối đa 500MB
         ]);
 
-        if ($switchResponse->failed()) {
-            Log::error('FastAPI recognition model switch failed', [
-                'status' => $switchResponse->status(),
-                'body' => $switchResponse->body(),
+        try {
+            // Ánh xạ giữa recognition_model và giá trị mong đợi trong request
+            $modelTypeMap = [
+                'default' => '66',
+                'xception' => '67',
+            ];
+            $expectedModelType = $modelTypeMap[$request->recognition_model];
+
+            // Gửi yêu cầu đến FastAPI để chuyển đổi mô hình
+            $apiKey = env('FASTAPI_KEY');
+            $switchResponse = Http::withHeaders([
+                'api-key' => $apiKey,
+            ])->post('http://localhost:55001/switch-model', [
+                        'model_type' => $expectedModelType,
+                    ]);
+
+            if ($switchResponse->failed()) {
+                Log::error('FastAPI recognition model switch failed', [
+                    'status' => $switchResponse->status(),
+                    'body' => $switchResponse->body(),
+                ]);
+                return redirect()->back()->with('recognition_model_error', 'Cập nhật mô hình nhận diện thất bại: ' . $switchResponse->body());
+            }
+
+            // Xử lý phản hồi từ FastAPI
+            $switchResponseBody = $switchResponse->json();
+            $status = $switchResponseBody['status'] ?? null;
+
+            if ($status !== 'success') {
+                Log::warning('FastAPI response status is not success', [
+                    'status' => $status,
+                    'body' => $switchResponseBody,
+                ]);
+                return redirect()->back()->with('recognition_model_error', 'Chuyển đổi mô hình không thành công: Trạng thái không hợp lệ.');
+            }
+
+            // Xử lý phần tải file (nếu có)
+            if ($request->hasFile('model_file')) {
+                $file = $request->file('model_file');
+                $filePath = $file->storeAs('models', $file->getClientOriginalName(), 'public'); // Lưu file vào storage/public/models
+
+                Log::info('Model file uploaded successfully', ['path' => $filePath]);
+
+                // Gửi file đến FastAPI (nếu cần)
+                $uploadResponse = Http::attach(
+                    'model_file',
+                    file_get_contents($file->getRealPath()),
+                    $file->getClientOriginalName()
+                )->withHeaders([
+                            'api-key' => $apiKey,
+                        ])->post('http://localhost:55001/switch-model', [
+                            'model_type' => $expectedModelType,
+                        ]);
+
+                if ($uploadResponse->failed()) {
+                    Log::error('Model file upload to FastAPI failed', [
+                        'status' => $uploadResponse->status(),
+                        'body' => $uploadResponse->body(),
+                    ]);
+                    return redirect()->back()->with('recognition_model_error', 'Tải lên file mô hình thất bại: ' . $uploadResponse->body());
+                }
+            }
+
+            // Lưu cài đặt mô hình nếu thành công
+            Setting::updateOrCreate(
+                ['key' => 'recognition_model'],
+                ['value' => $request->recognition_model]
+            );
+
+            $successMessage = $switchResponseBody['message'] ?? 'Cài đặt mô hình nhận diện đã được cập nhật thành công!';
+            return redirect()->back()->with('recognition_model_success', $successMessage);
+        } catch (\Exception $e) {
+            Log::error('Recognition model settings update error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
-            return redirect()->back()->with('recognition_model_error', 'Cập nhật mô hình nhận diện thất bại: ' . $switchResponse->body());
+            return redirect()->back()->with('recognition_model_error', 'Lỗi khi cập nhật cài đặt: ' . $e->getMessage());
+        }
+    }
+    public function uploadModel(Request $request)
+    {
+        // Xác thực dữ liệu đầu vào
+        $validated = $request->validate([
+            'model_file' => 'required|file|mimes:h5,pth,pt,onnx|max:512000', // Tối đa 500MB
+            'model_class' => [
+                'required',
+                'string',
+                'regex:/^[\w\s]+(,\s*[\w\s]+)*$/', // Định dạng: "Class1, Class2, Class3"
+                function ($attribute, $value, $fail) {
+                    // Tách chuỗi thành mảng các class
+                    $classes = array_map('trim', explode(',', $value));
+                    // Loại bỏ các phần tử rỗng
+                    $classes = array_filter($classes);
+                    // Kiểm tra số lượng class (ít nhất 1 class)
+                    if (count($classes) < 1) {
+                        $fail('Danh sách class không được rỗng.');
+                    }
+                    // Kiểm tra từng class
+                    foreach ($classes as $class) {
+                        if (strlen($class) < 1 || strlen($class) > 255) {
+                            $fail('Mỗi class phải có độ dài từ 1 đến 255 ký tự.');
+                        }
+                    }
+                },
+            ],
+        ]);
+
+        try {
+            // Lấy file từ request
+            $file = $request->file('model_file');
+            $filePath = $file->getPathname();
+            $fileName = $file->getClientOriginalName();
+            $modelClass = $validated['model_class'];
+
+            // Kiểm tra file có tồn tại và đọc được không
+            if (!file_exists($filePath) || !is_readable($filePath)) {
+                Log::error('File không tồn tại hoặc không đọc được', ['file_path' => $filePath]);
+                return redirect()->back()->with('upload_model_error', 'File không tồn tại hoặc không thể đọc.');
+            }
+
+            // Đọc nội dung file vào bộ nhớ để tránh lỗi khi gửi
+            $fileContent = file_get_contents($filePath);
+            if ($fileContent === false) {
+                Log::error('Không thể đọc nội dung file', ['file_path' => $filePath]);
+                return redirect()->back()->with('upload_model_error', 'Không thể đọc nội dung file.');
+            }
+
+            // Gửi yêu cầu đến FastAPI endpoint /upload-model
+            $apiKey = env('FASTAPI_KEY');
+            $uploadResponse = Http::timeout(600)
+                ->withHeaders([
+                    'api_key' => $apiKey,
+                ])
+                ->attach(
+                    'file',
+                    $fileContent,
+                    $fileName
+                )
+                ->post('http://localhost:55001/upload-model', [
+                    'model_class' => $modelClass,
+                ]);
+
+            if ($uploadResponse->failed()) {
+                Log::error('FastAPI model upload failed', [
+                    'status' => $uploadResponse->status(),
+                    'body' => $uploadResponse->body(),
+                ]);
+                return redirect()->back()->with('upload_model_error', 'Upload mô hình thất bại: ' . $uploadResponse->body());
+            }
+
+            // Xử lý phản hồi từ FastAPI
+            $uploadResponseBody = $uploadResponse->json();
+            $status = $uploadResponseBody['status'] ?? null;
+
+            if ($status !== 'success') {
+                Log::warning('FastAPI response status is not success', [
+                    'status' => $status,
+                    'body' => $uploadResponseBody,
+                ]);
+                return redirect()->back()->with('upload_model_error', 'Upload mô hình không thành công: Trạng thái không hợp lệ.');
+            }
+
+            // Lưu thông tin vào cơ sở dữ liệu
+            $modelPath = $uploadResponseBody['model_path'] ?? null;
+            if (!$modelPath) {
+                return redirect()->back()->with('upload_model_error', 'Không nhận được đường dẫn mô hình từ FastAPI.');
+            }
+
+            Setting::updateOrCreate(
+                ['key' => 'custom_model_path'],
+                ['value' => $modelPath]
+            );
+            Setting::updateOrCreate(
+                ['key' => 'custom_model_class'],
+                ['value' => $modelClass]
+            );
+
+            $successMessage = $uploadResponseBody['message'] ?? 'Upload mô hình thành công! Model đã được lưu tại: ' . $modelPath;
+            return redirect()->back()->with('upload_model_success', $successMessage);
+        } catch (\Exception $e) {
+            Log::error('Model upload error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()->back()->with('upload_model_error', 'Lỗi khi upload mô hình: ' . $e->getMessage());
+        }
+    }
+
+    // public function updateRecognitionModel(Request $request)
+    // {
+    //     // Xác thực dữ liệu đầu vào
+    //     $validated = $request->validate([
+    //         'recognition_model' => 'required|string|in:default,xception,custom',
+    //         'model_file' => 'required_if:recognition_model,custom|file|mimes:h5,pth,pt,onnx|max:1024000', // Tối đa 100MB
+    //         'model_class' => 'required_if:recognition_model,custom|string|max:255',
+    //     ]);
+
+    //     try {
+    //         // Ánh xạ giữa recognition_model và giá trị mong đợi trong request
+    //         $modelTypeMap = [
+    //             'default' => '66',
+    //             'xception' => '67',
+    //             'custom' => null, // Sẽ lấy từ trường model_class
+    //         ];
+
+    //         $modelType = $validated['recognition_model'] === 'custom'
+    //             ? $validated['model_class']
+    //             : $modelTypeMap[$validated['recognition_model']];
+
+    //         // Xử lý file model nếu chọn Custom Model
+    //         $modelPath = null;
+    //         if ($validated['recognition_model'] === 'custom' && $request->hasFile('model_file')) {
+    //             // Tạo thư mục lưu trữ nếu chưa tồn tại
+    //             if (!Storage::exists('models')) {
+    //                 Storage::makeDirectory('models');
+    //             }
+
+    //             // Lưu file model vào thư mục 'storage/app/models'
+    //             $file = $request->file('model_file');
+    //             $fileName = time() . '_' . $file->getClientOriginalName();
+    //             $modelPath = $file->storeAs('models', $fileName);
+
+    //             // Đường dẫn tuyệt đối để gửi đến FastAPI
+    //             $absoluteModelPath = storage_path('app/' . $modelPath);
+    //         }
+
+    //         // Gửi yêu cầu đến FastAPI
+    //         $apiKey = env('FASTAPI_KEY');
+    //         $switchResponse = Http::withHeaders([
+    //             'api-key' => $apiKey,
+    //         ])->post('http://localhost:55001/switch-model', [
+    //                     'model_type' => $modelType,
+    //                     'model_path' => $modelPath ? $absoluteModelPath : null, // Gửi đường dẫn file nếu có
+    //                 ]);
+
+    //         if ($switchResponse->failed()) {
+    //             Log::error('FastAPI recognition model switch failed', [
+    //                 'status' => $switchResponse->status(),
+    //                 'body' => $switchResponse->body(),
+    //             ]);
+    //             return redirect()->back()->with('recognition_model_error', 'Cập nhật mô hình nhận diện thất bại: ' . $switchResponse->body());
+    //         }
+
+    //         // Xử lý phản hồi từ FastAPI
+    //         $switchResponseBody = $switchResponse->json();
+
+    //         // Kiểm tra trường "status"
+    //         $status = $switchResponseBody['status'] ?? null;
+    //         if ($status !== 'success') {
+    //             Log::warning('FastAPI response status is not success', [
+    //                 'status' => $status,
+    //                 'body' => $switchResponseBody,
+    //             ]);
+    //             return redirect()->back()->with('recognition_model_error', 'Chuyển đổi mô hình không thành công: Trạng thái không hợp lệ.');
+    //         }
+
+    //         // Lưu cài đặt vào cơ sở dữ liệu nếu chuyển đổi thành công
+    //         Setting::updateOrCreate(
+    //             ['key' => 'recognition_model'],
+    //             ['value' => $validated['recognition_model']]
+    //         );
+
+    //         // Lưu class và đường dẫn file model nếu là Custom Model
+    //         if ($validated['recognition_model'] === 'custom') {
+    //             Setting::updateOrCreate(
+    //                 ['key' => 'recognition_model_class'],
+    //                 ['value' => $validated['model_class']]
+    //             );
+    //             Setting::updateOrCreate(
+    //                 ['key' => 'recognition_model_path'],
+    //                 ['value' => $modelPath]
+    //             );
+    //         } else {
+    //             // Xóa thông tin class và path nếu không dùng Custom Model
+    //             Setting::where('key', 'recognition_model_class')->delete();
+    //             Setting::where('key', 'recognition_model_path')->delete();
+    //         }
+
+    //         $successMessage = $switchResponseBody['message'] ?? 'Cài đặt mô hình nhận diện đã được cập nhật thành công!';
+    //         return redirect()->back()->with('recognition_model_success', $successMessage);
+    //     } catch (\Exception $e) {
+    //         Log::error('Recognition model settings update error', [
+    //             'message' => $e->getMessage(),
+    //             'trace' => $e->getTraceAsString(),
+    //         ]);
+    //         return redirect()->back()->with('recognition_model_error', 'Lỗi khi cập nhật cài đặt: ' . $e->getMessage());
+    //     }
+    // }
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'page' => 'required|string|max:255|unique:metadata,page',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'keywords' => 'nullable|string',
+            'favicon' => 'nullable|image|mimes:png,ico|max:2048',
+        ]);
+
+        // Kiểm tra và tạo thư mục 'favicons' nếu chưa tồn tại
+        if (!Storage::exists('public/favicons')) {
+            Storage::makeDirectory('public/favicons');
         }
 
-        // Xử lý phản hồi từ FastAPI
-        $switchResponseBody = $switchResponse->json();
-
-        // Kiểm tra trường "status"
-        $status = $switchResponseBody['status'] ?? null;
-        if ($status !== 'success') {
-            Log::warning('FastAPI response status is not success', [
-                'status' => $status,
-                'body' => $switchResponseBody,
-            ]);
-            return redirect()->back()->with('recognition_model_error', 'Chuyển đổi mô hình không thành công: Trạng thái không hợp lệ.');
+        // Lưu favicon vào thư mục 'favicons'
+        if ($request->hasFile('favicon')) {
+            $path = $request->file('favicon')->store('favicons', 'public'); // Lưu vào thư mục 'favicons'
+            $validated['favicon'] = $path;
         }
 
-        // Lưu cài đặt vào cơ sở dữ liệu nếu chuyển đổi thành công
+        Metadata::create($validated);
+
+        return redirect()->route('admin.index')->with('success', 'Metadata đã được thêm thành công!');
+    }
+    public function config()
+    {
+        $apiUrl = Setting::where('key', 'api_url')->first();
+        $apiKey = Setting::where('key', 'api_key')->first();
+
+        if ($apiUrl && $apiKey) {
+            return redirect()->route('admin.index');
+        }
+
+        return view('config');
+    }
+    public function updateSettings(Request $request)
+    {
+        // Validate input
+        $request->validate([
+            'settings.*.key' => 'required|string',
+            'settings.*.value' => 'nullable|string',
+        ]);
+
+        // Update or create settings
+        foreach ($request->settings as $setting) {
+            Setting::updateOrCreate(
+                ['key' => $setting['key']],
+                ['value' => $setting['value'] ?? '']
+            );
+        }
+
+        // Clear cache
+        Cache::forget('settings');
+
+        return redirect()->route('admin.index')->with('success', 'Cài đặt đã được cập nhật!');
+    }
+    public function saveConfig(Request $request)
+    {
+        $request->validate([
+            'api_url' => 'required|url',
+            'api_key' => 'required|string|min:8',
+        ]);
+
         Setting::updateOrCreate(
-            ['key' => 'recognition_model'],
-            ['value' => $request->recognition_model]
+            ['key' => 'api_url'],
+            ['value' => $request->api_url]
+        );
+        Setting::updateOrCreate(
+            ['key' => 'api_key'],
+            ['value' => $request->api_key]
         );
 
-        $successMessage = $switchResponseBody['message'] ?? 'Cài đặt mô hình nhận diện đã được cập nhật thành công!';
-        return redirect()->back()->with('recognition_model_success', $successMessage);
-    } catch (\Exception $e) {
-        Log::error('Recognition model settings update error', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ]);
-        return redirect()->back()->with('recognition_model_error', 'Lỗi khi cập nhật cài đặt: ' . $e->getMessage());
+        return redirect()->route('admin.index');
     }
-}
 }

@@ -6,18 +6,22 @@
     <html lang="en">
 
     <head>
-        <title>{{ $metadata->title ?? 'Trang chủ' }}</title>
-        <meta name="description" content="{{ $metadata->description ?? '' }}">
-        @php
-            $latestApk = App\Models\Apk::latest()->first();
-            $metadata = App\Models\Metadata::where('page', 'index')->first();
-        @endphp
-        <title>{{ $metadata->title ?? 'Trang chủ' }}</title>
-        <meta name="description" content="{{ $metadata->description ?? '' }}">
-        <meta name="keywords" content="{{ $metadata->keywords ?? '' }}">
-        @if ($metadata->favicon)
-            <link rel="icon" type="image/x-icon" href="{{ asset('storage/images/' . $metadata->favicon) }}">
-        @endif
+    @php
+        // Lấy metadata cho trang admin
+        $metadataForAdmin = App\Models\Metadata::where('page', 'index')->first();
+        // Lấy APK mới nhất (giữ nguyên nếu cần)
+        $latestApk = App\Models\Apk::latest()->first();
+    @endphp
+
+
+    <title>{{ $metadataForAdmin->title ?? 'Trang chủ' }}</title>
+    <meta name="description" content="{{ $metadataForAdmin->description ?? '' }}">
+    <meta name="keywords" content="{{ $metadataForAdmin->keywords ?? '' }}">
+
+    @if ($metadataForAdmin->favicon)
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $metadataForAdmin->favicon) }}">
+    @endif
+
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
             rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -451,7 +455,7 @@
             }
 
             .contact-sidebar.active {
-                overflow: scroll;
+                overflow: hidden;
                 right: 0;
             }
 
@@ -795,17 +799,17 @@
             <div class="header-content">
                 <a href="#" class="logo">
                     <img src="{{ asset('storage/ceramics/logo2.webp') }}" alt="Logo">
-                    Phân loại gốm sứ
+                    Ceramic AI
                 </a>
                 <button class="hamburger" aria-label="Toggle menu">☰</button>
                 <div class="nav-container">
                     <ul class="nav-menu">
-                        <li><a href="/">Trang chủ</a></li>
-                        <li><a href="gallery">Thư viện đồ gốm</a></li>
-                        <li><a href="#" id="classificationLink">Nhận diện</a></li>
-                        <li><a href="#market">Mua bán</a></li>
-                        <li><a id="appDownloadButton">Tải ứng dụng</a></li>
-                        <li><a href="#" id="contactLink">Liên hệ</a></li>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="gallery">Ceramic Library</a></li>
+                        <li><a href="#" id="classificationLink">Identification</a></li>
+                        <li><a href="#market">Shop</a></li>
+                        <li><a id="appDownloadButton">Android App</a></li>
+                        <li><a href="#" id="contactLink">Contact</a></li>
                     </ul>
                 </div>
             </div>
@@ -836,7 +840,7 @@
                 @else
                     @foreach ($news as $article)
                         <article class="news-item">
-                            <img src="{{ url('/storage/' . $article->image) }}" alt="{{ $article->title }}">
+                            <img src="{{ url( $article->image) }}" alt="{{ $article->title }}">
                             <div class="news-content">
                                 <h2>{{ $article->title }}</h2>
                                 <p>{{ $article->excerpt ?? Str::limit($article->content, 100) }}</p>
@@ -848,7 +852,7 @@
             </div>
         </section>
 
-        <!-- APK Update Section -->
+        <!-- APK Update Section
         <section class="apk-update-section">
             <h1>Ứng dụng Ceramic AI</h1>
             <div class="apk-info">
@@ -863,7 +867,7 @@
                     <p>Chưa có APK nào khả dụng.</p>
                 @endif
             </div>
-        </section>
+        </section> -->
 
         <!-- About Section -->
         <section class="about-section">

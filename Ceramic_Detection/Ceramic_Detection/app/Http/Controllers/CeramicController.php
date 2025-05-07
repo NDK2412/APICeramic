@@ -4,49 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Ceramic;
 use Illuminate\Http\Request;
-/**
- * @OA\Info(
- *     title="Ceramic Detection API",
- *     version="1.0.0",
- *     description="API documentation for the Ceramic Detection application"
- * )
- */
 
 class CeramicController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/gallery",
-     *     tags={"Ceramic"},
-     *     summary="Get ceramic gallery",
-     *     description="Retrieve a paginated list of ceramics with optional category and origin filters",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="category",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string", description="Filter by ceramic category")
-     *     ),
-     *     @OA\Parameter(
-     *         name="origin",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string", description="Filter by ceramic origin")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="ceramics", type="array", @OA\Items(type="object")),
-     *             @OA\Property(property="categories", type="array", @OA\Items(type="string")),
-     *             @OA\Property(property="origins", type="array", @OA\Items(type="string"))
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden")
-     * )
-     */
     public function gallery(Request $request)
     {
         // Lấy tham số lọc từ request
@@ -75,84 +35,13 @@ class CeramicController extends Controller
         return view('gallery', compact('ceramics', 'categories', 'origins'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/ceramic/{id}",
-     *     tags={"Ceramic"},
-     *     summary="Get ceramic details",
-     *     description="Retrieve details of a specific ceramic by ID",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer", description="Ceramic ID")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="ceramic", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden"),
-     *     @OA\Response(response=404, description="Ceramic not found")
-     * )
-     */
     public function show($id)
     {
         $ceramic = Ceramic::findOrFail($id);
         return view('ceramic_detail', compact('ceramic'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/ceramic/classify",
-     *     tags={"Ceramic"},
-     *     summary="Classify ceramic image",
-     *     description="Upload an image and classify it, saving the result to classification history",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 @OA\Property(
-     *                     property="image",
-     *                     type="string",
-     *                     format="binary",
-     *                     description="Ceramic image file (JPEG, PNG, JPG, GIF, max 2MB)"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="result",
-     *                     type="string",
-     *                     description="Classification result"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="llm_response",
-     *                     type="string",
-     *                     description="LLM response for the classification"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="result", type="string"),
-     *             @OA\Property(property="classification_id", type="integer")
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+    //     
     public function classify(Request $request)
     {
         try {
@@ -199,26 +88,6 @@ class CeramicController extends Controller
             return response()->json(['error' => 'Có lỗi xảy ra khi lưu nhận diện: ' . $e->getMessage()], 500);
         }
     }
-
-    /**
-     * @OA\Get(
-     *     path="/dashboard",
-     *     tags={"Ceramic"},
-     *     summary="Get user dashboard",
-     *     description="Retrieve classification history for the authenticated user",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="classifications", type="array", @OA\Items(type="object"))
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden")
-     * )
-     */
     public function dashboard()
     {
         // Lấy người dùng đã đăng nhập
@@ -232,33 +101,6 @@ class CeramicController extends Controller
         // Truyền dữ liệu vào view
         return view('dashboard', compact('classifications'));
     }
-
-    /**
-     * @OA\Get(
-     *     path="/classification/{id}",
-     *     tags={"Ceramic"},
-     *     summary="Get classification info",
-     *     description="Retrieve LLM response for a specific classification",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer", description="Classification ID")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="llm_response", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden"),
-     *     @OA\Response(response=404, description="Classification not found")
-     * )
-     */
     public function getClassificationInfo($id)
     {
         $classification = \App\Models\Classification::findOrFail($id);
@@ -267,40 +109,6 @@ class CeramicController extends Controller
         }
         return response()->json(['llm_response' => $classification->llm_response]);
     }
-
-    /**
-     * @OA\Get(
-     *     path="/classification/history",
-     *     tags={"Ceramic"},
-     *     summary="Get classification history",
-     *     description="Retrieve the classification history for the authenticated user",
-     *     security={{"bearerAuth":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="success", type="boolean"),
-     *             @OA\Property(property="redirect_url", type="string"),
-     *             @OA\Property(
-     *                 property="history",
-     *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="id", type="integer"),
-     *                     @OA\Property(property="image_path", type="string"),
-     *                     @OA\Property(property="result", type="string"),
-     *                     @OA\Property(property="created_at", type="string", format="date-time"),
-     *                     @OA\Property(property="llm_response", type="string")
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
     public function getHistory(Request $request)
     {
         try {
@@ -337,4 +145,7 @@ class CeramicController extends Controller
             ], 500);
         }
     }
+
 }
+
+

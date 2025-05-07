@@ -11,6 +11,7 @@
         "darkaonline/l5-swagger": "^9.0",
         "guzzlehttp/guzzle": "^7.9",
         "illuminate/support": "*",
+        "laminas/laminas-feed": "^2.23",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.19",
@@ -18,6 +19,7 @@
         "nikic/php-parser": "^5.4",
         "phpoffice/phpspreadsheet": "^4.1",
         "spatie/db-dumper": "^3.8",
+        "sunra/php-simple-html-dom-parser": "^1.5",
         "zircote/swagger-php": "^5.1"
     },
     "require-dev": {

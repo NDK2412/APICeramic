@@ -53,3 +53,10 @@ Route::prefix('adr')->group(function () {
     Route::get('/google/redirect', [AuthController::class, 'redirectToGoogle']);
     Route::get('/google/callback', [AuthController::class, 'handleGoogleCallback']);
 });
+
+
+
+
+
+
+

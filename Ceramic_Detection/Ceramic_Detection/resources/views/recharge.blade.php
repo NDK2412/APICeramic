@@ -602,42 +602,42 @@
         </div>
         <ul>
             <li><a href="#" class="active" data-section="recharge-section"><i
-                        class="fas fa-money-bill-wave"></i><span>Nạp Tiền</span></a></li>
-            <li><a href="#" data-section="recharge-history"><i class="fas fa-history"></i><span>Lịch Sử</span></a></li>
-            <li><a href="#" data-section="notifications"><i class="fas fa-bell"></i><span>Thông Báo</span></a></li>
-            <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Quay Lại Dashboard</span></a></li>
+                        class="fas fa-money-bill-wave"></i><span>Top up</span></a></li>
+            <li><a href="#" data-section="recharge-history"><i class="fas fa-history"></i><span>History</span></a></li>
+            <li><a href="#" data-section="notifications"><i class="fas fa-bell"></i><span>Notification</span></a></li>
+            <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Back to Dashboard</span></a></li>
         </ul>
     </div>
 
     <!-- Main content -->
     <div class="container">
         <div class="header">
-            <h1>Nạp Tiền</h1>
+            <h1>Top up</h1>
             <div class="user-info"><h2>
-                Xin chào, {{ Auth::user()->name }}! Bạn hiện có <span id="tokenCount">{{ Auth::user()->tokens }}</span>
-                lượt dự đoán.</h2>
+               Welcome, {{ Auth::user()->name }}! You currently have <span id="tokenCount">{{ Auth::user()->tokens }}</span>
+                token.</h2>
             </div>
         </div>
 
         <div class="content-wrapper">
             <!-- Recharge Stats Section - Không dùng class .section -->
             <div class="stats-section">
-                <h3>Thống Kê Nạp Tiền</h3>
+                <h3>Deposit Statistics</h3>
                 <div class="stats-grid">
                     <div class="stat-card pending">
-                        <h4>Yêu Cầu Đang Chờ</h4>
+                        <h4>Requests Pending</h4>
                         <p>{{ $pendingRequestsCount }}</p>
                     </div>
                     <div class="stat-card approved">
-                        <h4>Yêu Cầu Đã Duyệt</h4>
+                        <h4>Request Approved</h4>
                         <p>{{ $approvedRequestsCount }}</p>
                     </div>
                     <div class="stat-card amount">
-                        <h4>Tổng Số Tiền Đã Nạp</h4>
+                        <h4>Total Amount Deposited</h4>
                         <p>{{ number_format($totalAmount) }} VNĐ</p>
                     </div>
                     <div class="stat-card tokens">
-                        <h4>Tổng Token Đã Nạp</h4>
+                        <h4>Total Tokens Deposited</h4>
                         <p>{{ $totalTokens }}</p>
                     </div>
                 </div>
@@ -645,7 +645,7 @@
 
             <!-- Recharge Section -->
             <div class="section recharge-section" id="recharge-section">
-                <h3>Chọn Số Tiền Nạp</h3>
+                <h3>Select Deposit Amount</h3>
                 @if (session('success'))
                     <p style="color: var(--success-color); text-align: center; margin-bottom: 20px;">
                         {{ session('success') }}
@@ -666,32 +666,32 @@
                                 </div>
                             </label>
                         @empty
-                            <p>Không có gói nạp tiền nào khả dụng.</p>
+                            <p>No deposit packages available.</p>
                         @endforelse
                     </div>
 
                     <div class="qr-code">
-                        <h4>Quét Mã QR Để Chuyển Khoản</h4>
+                        <h4>Scan QR Code To Transfer Money</h4>
                         <img src="/images/1743491347043.png" alt="QR Code Agribank">
-                        <p>Ngân hàng: Agribank<br>STK: 7206205146190<br>Vui lòng chụp rõ số tiền khi chuyển khoản!</p>
+                        <p>Bank: Agribank<br>STK: 7206205146190<br>Please take a clear photo of the amount when transferring!</p>
                     </div>
 
                     <div class="proof-upload">
-                        <h4>Tải Lên Ảnh Chứng Minh Chuyển Khoản</h4>
+                        <h4>Upload Photo Proof of Transfer</h4>
                         <input type="file" name="proof_image" id="proofImage" accept="image/*" required>
                         <img id="proofPreview" src="" alt="Proof preview">
                     </div>
 
-                    <button type="submit">Xác Nhận Mua Thêm Lượt</button>
+                    <button type="submit">Confirm Buy More Views</button>
                 </form>
             </div>
         </div>
 
         <!-- Recharge History Section -->
         <div class="section recharge-history" id="recharge-history">
-            <h3>Lịch Sử Nạp Tiền</h3>
+            <h3>Deposit History</h3>
             @if ($rechargeHistory->isEmpty())
-                <p>Bạn chưa có lịch sử nạp tiền.</p>
+                <p>You have no deposit history.</p>
             @else
                 <ul>
                     @foreach ($rechargeHistory as $record)
@@ -700,7 +700,7 @@
                                 Nạp {{ number_format($record->amount) }} VNĐ → Nhận {{ $record->tokens_added }} tokens
                                 ({{ $record->approved_at }})
                             </span>
-                            <button class="export-btn" onclick="exportReceipt({{ $record->id }})">Xuất Hóa Đơn</button>
+                            <button class="export-btn" onclick="exportReceipt({{ $record->id }})">Invoice</button>
                         </li>
                     @endforeach
                 </ul>
@@ -709,10 +709,10 @@
 
         <!-- Notifications Section -->
         <div class="section notifications" id="notifications">
-            <h3>Thông Báo Từ Admin</h3>
+            <h3>Notice From Admin</h3>
             <div class="notification-messages">
                 @if ($messages->isEmpty())
-                    <p>Chưa có thông báo nào từ admin.</p>
+                    <p>No announcement from admin yet.</p>
                 @else
                     @foreach ($messages as $message)
                         @if ($message->admin_id)
@@ -729,14 +729,14 @@
         <!-- Popup Xác Nhận Mật Khẩu và CAPTCHA -->
         <div class="popup-overlay" id="confirmPopupOverlay" onclick="hideConfirmPopup()"></div>
         <div class="popup" id="confirmPopup">
-            <h3>Xác Nhận Giao Dịch</h3>
+            <h3>Confirm Transaction</h3>
             <form id="confirmForm">
-                <p><strong>Nhập lại mật khẩu:</strong></p>
+                <p><strong>Re-enter password:</strong></p>
                 <input type="password" id="confirmPassword" name="password" required
                     placeholder="Nhập mật khẩu của bạn">
-                <p><strong>Xác nhận CAPTCHA:</strong></p>
+                <p><strong>Confirm CAPTCHA:</strong></p>
                 <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
-                <button type="button" onclick="submitRechargeForm()">Xác Nhận</button>
+                <button type="button" onclick="submitRechargeForm()">Confirm</button>
             </form>
         </div>
     </div>

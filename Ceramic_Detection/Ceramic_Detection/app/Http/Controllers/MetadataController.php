@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Metadata;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
 
 class MetadataController extends Controller
 {
@@ -12,6 +12,7 @@ class MetadataController extends Controller
     {
         $this->middleware('auth');
     }
+
     public function index()
     {
         $metadata = Metadata::all();
@@ -28,14 +29,20 @@ class MetadataController extends Controller
             'favicon' => 'nullable|image|mimes:png,ico|max:2048',
         ]);
 
+        // Kiểm tra và tạo thư mục 'favicons' nếu chưa tồn tại
+        if (!Storage::exists('public/favicons')) {
+            Storage::makeDirectory('public/favicons');
+        }
+
+        // Lưu favicon vào thư mục 'favicons'
         if ($request->hasFile('favicon')) {
-            $path = $request->file('favicon')->store('favicons', 'public');
+            $path = $request->file('favicon')->store('favicons', 'public'); // Lưu vào thư mục 'favicons'
             $validated['favicon'] = $path;
         }
 
         Metadata::create($validated);
 
-        return redirect()->route('admin.metadata.index')->with('success', 'Metadata đã được thêm thành công!');
+        return redirect()->route('admin.index')->with('success', 'Metadata đã được thêm thành công!');
     }
 
     public function edit($id)
@@ -46,7 +53,6 @@ class MetadataController extends Controller
 
     public function update(Request $request, $id)
     {
-
         $request->validate([
             'page' => 'required|string|max:255',
             'title' => 'required|string|max:255',
@@ -61,12 +67,13 @@ class MetadataController extends Controller
         $metadata->title = $request->title;
         $metadata->description = $request->description;
         $metadata->keywords = $request->keywords;
+
+        // Lưu favicon mới vào thư mục 'favicons' nếu có file tải lên
         if ($request->hasFile('favicon')) {
             $file = $request->file('favicon');
-            $originalName = $file->getClientOriginalName(); // Lấy tên gốc của file
-            $metadata->favicon = $file->storeAs($originalName); // Lưu file với tên gốc
+            $path = $file->store('favicons', 'public'); // Lưu file vào thư mục 'favicons'
+            $metadata->favicon = $path;
         }
-        
 
         $metadata->update();
 

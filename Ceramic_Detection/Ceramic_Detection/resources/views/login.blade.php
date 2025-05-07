@@ -5,7 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Đăng Nhập</title>
+    @php
+        // Lấy metadata cho trang admin
+        $metadataForAdmin = App\Models\Metadata::where('page', 'login')->first();
+        // Lấy APK mới nhất (giữ nguyên nếu cần)
+        $latestApk = App\Models\Apk::latest()->first();
+    @endphp
+
+    <!-- Sử dụng metadata cho title, description, keywords, favicon -->
+    <title>{{ $metadataForAdmin->title ?? 'Trang chủ' }}</title>
+    <meta name="description" content="{{ $metadataForAdmin->description ?? '' }}">
+    <meta name="keywords" content="{{ $metadataForAdmin->keywords ?? '' }}">
+
+    @if ($metadataForAdmin->favicon)
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/images/' . $metadataForAdmin->favicon) }}">
+    @endif
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @if (isset($recaptchaEnabled) && $recaptchaEnabled)
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -207,10 +221,10 @@
 
 <body>
     <div class="login-container">
-        <h2>ĐĂNG NHẬP</h2>
+        <h2>LOG IN</h2>
         <div class="welcome-text">
-            <h3>Xin chào!</h3>
-            <p>Đăng nhập để sử dụng tất cả các tính năng của trang web</p>
+            <h3>Welcome!</h3>
+            <p>Log in to use all features of the site</p>
         </div>
 
         <div class="divider"></div>
@@ -242,14 +256,14 @@
             </div>
 
             <div class="input-group">
-                <label for="password">Mật khẩu</label>
+                <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
                 <i class="fas fa-lock"></i>
             </div>
 
             <!-- Remember Me Checkbox -->
             <div class="links">
-                <a href="{{ route('password.change.form') }}">Đổi mật khẩu?</a>
+                <a href="{{ route('password.change.form') }}">Change password?</a>
             </div>
 
             @if ($recaptchaEnabled)
@@ -260,19 +274,18 @@
             @endif
 
             <button type="submit">
-                <i class="fas fa-sign-in-alt"></i> ĐĂNG NHẬP
+                <i class="fas fa-sign-in-alt"></i> LOG IN
             </button>
         </form>
 
         <!-- Google Login Button -->
         <a href="{{ route('auth.google') }}">
             <button class="google-login-btn">
-                <i class="fab fa-google"></i> Đăng nhập với Google
+                <i class="fab fa-google"></i>Sign in with Google
             </button>
         </a>
 
-        <p style="margin-top: 20px; color: #606770;">Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký tại
-                đây</a></p>
+        <p style="margin-top: 20px; color: #606770;">Don't have an account? <a href="{{ route('register') }}">Register here</a></p>
     </div>
 </body>
 

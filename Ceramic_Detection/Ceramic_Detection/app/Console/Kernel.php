@@ -14,7 +14,9 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             $this->runScheduledTasks();
+           
         })->everyFiveSeconds();
+        $schedule->command('news:fetch')->hourly();
     }
 
     public function runScheduledTasks()
@@ -30,6 +32,15 @@ class Kernel extends ConsoleKernel
     }
 
     protected $commands = [
+        \App\Console\Commands\FetchNews::class,
         \App\Console\Commands\InstallApi::class,
     ];
+
+
+    protected function commands()
+    {
+        $this->load(__DIR__.'/Commands');
+
+        require base_path('routes/console.php');
+    }
 }

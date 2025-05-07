@@ -127,7 +127,6 @@
         }
 
         @keyframes bounce {
-
             0%,
             100% {
                 transform: translateY(0);
@@ -160,6 +159,7 @@
             padding: 0.5rem;
         }
 
+        /* Cải thiện giao diện phần tin tức */
         .content-container {
             max-width: 800px;
             margin: 0 auto;
@@ -169,42 +169,87 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
+        .article-header {
+            margin-bottom: 1.5rem;
+        }
+
         h1 {
             font-size: 2rem;
             color: var(--dark-color);
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
         }
 
-        img {
+        .article-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .article-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .article-meta i {
+            color: var(--secondary-color);
+        }
+
+        .article-image {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .article-image img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
-            margin-bottom: 1rem;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .article-image img:hover {
+            transform: scale(1.02);
         }
 
         p.excerpt {
+            font-size: 1rem;
             font-style: italic;
-            color: #666;
-            margin-bottom: 1rem;
+            color: #555;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--accent-color);
+            border-left: 4px solid var(--secondary-color);
+            border-radius: 4px;
         }
 
         p.content {
-            line-height: 1.6;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 2rem;
+            text-align: justify;
         }
 
         a.back {
             display: inline-block;
-            padding: 0.6rem 1.2rem;
+            padding: 0.6rem 1.5rem;
             background-color: var(--secondary-color);
             color: var(--text-light);
             text-decoration: none;
             border-radius: 20px;
-            transition: background-color 0.3s ease;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         a.back:hover {
             background-color: var(--dark-color);
+            transform: translateY(-2px);
         }
 
         .contact-sidebar {
@@ -363,6 +408,19 @@
             .contact-sidebar {
                 width: 250px;
             }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .article-meta {
+                font-size: 0.8rem;
+            }
+
+            p.excerpt,
+            p.content {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -388,16 +446,29 @@
             </div>
         </header>
 
-
         <div class="content-container">
-            <h1>{{ $article->title }}</h1>
+            <div class="article-header">
+                <h1>{{ $article->title }}</h1>
+                <div class="article-meta">
+                    <span><i class="far fa-calendar-alt"></i> {{ $article->created_at->format('d/m/Y H:i') }}</span>
+                    @if ($article->source_url)
+                        <span><i class="fas fa-link"></i> <a href="{{ $article->source_url }}" target="_blank">Nguồn bài viết</a></span>
+                    @endif
+                </div>
+            </div>
+
             @if ($article->image)
-                <img src="{{ url('/storage/' . $article->image) }}" alt="{{ $article->title }}">
+                <div class="article-image">
+                    <img src="{{ url($article->image) }}" alt="{{ $article->title }}">
+                </div>
             @endif
+
             @if ($article->excerpt)
                 <p class="excerpt">{{ $article->excerpt }}</p>
             @endif
+
             <p class="content">{{ $article->content }}</p>
+
             <a href="{{ route('home') }}" class="back">Quay lại trang chủ</a>
         </div>
     </div>

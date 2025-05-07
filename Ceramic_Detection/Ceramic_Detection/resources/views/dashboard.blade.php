@@ -5,7 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Ceramic Recognition Dashboard</title>
+    @php
+        // Lấy metadata cho trang admin
+        $metadataForAdmin = App\Models\Metadata::where('page', 'dashboard')->first();
+        // Lấy APK mới nhất (giữ nguyên nếu cần)
+        $latestApk = App\Models\Apk::latest()->first();
+    @endphp
+
+    <!-- Sử dụng metadata cho title, description, keywords, favicon -->
+    <title>{{ $metadataForAdmin->title ?? 'Trang chủ' }}</title>
+    <meta name="description" content="{{ $metadataForAdmin->description ?? '' }}">
+    <meta name="keywords" content="{{ $metadataForAdmin->keywords ?? '' }}">
+
+    @if ($metadataForAdmin->favicon)
+        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $metadataForAdmin->favicon) }}">
+    @endif
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
@@ -415,6 +429,7 @@
             padding: 10px;
             background: var(--gradient);
             color: var(--white);
+            margin-bottom: 10px;
             border: none;
             /* border-radius: 8px; */
             cursor: pointer;
@@ -1221,12 +1236,12 @@
         <ul>
             <li><a href="#" class="active" data-section="ceramic-ai"><i
                         class="fas fa-vial"></i><span>CeramicAI</span></a></li> <!-- Icon gốm sứ -->
-            <li><a href="#" data-section="history"><i class="fas fa-clock-rotate-left"></i><span>Lịch sử</span></a></li>
+            <li><a href="#" data-section="history"><i class="fas fa-clock-rotate-left"></i><span>History</span></a></li>
             <!-- Icon lịch sử -->
             <li><a href="#" data-section="rating"><i class="fas fa-star-half-alt"></i><span>Rating</span></a></li>
             <!-- Icon đánh giá -->
             <li><a href="/recharge"><i class="fas fa-coins"></i><span>Recharge</span></a></li> <!-- Icon tiền -->
-            <li><a href="#" onclick="toggleTheme()"><i class="fas fa-moon"></i><span>Đổi Theme</span></a></li>
+            <li><a href="#" onclick="toggleTheme()"><i class="fas fa-moon"></i><span>Change Theme</span></a></li>
             <!-- Icon theme -->
 
             <li>
@@ -1234,7 +1249,7 @@
                     @csrf
                     <button type="submit">
                         <i class="fas fa-right-from-bracket"></i>
-                        <span>Đăng xuất</span>
+                        <span>Logout</span>
                     </button>
                 </form>
             </li>
@@ -1248,12 +1263,12 @@
             <h1>Ceramic Recognition Dashboard</h1>
             <div class="user-info">
                 <h2>
-                    Xin chào, {{ Auth::user()->name }}! Bạn còn <span id="tokenCount">{{ Auth::user()->tokens }}</span>
-                    lượt dự đoán.
+                    Welcome, {{ Auth::user()->name }}! You have <span id="tokenCount">{{ Auth::user()->tokens }}</span>
+                    uses left.
                     <br>
-                    Bạn đã sử dụng <span id="tokenUseCount">{{ Auth::user()->tokens_used }}</span> lượt.
+                    You have used <span id="tokenUseCount">{{ Auth::user()->tokens_used }}</span> times.
                     <br>
-                    <a href="/recharge"><u>Nạp thêm lượt</u></a>
+                    <a href="/recharge"><u>Top up more times</u></a>
                 </h2>
             </div>
         </div>
@@ -1261,14 +1276,14 @@
         <div class="content-wrapper">
             <div class="section ceramic-ai" id="ceramic-ai">
                 <h3><i class="fas fa-vial me-2"></i> CeramicAI</h3>
-                <h4>Chọn Ảnh</h4>
+                <h4>Choose an image</h4>
                 <div class="upload-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)"
                     ondragleave="handleDragLeave(event)">
                     <div class="upload-mode-selector">
                         <button class="mode-btn active" onclick="selectMode('upload')"><i
-                                class="fas fa-upload me-1"></i> Tải ảnh</button>
-                        <button class="mode-btn" onclick="selectMode('camera')"><i class="fas fa-camera me-1"></i> Chụp
-                            ảnh</button>
+                                class="fas fa-upload me-1"></i> Upload photo</button>
+                        <button class="mode-btn" onclick="selectMode('camera')"><i class="fas fa-camera me-1"></i> Take
+                            a photo </button>
                     </div>
                     <!-- Upload file -->
                     <div id="uploadMode" class="upload-mode active">
@@ -1283,7 +1298,7 @@
                     </div>
                     <button onclick="predictImage()" id="predictBtn" class="predict-btn">
                         <span id="predictSpinner" class="loading" style="display: none;"></span>
-                        <i class="fas fa-brain me-1"></i> Dự đoán
+                        <i class="fas fa-brain me-1"></i> Generate
                     </button>
                 </div>
                 <h4>Preview</h4>
@@ -1294,30 +1309,30 @@
                 </div>
                 <h4>Result</h4>
                 <div class="result-area">
-                    <p id="result"><i class="fas fa-brain me-1"></i> Vui lòng upload ảnh để xem kết quả.</p>
+                    <p id="result"><i class="fas fa-brain me-1"></i> Please upload a photo to see the results.</p>
                 </div>
                 <h4>Information</h4>
                 <div class="chatbot-area">
                     <div class="chatbot-content" id="chatbotResponse">
-                        <p><i class="#"></i> Thông tin chi tiết sẽ hiển thị tại đây.</p>
+                        <p><i class="#"></i> Details will be displayed here.</p>
                     </div>
                 </div>
             </div>
 
             <div class="section history-section" id="history" style="display: none;">
-                <h3>Lịch Sử Nhận Diện</h3>
-                <input type="text" id="historySearch" placeholder="Tìm kiếm theo kết quả..." onkeyup="filterHistory()">
+                <h3>History of Identification</h3>
+                <input type="text" id="historySearch" placeholder="Search by results..." onkeyup="filterHistory()">
                 @if ($classifications->isEmpty())
-                    <p>Không có lịch sử nhận diện nào.</p>
+                    <p>No identification history.</p>
                 @else
                     <table>
                         <thead>
                             <tr>
                                 <th>STT</th>
-                                <th>Ảnh</th>
-                                <th>Kết quả</th>
-                                <th>Thời gian</th>
-                                <th>Thông tin</th>
+                                <th>Picture</th>
+                                <th>Result</th>
+                                <th>Time</th>
+                                <th>Information</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1334,7 +1349,7 @@
                                     <td>{{ $classification->created_at->format('d/m/Y H:i') }}</td>
                                     <td>
                                         <button class="view-info-btn" onclick="showInfoPopup({{ $classification->id }})">
-                                            <i class="fas fa-eye"></i> Xem chi tiết
+                                            <i class="fas fa-eye"></i> See details
                                         </button>
                                     </td>
                                 </tr>
@@ -1366,30 +1381,30 @@
                         <i class="fa-star far" data-value="5"></i>
                     </div>
                     <textarea id="feedback" placeholder="Nhập phản hồi của bạn..." rows="4"></textarea>
-                    <button onclick="submitRating()">Gửi đánh giá</button>
+                    <button onclick="submitRating()">Submit a review</button>
                 </div>
                 <!-- Khu vực hiển thị rating của tất cả người dùng -->
                 <div class="all-users-rating">
-                    <h4>Đánh Giá Từ Người Dùng Khác</h4>
+                    <h4>Reviews From Other Users</h4>
                     <!-- Bộ lọc theo số sao -->
                     <div class="rating-filter">
-                        <label for="ratingFilter">Lọc theo số sao: </label>
+                        <label for="ratingFilter">Filter by star rating: </label>
                         <select id="ratingFilter" onchange="filterAndPaginateRatings()">
-                            <option value="all">Tất cả</option>
-                            <option value="1">1 Sao</option>
-                            <option value="2">2 Sao</option>
-                            <option value="3">3 Sao</option>
-                            <option value="4">4 Sao</option>
-                            <option value="5">5 Sao</option>
+                            <option value="all">All</option>
+                            <option value="1">1 Star</option>
+                            <option value="2">2 Star</option>
+                            <option value="3">3 Star</option>
+                            <option value="4">4 Star</option>
+                            <option value="5">5 Star</option>
                         </select>
                     </div>
                     <!-- Bảng hiển thị rating -->
                     <table id="ratingsTable">
                         <thead>
                             <tr>
-                                <th>Tên Người Dùng</th>
-                                <th>Đánh Giá</th>
-                                <th>Phản Hồi</th>
+                                <th>User name</th>
+                                <th>Rating</th>
+                                <th>Feedback</th>
                             </tr>
                         </thead>
                         <tbody id="ratingsBody">
@@ -1397,7 +1412,7 @@
                         </tbody>
                     </table>
                     <!-- Thông báo khi không có dữ liệu -->
-                    <p id="noRatingsMessage" style="display: none;">Chưa có đánh giá nào từ người dùng khác.</p>
+                    <p id="noRatingsMessage" style="display: none;">There are no reviews from other users yet.</p>
                     <!-- Phân trang -->
                     <div class="pagination" id="pagination">
                         <!-- Các nút phân trang sẽ được thêm bằng JavaScript -->
@@ -1408,17 +1423,17 @@
             <!-- Popup hiển thị thông tin chi tiết -->
             <div class="popup-overlay" id="infoPopupOverlay" onclick="hideInfoPopup()"></div>
             <div class="popup" id="infoPopup">
-                <h3>Thông tin chi tiết</h3>
+                <h3>Details</h3>
                 <div id="infoPopupContent">
                     <!-- Nội dung sẽ được thêm bằng JavaScript -->
                 </div>
-                <button onclick="hideInfoPopup()">Đóng</button>
+                <button onclick="hideInfoPopup()">Close</button>
             </div>
 
             <!-- Popup cập nhật thông tin người dùng -->
             <div class="popup-overlay" id="userInfoPopupOverlay" onclick="hideUserInfoPopup()"></div>
             <div class="popup" id="userInfoPopup">
-                <h3>Cập Nhật Thông Tin Người Dùng</h3>
+                <h3>Update User Information</h3>
                 <div id="userInfoContent">
                     <p id="userInfoError" style="color: #f44336; display: none;"></p>
                     <h5>User Name</h5>
@@ -1428,7 +1443,7 @@
                         value="{{ Auth::user()->phone ?? '' }}">
                     <h5>User Gender</h5>
                     <select id="userGender">
-                        <option value="" disabled {{ !Auth::user()->gender ? 'selected' : '' }}>Chọn giới tính</option>
+                        <option value="" disabled {{ !Auth::user()->gender ? 'selected' : '' }}>Select gender</option>
                         <option value="male" {{ Auth::user()->gender == 'male' ? 'selected' : '' }}>Nam</option>
                         <option value="female" {{ Auth::user()->gender == 'female' ? 'selected' : '' }}>Nữ</option>
                         <option value="other" {{ Auth::user()->gender == 'other' ? 'selected' : '' }}>Khác</option>
@@ -1463,23 +1478,23 @@
                 predictBtn.disabled = true;
                 predictBtn.classList.add('processing'); // Animation pulse cho nút
                 spinner.style.display = 'inline-block';
-                resultElement.textContent = 'Đang phân tích mẫu gốm...';
-                resultElement.classList.add('result-processing'); // Animation nhấp nháy cho Result
-                chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
-                chatbotElement.classList.add('chatbot-processing'); // Animation nhấp nháy cho Chatbot
+                resultElement.textContent = 'Analyzing ceramic sample...';
+                resultElement.classList.add('result-processing'); // Blinking animation for Result
+                chatbotElement.innerHTML = '<p>Researching historical information...</p>';
+                chatbotElement.classList.add('chatbot-processing'); // Blinking animation for Chatbot
                 if (!fileInput.files[0]) {
-                    resultElement.textContent = 'Vui lòng upload ảnh trước!';
+                    resultElement.textContent = 'Please upload an image first!';
                     return;
                 }
-
                 const formData = new FormData();
                 formData.append('file', fileInput.files[0]);
                 formData.append('_token', '{{ csrf_token() }}');
 
                 predictBtn.disabled = true;
                 spinner.style.display = 'inline-block';
-                resultElement.textContent = 'Đang phân tích mẫu gốm...';
-                chatbotElement.innerHTML = '<p>Đang nghiên cứu thông tin lịch sử...</p>';
+                resultElement.textContent = 'Analyzing ceramic sample...';
+                chatbotElement.innerHTML = '<p>Researching historical information...</p>';
+
 
                 try {
                     const response = await fetch('{{ route('predict.image') }}', {

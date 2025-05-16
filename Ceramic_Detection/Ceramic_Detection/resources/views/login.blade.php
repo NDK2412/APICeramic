@@ -267,7 +267,7 @@
             </div>
 
             @if ($recaptchaEnabled)
-                <div class="g-recaptcha" data-sitekey="6LfKbgorAAAAANtv57r8iydInhajQevs23gVHSRQ"></div>
+                <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
                 @error('g-recaptcha-response')
                     <!-- <div class="alert alert-danger">{{ $message }}</div> -->
                 @enderror

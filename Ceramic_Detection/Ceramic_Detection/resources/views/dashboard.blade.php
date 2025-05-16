@@ -158,7 +158,7 @@
         .sidebar .logo {
             text-align: center;
             padding: 15px 0;
-            margin-bottom: 20px;
+            /*margin-bottom: 20px;*/
         }
 
         .sidebar .logo i {
@@ -209,15 +209,15 @@
             opacity: 1;
         }
 
-        .sidebar .user-name {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            color: var(--white);
-            font-size: 1rem;
-            font-weight: 500;
-            transition: padding-left 0.3s;
-        }
+        /*.sidebar .user-name {*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*    padding: 15px 20px;*/
+        /*    color: var(--white);*/
+        /*    font-size: 1rem;*/
+        /*    font-weight: 500;*/
+        /*    transition: padding-left 0.3s;*/
+        /*}*/
 
         .sidebar .user-name i {
             font-size: 1.2rem;
@@ -1229,21 +1229,23 @@
         <div class="logo">
             <i class="fas fa-microchip fa-spin-hover"></i> <!-- Icon công nghệ AI -->
         </div>
-        <div class="user-name" onclick="showUserInfoPopup()">
-            <i class="fas fa-user-circle"></i>
-            <span>{{ Auth::user()->name }}</span>
-        </div>
         <ul>
-            <li><a href="#" class="active" data-section="ceramic-ai"><i
-                        class="fas fa-vial"></i><span>CeramicAI</span></a></li> <!-- Icon gốm sứ -->
-            <li><a href="#" data-section="history"><i class="fas fa-clock-rotate-left"></i><span>History</span></a></li>
-            <!-- Icon lịch sử -->
-            <li><a href="#" data-section="rating"><i class="fas fa-star-half-alt"></i><span>Rating</span></a></li>
-            <!-- Icon đánh giá -->
-            <li><a href="/recharge"><i class="fas fa-coins"></i><span>Recharge</span></a></li> <!-- Icon tiền -->
-            <li><a href="#" onclick="toggleTheme()"><i class="fas fa-moon"></i><span>Change Theme</span></a></li>
-            <!-- Icon theme -->
-
+            <li class="user-name" onclick="showUserInfoPopup()">
+                <a href="#">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{ Auth::user()->name }}</span>
+                </a>
+            </li>
+            <li><a href="#" class="active" data-section="ceramic-ai">
+                <i class="fas fa-vial"></i><span>CeramicAI</span></a></li> <!-- Icon gốm sứ -->
+            <li><a href="#" data-section="history">
+                <i class="fas fa-clock-rotate-left"></i><span>History</span></a></li> <!-- Icon lịch sử -->
+            <li><a href="#" data-section="rating">
+                <i class="fas fa-star-half-alt"></i><span>Rating</span></a></li> <!-- Icon đánh giá -->
+            <li><a href="/recharge">
+                <i class="fas fa-coins"></i><span>Recharge</span></a></li> <!-- Icon tiền -->
+            <li><a href="#" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i><span>Theme</span></a></li> <!-- Icon theme -->
             <li>
                 <form method="POST" action="{{ route('logout') }}" class="logout-form">
                     @csrf
@@ -1254,6 +1256,7 @@
                 </form>
             </li>
         </ul>
+
     </div>
 
     <!-- Main content -->
@@ -1997,7 +2000,7 @@
                         chatbotElement.innerHTML = `<p>${data.error}</p>`;
                     } else {
                         tokenCountElement.textContent = data.tokens;
-                        resultElement.textContent = `Dự đoán: ${data.predicted_class}`;
+                        resultElement.textContent = `Dự đoán sơ bộ: ${data.predicted_class}`;
                         resultElement.classList.add('result-loaded');
                         const llmResponse = data.llm_response;
                         const paragraphs = llmResponse.split('\n').filter(p => p.trim() !== '');

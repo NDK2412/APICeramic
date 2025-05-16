@@ -267,15 +267,30 @@ Route::post('/admin/model/upload', [AdminController::class, 'uploadModel'])->nam
 Route::get('/admin/news/{id}/edit', [AdminController::class, 'editNews'])->name('admin.news.edit');
 Route::put('/admin/news/{id}', [AdminController::class, 'updateNews'])->name('admin.news.update');
 Route::delete('/admin/news/{id}', [AdminController::class, 'deleteNews'])->name('admin.news.delete');
+// Route::post('/admin/news/fetch', function () {
+//     try {
+//         \Artisan::call('news:fetch');
+//         return response()->json(['success' => true, 'message' => 'Cập nhật tin tức thành công!']);
+//     } catch (\Exception $e) {
+//         return response()->json(['success' => false, 'message' => 'Lỗi khi cập nhật tin tức: ' . $e->getMessage()], 500);
+//     }
+// })->middleware('auth')->name('admin.news.fetch');
+
 Route::post('/admin/news/fetch', function () {
     try {
-        \Artisan::call('news:fetch');
-        return response()->json(['success' => true, 'message' => 'Cập nhật tin tức thành công!']);
+        // Gọi Artisan Command
+        Artisan::call('news:fetch');
+        return Response::json([
+            'success' => true,
+            'message' => 'Cập nhật tin tức thành công!'
+        ]);
     } catch (\Exception $e) {
-        return response()->json(['success' => false, 'message' => 'Lỗi khi cập nhật tin tức: ' . $e->getMessage()], 500);
+        return Response::json([
+            'success' => false,
+            'message' => 'Lỗi khi cập nhật tin tức: ' . $e->getMessage()
+        ], 500);
     }
 })->middleware('auth')->name('admin.news.fetch');
-
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::put('/admin/users/{id}', [AdminController::class, 'update'])->name('admin.update');
 Route::delete('/admin/users/{id}', [AdminController::class, 'delete'])->name('admin.delete');

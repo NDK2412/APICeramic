@@ -6,22 +6,42 @@
     <html lang="en">
 
     <head>
-    @php
-        // Lấy metadata cho trang admin
-        $metadataForAdmin = App\Models\Metadata::where('page', 'index')->first();
-        // Lấy APK mới nhất (giữ nguyên nếu cần)
-        $latestApk = App\Models\Apk::latest()->first();
-    @endphp
+        @php
+            // Lấy metadata cho trang admin
+            $metadataForAdmin = App\Models\Metadata::where('page', 'index')->first();
+            // Lấy APK mới nhất (giữ nguyên nếu cần)
+            $latestApk = App\Models\Apk::latest()->first();
+        @endphp
 
 
-    <title>{{ $metadataForAdmin->title ?? 'Trang chủ' }}</title>
-    <meta name="description" content="{{ $metadataForAdmin->description ?? '' }}">
-    <meta name="keywords" content="{{ $metadataForAdmin->keywords ?? '' }}">
+        <title>{{ $metadataForAdmin->title ?? 'Trang chủ' }}</title>
+        <meta name="description" content="{{ $metadataForAdmin->description ?? '' }}">
+        <meta name="keywords" content="{{ $metadataForAdmin->keywords ?? '' }}">
 
-    @if ($metadataForAdmin->favicon)
-        <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $metadataForAdmin->favicon) }}">
-    @endif
+        @if ($metadataForAdmin->favicon)
+            <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $metadataForAdmin->favicon) }}">
+        @endif
+        <!-- SEO Metadata -->
+        <meta property="og:title" content="{{ $metadataForAdmin->title ?? 'Trang chủ' }}" />
+        <meta property="og:description" content="{{ $metadataForAdmin->description ?? '' }}" />
+        <meta property="og:image"
+            content="{{ $metadataForAdmin->og_image ? asset('storage/' . $metadataForAdmin->og_image) : asset('images/default-og-image.png') }}" />
+        <meta property="og:url" content="{{ Request::fullUrl() }}" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="{{ config('app.name', 'Website') }}" />
+        <meta property="og:image:alt" content="{{ $metadataForAdmin->title ?? 'Hình ảnh đại diện' }}" />
 
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $metadataForAdmin->title ?? 'Trang chủ' }}">
+        <meta name="twitter:description" content="{{ $metadataForAdmin->description ?? '' }}">
+        <meta name="twitter:image"
+            content="{{ $metadataForAdmin->og_image ? asset('storage/' . $metadataForAdmin->og_image) : asset('images/default-og-image.png') }}">
+
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="robots" content="all">
+        <!-- End SEO Metadata -->
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
             rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
@@ -840,7 +860,7 @@
                 @else
                     @foreach ($news as $article)
                         <article class="news-item">
-                            <img src="{{ url( $article->image) }}" alt="{{ $article->title }}">
+                            <img src="{{ url($article->image) }}" alt="{{ $article->title }}">
                             <div class="news-content">
                                 <h2>{{ $article->title }}</h2>
                                 <p>{{ $article->excerpt ?? Str::limit($article->content, 100) }}</p>
@@ -1020,7 +1040,7 @@
 
         async function checkLoginStatus() {
             try {
-                let response = await fetch("http://localhost:8000/api/check-auth", {
+                let response = await fetch("{{ asset('api/check-auth') }}", {
                     credentials: "include"
                 });
                 let data = await response.json();
@@ -1040,17 +1060,17 @@
         }
 
         function redirectToLogin() {
-            window.location.href = "http://localhost:8000/login";
+            window.location.href = "{{ asset('login') }}";
         }
 
         function redirectToGuide() {
-            window.location.href = "http://localhost:8000/guide";
+            window.location.href = "{{ asset('guide') }}";
         }
 
         async function logout() {
             try {
                 document.getElementById('logoutButton').innerHTML = '<span class="loading"></span> Processing...';
-                await fetch("http://localhost:8000/api/logout", {
+                await fetch("{{ asset('api/logout') }}", {
                     method: "POST",
                     credentials: "include"
                 });

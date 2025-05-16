@@ -262,7 +262,7 @@
                     <td>{{ $item->keywords }}</td>
                     <td>
                         @if ($item->favicon)
-                            <img src="http://localhost:8000/storage/{{ $item->favicon }}" alt="Favicon" width="30" class="favicon-img">
+                            <img src="{{ asset('storage/' . $item->favicon) }}" alt="Favicon" width="30" class="favicon-img">
                         @endif
                     </td>
                     <td>

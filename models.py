@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # import tensorflow as tf
 # import logging
 # import os
@@ -210,27 +209,16 @@ import os
 import json
 import tensorflow.keras as k3
 from config import MODEL_PATH_66, MODEL_PATH_67, DEFAULT_MODEL
-=======
-import tensorflow as tf
-import logging
-import os
-import tensorflow.keras as k3
->>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 
 # Cấu hình logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-<<<<<<< HEAD
 # Đường dẫn tới file lưu trạng thái
 STATE_FILE = "/app/model_state.json"
 
 # Danh sách class cho mô hình 66 class (không có 'Bát Tràng Men đỏ')
 CLASS_NAMES_66 = [
-=======
-# Danh sách class được định nghĩa sẵn (tiếng Việt có dấu, không có dấu _)
-CLASS_NAMES = [
->>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
     'Bát Tràng Men chảy', 'Bát Tràng Men hoa biến', 'Bát Tràng Men lam',
     'Bát Tràng Men nâu', 'Bát Tràng Men nâu da lươn', 'Bát Tràng Men ngọc',
     'Bát Tràng Men rạn', 'Bát Tràng Men trắng', 'Bát Tràng Men vàng',
@@ -261,7 +249,6 @@ CLASS_NAMES = [
     'Thổ Hà Men nâu', 'Vĩnh Long Men đỏ'
 ]
 
-<<<<<<< HEAD
 # Danh sách class cho mô hình 67 class (có thêm 'Bát Tràng Men đỏ')
 CLASS_NAMES_67 = [
     'Bát Tràng Men chảy', 'Bát Tràng Men đỏ', 'Bát Tràng Men hoa biến', 'Bát Tràng Men lam',
@@ -405,16 +392,3 @@ def switch_model(model_path=None, class_names=None):
         elif current_model_type == "67":
             load_model(MODEL_PATH_66, "66")
     logger.info(f"After switch - Updated state: model_type={current_model_type}, class_count={len(current_class_names)}")
-=======
-# Load mô hình TensorFlow
-logger.info("Đang tải mô hình TensorFlow...")
-# model_path = os.path.join(os.path.dirname(__file__), 'xception_66class_model.h5')
-# model = tf.keras.models.load_model(model_path)
-# model = k3.models.load_model(model_path)
-model = tf.keras.models.load_model(os.path.join('/app', 'xception_66class_model.h5'))
-# model_path = os.path.join(os.path.dirname(__file__), 'xception_66class_model.h5')
-# model = tf.keras.models.load_model(model_path)
-# model = tf.keras.models.load_model('D:\\PY_Code\\Ceramic_Detection\\xception_66class_model.h5')
-logger.info("Mô hình TensorFlow đã được tải thành công.")
-logger.info(f"Nhận diện được {len(CLASS_NAMES)} lớp: {CLASS_NAMES}")
->>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad

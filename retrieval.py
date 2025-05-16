@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 # Khởi tạo mô hình nhúng văn bản
 embedder = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
+embedder.save_pretrained('/app/ultis')
 
 # Hàm tìm kiếm thông tin từ Google và scrape nội dung
 def search_google(query, num_results=10):
@@ -51,7 +52,7 @@ def summarize_with_llm(predicted_class, contents, llm_provider, llm_api_key):
         f"Tôi đã nhận diện được dòng gốm '{predicted_class}'. "
         f"Dựa trên thông tin từ các trang web sau:\n"
         f"{content_text}\n"
-        f"Hãy cung cấp mô tả chi tiết về dòng gốm này bằng tiếng Việt, bao gồm: mô tả, giá bán, và lịch sử hình thành. "
+        f"Hãy cung cấp mô tả chi tiết về dòng gốm này bằng tiếng Việt, bao gồm:Dòng gốm sau khi quan sát cụ thể chi tiết hoa văn, mô tả, giá bán, và lịch sử hình thành. "
         "Chỉ trả về thông tin liên quan và chính xác nhất có thể"
     )
 
@@ -61,7 +62,7 @@ def summarize_with_llm(predicted_class, contents, llm_provider, llm_api_key):
                 raise ValueError("API key cho Gemini không được cung cấp.")
             # Cấu hình API Gemini với key từ người dùng
             genai.configure(api_key=llm_api_key)
-            gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+            gemini_model = genai.GenerativeModel('gemini-2.0-flash')
             response = gemini_model.generate_content(prompt)
             if not response.text:
                 raise ValueError("Gemini không trả về nội dung hợp lệ.")

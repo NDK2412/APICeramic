@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # import os
 # from dotenv import load_dotenv
 #
@@ -22,8 +21,6 @@
 
 
 
-=======
->>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
 import os
 from dotenv import load_dotenv
 
@@ -31,26 +28,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Cấu hình
-<<<<<<< HEAD
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyAH7ynNF7vZDM-3y34Bz4eMGNjqq0sUv6E")
 TEXT_FOLDER = "/app/texts"
 IMAGE_DIR = "/app/images"
-MODEL_PATH_66 = "/app/xception_66class_model.h5"  # Đường dẫn tuyệt đối
-MODEL_PATH_67 = "/app/xception_67class_model.h5"  # Đường dẫn tuyệt đối
-DEFAULT_MODEL = "xception_66class_model.h5"  # Chỉ tên file, sẽ kết hợp với /app
-=======
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyAH7ynNF7vZDM-3y34Bz4eMGNjqq0sUv6E")  # Thay bằng key mới
-TEXT_FOLDER = "D:\\PY_Code\\GD5\\texts"
-IMAGE_DIR = "D:\\PY_Code\\SecondModel\\images"
-MODEL_PATH = "D:\\PY_Code\\Ceramic_Detection\\xception_66class_model.h5"
->>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
+MODEL_PATH_66 = "/app/ultis/xception_66class_model.h5"  # Đường dẫn tuyệt đối
+MODEL_PATH_67 = "/app/ultis/xception_67class_model.h5"  # Đường dẫn tuyệt đối
+# MODEL_PATH_66 = os.getenv("MODEL_PATH_66", "/app/models/xception_66class_model.h5")
+# MODEL_PATH_67 = os.getenv("MODEL_PATH_67", "/app/models/xception_67class_model.h5")
+
+DEFAULT_MODEL = "/app/ultis/xception_66class_model.h5"  # Chỉ tên file, sẽ kết hợp với /app
 
 # Đảm bảo thư mục tồn tại
 os.makedirs(TEXT_FOLDER, exist_ok=True)
 
 # API key cho FastAPI
-<<<<<<< HEAD
 API_KEY = "AuwTLoaTGAWYm2HmDzV0i9ahfemzky"
-=======
-API_KEY = "AuwTLoaTGAWYm2HmDzV0i9ahfemzky"  # Giữ nguyên
->>>>>>> 030ad931c4b00f84144f65f1375678cf8d0924ad
